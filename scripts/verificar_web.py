@@ -39,7 +39,7 @@ def local_target(page, ref):
 
 def main():
     errors = []
-    pages = list(ROOT.glob('*.html')) + list((ROOT / 'articles').glob('*.html'))
+    pages = list(ROOT.glob('*.html')) + list((ROOT / 'articles').glob('*.html')) + list((ROOT / 'admin').glob('*.html'))
     scripts_checked = 0
     references = 0
     for page in pages:
@@ -53,7 +53,7 @@ def main():
             target = local_target(page, ref)
             if target is not None:
                 references += 1
-                if not target.is_file():
+                if not target.is_file() and not (target.is_dir() and (target / 'index.html').is_file()):
                     errors.append(f'{page.relative_to(ROOT)}: archivo ausente {ref}')
         for script in re.findall(r'<script\b([^>]*)>(.*?)</script>', source, re.S):
             attrs, code = script
@@ -67,7 +67,7 @@ def main():
             if result.returncode:
                 errors.append(f'{page.relative_to(ROOT)}: JavaScript inválido\n{result.stderr}')
 
-    for path in list((ROOT / 'data').glob('*.js')):
+    for path in [p for folder in ('data', 'js', 'admin', 'vendor') for p in (ROOT / folder).glob('*.js')]:
         result = subprocess.run(['node', '--check', str(path)], capture_output=True, text=True)
         scripts_checked += 1
         if result.returncode:

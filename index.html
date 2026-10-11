@@ -283,6 +283,7 @@
         </div>
 
         <!-- Products Grid Container (Rendered dynamically) -->
+        <p id="catalog-status" role="status" aria-live="polite" hidden></p>
         <div class="products-grid" id="products-grid">
           <!-- Populated by JavaScript with all verified products -->
         </div>
@@ -486,6 +487,8 @@
   <!-- ========================================================================
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
+  <script src="data/config.js"></script>
+  <script src="js/catalogo-remoto.js"></script>
   <script src="data/productos.js"></script>
   <script>
 
@@ -548,6 +551,8 @@
         : productsDB.filter(p => p.category === category);
 
       filtered.forEach(p => {
+        const q = {...p};
+        for (const field of ["id", "name", "subtitle", "image", "price"]) q[field] = KP_CATALOG.escape(p[field]);
         const card = document.createElement("article");
         card.className = "product-card";
 
@@ -562,14 +567,14 @@
         }
 
         // Specs chips
-        const specsHtml = p.specs.map(s => `<span class="spec-chip">${s}</span>`).join("");
+        const specsHtml = p.specs.map(s => `<span class="spec-chip">${KP_CATALOG.escape(s)}</span>`).join("");
 
         // Variant selector if stock or dual
         let variantHtml = "";
         if (p.variants && p.variants.length > 0) {
           const optionsHtml = p.variants.map((v, idx) => `
-            <button type="button" class="variant-btn ${idx === 0 ? 'selected' : ''}" data-val="${v}">
-              ${v}
+            <button type="button" class="variant-btn ${idx === 0 ? 'selected' : ''}" data-val="${KP_CATALOG.escape(v)}">
+              ${KP_CATALOG.escape(v)}
             </button>
           `).join("");
 
@@ -585,13 +590,13 @@
         let actionBtnHtml = "";
         if (p.type === "stock") {
           actionBtnHtml = `
-            <button class="btn-card-action btn-add-cart" type="button" data-action="add-stock" data-id="${p.id}">
+            <button class="btn-card-action btn-add-cart" type="button" data-action="add-stock" data-id="${q.id}">
               + Agregar al carrito
             </button>
           `;
         } else if (p.type === "custom") {
           actionBtnHtml = `
-            <button class="btn-card-action btn-custom-action" type="button" data-action="customize" data-id="${p.id}">
+            <button class="btn-card-action btn-custom-action" type="button" data-action="customize" data-id="${q.id}">
               🎨 Personalizar con logo →
             </button>
           `;
@@ -599,10 +604,10 @@
           // Dual
           actionBtnHtml = `
             <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-              <button class="btn-card-action btn-add-cart" type="button" data-action="add-stock" data-id="${p.id}">
+              <button class="btn-card-action btn-add-cart" type="button" data-action="add-stock" data-id="${q.id}">
                 + Comprar pack
               </button>
-              <button class="btn-card-action btn-custom-action" type="button" data-action="customize" data-id="${p.id}">
+              <button class="btn-card-action btn-custom-action" type="button" data-action="customize" data-id="${q.id}">
                 Con mi logo →
               </button>
             </div>
@@ -612,17 +617,17 @@
         card.innerHTML = `
           <div class="product-card-media">
             ${badgeHtml}
-            <img src="${p.image}" alt="${p.name}" loading="lazy">
+            <img src="${q.image}" alt="${q.name}" loading="lazy">
           </div>
           <div class="product-card-body">
             <span class="product-category-tag">${getCategoryName(p.category)}</span>
-            <h3 class="product-card-title">${p.name}</h3>
-            <p class="product-card-desc">${p.subtitle}</p>
+            <h3 class="product-card-title">${q.name}</h3>
+            <p class="product-card-desc">${q.subtitle}</p>
             <div class="product-specs-list">${specsHtml}</div>
             ${variantHtml}
             <div class="product-card-footer">
               <div class="product-price-box">
-                <span class="product-price-value">${p.price}</span>
+                <span class="product-price-value">${q.price}</span>
                 <span class="product-price-note">${p.type === 'custom' ? 'Revisión de arte incluida' : 'Despacho rápido'}</span>
               </div>
               ${actionBtnHtml}
@@ -747,27 +752,28 @@
       cartItemsContainer.innerHTML = "";
 
       cart.forEach((item, index) => {
+        const safe = Object.fromEntries(Object.entries(item).map(([key, value]) => [key, KP_CATALOG.escape(value)]));
         const itemEl = document.createElement("div");
         itemEl.className = "cart-item";
 
         const customBadge = item.isCustom 
-          ? `<div class="cart-item-custom-badge">🎨 Con logo: ${item.logoFile || 'A coordinar'}</div>` 
+          ? `<div class="cart-item-custom-badge">🎨 Con logo: ${safe.logoFile || 'A coordinar'}</div>`
           : `<div style="font-size:11px;color:var(--stock-green);font-weight:600;">✓ Pack genérico sin impresión</div>`;
 
         itemEl.innerHTML = `
-          <img class="cart-item-thumb" src="${item.image}" alt="${item.name}">
+          <img class="cart-item-thumb" src="${safe.image}" alt="${safe.name}">
           <div class="cart-item-details">
-            <h5>${item.name}</h5>
-            <p class="cart-item-variant">${item.variant}</p>
+            <h5>${safe.name}</h5>
+            <p class="cart-item-variant">${safe.variant}</p>
             ${customBadge}
             <div class="cart-item-qty-row">
               <button class="cart-qty-btn" type="button" data-index="${index}" data-action="minus">−</button>
-              <span class="cart-qty-value">${item.qty}</span>
+              <span class="cart-qty-value">${safe.qty}</span>
               <button class="cart-qty-btn" type="button" data-index="${index}" data-action="plus">+</button>
             </div>
           </div>
           <div class="cart-item-right">
-            <span class="cart-item-price">${item.price}</span>
+            <span class="cart-item-price">${safe.price}</span>
             <button class="cart-item-remove" type="button" data-index="${index}" aria-label="Eliminar item">🗑️</button>
           </div>
         `;
@@ -1064,7 +1070,38 @@
     // ------------------------------------------------------------------------
     // Inicialización al cargar la página
     // ------------------------------------------------------------------------
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
+      const status = document.getElementById("catalog-status");
+      checkoutWaBtn.disabled = true;
+      checkoutEmailBtn.disabled = true;
+      // Con conexión activa, no mostrar la copia estática ni sus precios antiguos.
+      if (window.KP_CONFIG?.enabled) {
+        productsDB.splice(0);
+        status.hidden = false;
+        status.textContent = "Cargando catálogo…";
+      }
+      try {
+        const remote = await KP_CATALOG.load();
+        if (remote !== null) {
+          productsDB.splice(0, productsDB.length, ...remote);
+          // Revalidar pedidos guardados al volver a entrar a la tienda.
+          cart = cart.filter(item => productsDB.some(p => p.id === item.id && p.variants.includes(item.variant)
+            && (item.isCustom ? p.type !== "stock" : p.type !== "custom")));
+          cart = cart.map(item => {
+            const product = productsDB.find(p => p.id === item.id);
+            return {...item, name:product.name, image:product.image, price:item.isCustom ? "Cotización con logo" : product.price};
+          });
+          saveCart();
+        }
+        status.hidden = productsDB.length > 0;
+        status.textContent = productsDB.length ? "" : "Estamos actualizando el catálogo. Puedes consultarnos por WhatsApp.";
+        checkoutWaBtn.disabled = false;
+        checkoutEmailBtn.disabled = false;
+      } catch (error) {
+        productsDB.splice(0);
+        status.hidden = false;
+        status.textContent = "No pudimos cargar el catálogo. Recarga la página o consulta por WhatsApp. Los pedidos guardados podrán revisarse al recuperar la conexión.";
+      }
       renderProducts("all");
       updateCartUI();
       initHeroSlider();

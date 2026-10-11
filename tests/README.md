@@ -1,0 +1,17 @@
+# Pruebas del catálogo y administrador
+
+Ejecutar `npm install` y `npm test` en una copia local. Las dependencias son solo
+para desarrollo; no se sube `node_modules` ni se necesita Node para servir la web.
+Cloudflare puede seguir usando el comando `exit 0` y salida `.`.
+
+- `test-db.cjs` ejecuta esquema y carga inicial en PostgreSQL mediante PGlite.
+  Comprueba lectura pública, productos ocultos, permisos de escritura, autorización
+  de un solo administrador, validación, conflictos y carga sin sobrescrituras.
+- `test-ui.cjs` ejecuta las páginas en JSDOM con respuestas de servicio simuladas.
+  Comprueba estados del login, búsqueda, edición, guardado fallido, conflicto,
+  cierre de sesión, catálogo estático/remoto, filtros, carrito, personalización,
+  escape de texto HTML y caída de conexión.
+
+Estas pruebas no acceden a cuentas reales, no envían mensajes y no sustituyen
+la revisión visual en navegador ni la prueba final contra Supabase y Cloudflare.
+El proyecto Supabase y el usuario deben configurarse antes de esa aceptación.

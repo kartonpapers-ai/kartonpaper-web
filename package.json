@@ -1,0 +1,11 @@
+{
+  "name": "kartonpaper-web",
+  "private": true,
+  "scripts": {
+    "test": "node tests/test-db.cjs && node tests/test-ui.cjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "jsdom": "26.1.0"
+  }
+}

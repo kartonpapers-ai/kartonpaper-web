@@ -54,9 +54,10 @@ archivo y desplegar la rama; no existe aún un panel ni una base de datos.
 Las condiciones comerciales anotadas en `INVENTARIO-INICIAL.md` siguen pendientes
 de confirmación. La extracción no modifica precios ni mínimos.
 
-La siguiente entrega elegirá y conectará almacenamiento persistente y
-autenticación real. El panel y la tienda consumirán esa misma fuente de datos,
-para que actualizar precios no requiera editar HTML ni publicar código.
+La tercera entrega prepara Supabase para almacenamiento persistente y
+autenticación real. El panel y la tienda consultan la misma tabla al activar
+`data/config.js`. La conexión está desactivada hasta crear el proyecto y el
+usuario autorizado. Ver `ADMINISTRADOR.md` para activarla y probarla.
 
 La contraseña del administrador y las credenciales de servicios se guardarán
 en el servidor; nunca dentro de HTML o JavaScript público. Las consultas y
