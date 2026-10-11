@@ -41,12 +41,22 @@ Si la copia ya fue clonada, obtener los cambios con `git fetch origin` y revisar
 `git status` antes de actualizar. No reemplazar indiscriminadamente una carpeta
 que tenga trabajo local sin guardar.
 
-## Siguiente entrega
+## Catálogo separado (segunda entrega)
 
-Separar el catálogo de `index.html` conservando los identificadores, variantes,
-imágenes y comportamiento actual. Esa estructura será la fuente de datos para
-la tienda y el asistente. Después elegir y conectar almacenamiento persistente
-y autenticación real para el panel.
+El catálogo público está en `data/productos.js` y se carga antes del código de la
+tienda. Conserva los 20 productos y todos sus campos, precios, variantes e imágenes.
+`index.html` contiene la presentación y la lógica del carrito, sin una copia de
+los productos. El archivo externo funciona tanto en un servidor como al abrir
+`index.html` directamente en el navegador.
+
+Esta es una etapa intermedia estática. Editar precios todavía exige actualizar el
+archivo y desplegar la rama; no existe aún un panel ni una base de datos.
+Las condiciones comerciales anotadas en `INVENTARIO-INICIAL.md` siguen pendientes
+de confirmación. La extracción no modifica precios ni mínimos.
+
+La siguiente entrega elegirá y conectará almacenamiento persistente y
+autenticación real. El panel y la tienda consumirán esa misma fuente de datos,
+para que actualizar precios no requiera editar HTML ni publicar código.
 
 La contraseña del administrador y las credenciales de servicios se guardarán
 en el servidor; nunca dentro de HTML o JavaScript público. Las consultas y

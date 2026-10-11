@@ -67,10 +67,23 @@ def main():
             if result.returncode:
                 errors.append(f'{page.relative_to(ROOT)}: JavaScript inválido\n{result.stderr}')
 
+    for path in list((ROOT / 'data').glob('*.js')):
+        result = subprocess.run(['node', '--check', str(path)], capture_output=True, text=True)
+        scripts_checked += 1
+        if result.returncode:
+            errors.append(f'{path.relative_to(ROOT)}: JavaScript inválido\n{result.stderr}')
+
     home = (ROOT / 'index.html').read_text(encoding='utf-8')
-    match = re.search(r'const productsDB\s*=\s*(\[.*?\]);', home, re.S)
+    catalog_path = ROOT / 'data/productos.js'
+    catalog = catalog_path.read_text(encoding='utf-8') if catalog_path.is_file() else ''
+    match = re.search(r'const productsDB\s*=\s*(\[.*?\]);', catalog, re.S)
+    if 'const productsDB' in home:
+        errors.append('El catálogo sigue duplicado dentro de index.html')
+    catalog_tag = '<script src="data/productos.js"></script>'
+    if catalog_tag not in home or home.index(catalog_tag) > home.index('    let cart = []'):
+        errors.append('Cargar data/productos.js antes del código de la tienda')
     if not match:
-        errors.append('No se encontró productsDB; actualizar el verificador al migrar el catálogo.')
+        errors.append('No se encontró productsDB en data/productos.js.')
         products = []
     else:
         # Ejecuta únicamente la declaración del catálogo del repositorio, sin APIs del navegador.
