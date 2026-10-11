@@ -1,0 +1,11 @@
+KartonPaper — hero de cajas de alfajores
+
+1. Reemplaza index.html en la raíz de tu web.
+2. Reemplaza css/styles.css con el incluido (se conserva el CSS adjunto).
+3. Coloca hero-alfajores.png dentro de images/.
+4. Conserva las demás imágenes y archivos del proyecto.
+5. Recarga sin caché con Cmd + Shift + R.
+
+La imagen está vinculada a la tercera diapositiva del hero, Repostería & Gastronomía.
+Se conservan header, footer, catálogo, precios, textos y lógica del carrito.
+Imagen original sin reescalar. Referencia de archivo y sintaxis JavaScript verificadas.
