@@ -1,0 +1,53 @@
+(function () {
+  "use strict";
+  const categories = ["cerveza", "reposteria", "gastronomia", "bolsas", "doypack", "posavasos"];
+  function validate(p) {
+    if (!p || typeof p !== "object") throw new Error("Producto inválido.");
+    for (const field of ["id", "category", "name", "subtitle", "type", "image", "price"]) {
+      if (typeof p[field] !== "string" || !p[field].trim() || p[field].length > 500) {
+        throw new Error("Revisa el campo " + field + ".");
+      }
+    }
+    if (!/^[a-z0-9-]+$/.test(p.id) || !categories.includes(p.category) || !["dual", "custom", "stock"].includes(p.type)) {
+      throw new Error("Identificador, categoría o tipo inválidos.");
+    }
+    if (!/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)) throw new Error("Ruta de imagen inválida.");
+    for (const field of ["specs", "variants"]) {
+      if (!Array.isArray(p[field]) || !p[field].length || p[field].length > 30 || p[field].some(v => typeof v !== "string" || !v.trim() || v.length > 500)) {
+        throw new Error("Revisa las opciones y características del producto.");
+      }
+    }
+    if ("priceNum" in p && (!Number.isFinite(p.priceNum) || p.priceNum < 0)) throw new Error("Precio numérico inválido.");
+    return p;
+  }
+  function configuration() {
+    const c = window.KP_CONFIG;
+    if (!c || !c.enabled) return null;
+    if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(c.supabaseUrl) || !/^sb_publishable_[A-Za-z0-9_-]+$/.test(c.publishableKey)) {
+      throw new Error("Revisa la URL y la clave pública de Supabase.");
+    }
+    return c;
+  }
+  async function load() {
+    const c = configuration();
+    if (!c) return null;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    try {
+      const url = c.supabaseUrl.replace(/\/$/, "") + "/rest/v1/kp_products?select=id,data&published=eq.true&order=sort_order.asc,id.asc";
+      const response = await fetch(url, {headers: {apikey: c.publishableKey}, signal: controller.signal, cache: "no-store"});
+      if (!response.ok) throw new Error("No se pudo consultar el catálogo.");
+      const rows = await response.json();
+      if (!Array.isArray(rows)) throw new Error("Respuesta de catálogo inválida.");
+      const seen = new Set();
+      return rows.map(row => {
+        const p = validate(row.data);
+        if (row.id !== p.id || seen.has(p.id)) throw new Error("Identificador de catálogo inválido.");
+        seen.add(p.id);
+        return p;
+      });
+    } finally { clearTimeout(timer); }
+  }
+  const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
+  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape});
+})();

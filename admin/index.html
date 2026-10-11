@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Administración · KartonPaper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin.css">
+  <script defer src="../vendor/supabase-2.117.3.js"></script>
+  <script defer src="../data/config.js"></script>
+  <script defer src="../js/catalogo-remoto.js"></script>
+  <script defer src="admin.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../" aria-label="Volver a KartonPaper"><img src="../images/kartonpaper-logo-lockup.webp" alt="KartonPaper.cl"></a>
+    <div class="header-actions"><a href="../" target="_blank" rel="noopener">Ver tienda</a><button id="logout" class="secondary" hidden>Cerrar sesión</button></div>
+  </header>
+  <main>
+    <section id="login-view" class="login-layout">
+      <div class="welcome"><h1>Tu catálogo,<br>a tu ritmo.</h1><p>Actualiza productos y precios desde un solo lugar, y vuelve a lo que mejor haces: fabricar.</p><div class="mint-rule"></div></div>
+      <div class="login-panel"><h2>Administración</h2><p>Acceso personal a KartonPaper.</p>
+        <form id="login-form">
+          <label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required maxlength="254">
+          <label for="password">Contraseña</label><div class="password-field"><input id="password" type="password" autocomplete="current-password" required maxlength="256"><button id="show-password" type="button" class="secondary" aria-pressed="false">Mostrar</button></div>
+          <button id="login-button" class="primary" type="submit">Entrar al panel</button>
+        </form>
+        <p id="login-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <section id="workspace" hidden>
+      <div class="workspace-heading"><div><h1>Productos</h1><p id="product-count">Cargando catálogo…</p></div><button id="reload" class="secondary">Actualizar lista</button></div>
+      <div class="workspace-layout">
+        <section class="catalog-list" aria-label="Buscar productos">
+          <label for="search">Buscar en tu catálogo</label><input id="search" type="search" placeholder="Nombre o categoría" autocomplete="off">
+          <div id="product-list" class="product-list"></div>
+          <p id="list-status" role="status" aria-live="polite"></p>
+        </section>
+        <section class="editor" aria-label="Editar producto">
+          <div id="editor-empty"><h2>Elige un producto</h2><p>Selecciona un producto de la lista para revisar su precio, sus opciones y su visibilidad.</p></div>
+          <form id="edit-form" hidden>
+            <div class="editor-heading"><img id="edit-image" alt=""><div><h2 id="edit-title">Editar producto</h2><p id="edit-id"></p></div></div>
+            <label for="edit-name">Nombre del producto</label><input id="edit-name" required maxlength="150">
+            <label for="edit-subtitle">Descripción breve</label><input id="edit-subtitle" required maxlength="500">
+            <label for="edit-price">Precio o texto visible</label><input id="edit-price" required maxlength="150"><p class="field-help">Ejemplo: $670 + IVA c/u, o Cotización con logo.</p>
+            <label for="edit-number">Precio numérico de referencia (CLP)</label><input id="edit-number" type="number" min="0" step="1"><p class="field-help">Opcional. El texto visible y los valores de cada pack se editan por separado.</p>
+            <label for="edit-variants">Opciones de venta · una por línea</label><textarea id="edit-variants" rows="4" required></textarea><p class="field-help">Si cambia un precio por unidad, revisa también los precios escritos en los packs.</p>
+            <label for="edit-specs">Características · una por línea</label><textarea id="edit-specs" rows="3" required></textarea>
+            <label class="checkbox"><input id="edit-published" type="checkbox"> Mostrar en el catálogo</label>
+            <div class="save-bar"><button id="save" type="submit" class="primary">Guardar cambios</button><button id="cancel" type="button" class="secondary">Descartar cambios</button></div>
+            <p id="save-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
