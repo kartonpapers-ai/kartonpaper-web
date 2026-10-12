@@ -11,7 +11,11 @@
     if (!/^[a-z0-9-]+$/.test(p.id) || !categories.includes(p.category) || !["dual", "custom", "stock"].includes(p.type)) {
       throw new Error("Identificador, categoría o tipo inválidos.");
     }
-    if (!/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)) throw new Error("Ruta de imagen inválida.");
+    if (!/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)) {
+      const c = configuration();
+      const prefix = c && c.supabaseUrl.replace(/\/$/, "") + "/storage/v1/object/public/kp-productos/";
+      if (!prefix || !p.image.startsWith(prefix) || !/^[a-z0-9-]+\.webp$/.test(p.image.slice(prefix.length))) throw new Error("Imagen inválida: usa una foto de este catálogo.");
+    }
     for (const field of ["specs", "variants"]) {
       if (!Array.isArray(p[field]) || !p[field].length || p[field].length > 30 || p[field].some(v => typeof v !== "string" || !v.trim() || v.length > 500)) {
         throw new Error("Revisa las opciones y características del producto.");

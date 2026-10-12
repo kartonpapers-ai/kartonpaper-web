@@ -15,3 +15,8 @@ Cloudflare puede seguir usando el comando `exit 0` y salida `.`.
 Estas pruebas no acceden a cuentas reales, no envían mensajes y no sustituyen
 la revisión visual en navegador ni la prueba final contra Supabase y Cloudflare.
 El proyecto Supabase y el usuario deben configurarse antes de esa aceptación.
+
+La migración 04 se prueba con tablas de Storage simuladas en PostgreSQL: verifica
+INSERT de productos y objetos, rechazo de otros usuarios, formatos y publicación.
+Las pruebas de imágenes simulan la API canvas; conversión y subida reales se
+verifican manualmente en el Preview tras activar la migración.

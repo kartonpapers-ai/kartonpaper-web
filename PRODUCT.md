@@ -20,7 +20,7 @@ Centralizar catálogo, precios y atención inicial para reducir trabajo repetiti
 Sitio HTML/CSS/JavaScript publicado en Cloudflare Pages desde GitHub. Desarrollo
 en `desarrollo/admin`; producción en `main`. Mantener el catálogo y diseño actual.
 Panel de uso personal con correo y contraseña, sin enlace en la navegación pública
-ni registro de usuarios. Esta primera versión administra productos existentes.
+ni registro de usuarios. El panel administra productos existentes y permite crear productos con fotos.
 Promociones, imágenes nuevas, pedidos y asistente se incorporan en etapas siguientes.
 Precios, mínimos y plazos requieren confirmación comercial de Jorge.
 

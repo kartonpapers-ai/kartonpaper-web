@@ -1,13 +1,22 @@
 (async function () {
   "use strict";
   const $ = id => document.getElementById(id);
-  let client, rows = [], selected = null, dirty = false, saving = false, activeUser = null;
+  let client, rows = [], selected = null, dirty = false, saving = false, activeUser = null, pendingImage = null, imageBusy = false, imageRevision = 0;
   const categoryNames = {cerveza:"Cerveza",reposteria:"Repostería",gastronomia:"Gastronomía",bolsas:"Bolsas",doypack:"Doypack",posavasos:"Posavasos"};
   function status(id, message, kind = "") { $(id).textContent = message; $(id).className = kind; }
   function setLogin() {
     $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
-    rows = []; selected = null; dirty = false; activeUser = null;
+    rows = []; selected = null; dirty = false; activeUser = null; resetImage();
     $("product-list").replaceChildren(); $("edit-form").reset(); $("edit-form").hidden = true;
+  }
+  const imageSource = value => value.startsWith("https://") ? value : "../" + value;
+  function resetImage() { imageRevision++; pendingImage = null; imageBusy = false; $("edit-file").value = ""; status("image-status", ""); }
+  function imageOptions(value) {
+    $("edit-existing-image").replaceChildren(new Option("Selecciona una imagen o sube una foto", ""));
+    const seen = new Set();
+    for (const row of rows) if (!seen.has(row.data.image)) { seen.add(row.data.image); $("edit-existing-image").add(new Option(row.data.name, row.data.image)); }
+    if (value && !seen.has(value)) $("edit-existing-image").add(new Option("Imagen actual", value));
+    $("edit-existing-image").value = value;
   }
   function mayDiscard() { return !dirty || window.confirm("Tienes cambios sin guardar. ¿Quieres descartarlos?"); }
   function renderList() {
@@ -17,7 +26,7 @@
     for (const row of filtered) {
       const button = document.createElement("button"); button.type = "button"; button.className = "product-row";
       button.setAttribute("aria-pressed", String(row.id === selected?.id));
-      const image = document.createElement("img"); image.src = "../" + row.data.image; image.alt = "";
+      const image = document.createElement("img"); image.src = imageSource(row.data.image); image.alt = "";
       const text = document.createElement("span"), name = document.createElement("strong"), note = document.createElement("small");
       name.textContent = row.data.name; note.textContent = categoryNames[row.data.category] + " · " + (row.published ? "Visible" : "Oculto");
       text.append(name, note); button.append(image, text);
@@ -28,10 +37,11 @@
     status("list-status", filtered.length ? "" : "No hay productos que coincidan con tu búsqueda.");
   }
   function selectRow(row) {
-    selected = row; dirty = false;
+    resetImage(); selected = row; dirty = false; $("save").textContent = row.isNew ? "Crear producto" : "Guardar cambios";
     $("editor-empty").hidden = true; $("edit-form").hidden = false;
     $("edit-title").textContent = row.data.name; $("edit-id").textContent = categoryNames[row.data.category] + " · " + row.id;
-    $("edit-image").src = "../" + row.data.image;
+    $("edit-image").src = imageSource(row.data.image); $("edit-image").hidden = !row.data.image;
+    $("edit-category").value = row.data.category; $("edit-type").value = row.data.type; imageOptions(row.data.image);
     for (const field of ["name", "subtitle", "price"]) $("edit-" + field).value = row.data[field];
     $("edit-number").value = row.data.priceNum ?? "";
     $("edit-variants").value = row.data.variants.join("\n"); $("edit-specs").value = row.data.specs.join("\n");
@@ -59,7 +69,7 @@
     } catch (error) { status("pricing-status", error.message, "error"); }
   }
   async function loadRows() {
-    $("reload").disabled = true;
+    resetImage(); $("reload").disabled = true;
     try {
       const {data, error} = await client.from("kp_products").select("id,data,published,version,updated_at,sort_order").order("sort_order").order("id");
       if (error) throw error;
@@ -92,8 +102,46 @@
     const show = $("password").type === "password"; $("password").type = show ? "text" : "password";
     $("show-password").textContent = show ? "Ocultar" : "Mostrar"; $("show-password").setAttribute("aria-pressed", String(show));
   });
+  $("new-product").addEventListener("click", () => {
+    if (saving || !mayDiscard()) return;
+    selectRow({isNew:true,id:"producto-" + crypto.randomUUID(),published:false,sort_order:Math.max(-1,...rows.map(r=>r.sort_order))+1,data:{name:"",subtitle:"",category:"reposteria",type:"custom",image:"",price:"Cotización con logo",variants:["100 unidades","250 unidades","500 unidades"],specs:["Personalización con tu logo"]}});
+    $("edit-title").textContent = "Nuevo producto"; $("edit-id").textContent = "Completa los datos y guarda. Comienza oculto en la tienda."; $("edit-name").focus();
+    dirty = true;
+  });
+  $("edit-existing-image").addEventListener("change", () => {
+    resetImage(); $("edit-image").hidden = !$("edit-existing-image").value;
+    if (!$("edit-image").hidden) $("edit-image").src=imageSource($("edit-existing-image").value);
+  });
+  $("edit-file").addEventListener("change", async () => {
+    const file = $("edit-file").files[0]; resetImage(); if (!file) return;
+    const revision = imageRevision; imageBusy = true; dirty = true; status("image-status", "Preparando foto…");
+    try {
+      const blob = await window.KP_IMAGES.prepare(file);
+      if (revision !== imageRevision) return;
+      const name = crypto.randomUUID() + ".webp";
+      pendingImage = {blob,name,url:window.KP_CATALOG.configuration().supabaseUrl.replace(/\/$/,"")+"/storage/v1/object/public/kp-productos/"+name,uploaded:false};
+      $("edit-existing-image").value="";
+      const preview=URL.createObjectURL(blob); $("edit-image").onload=()=>URL.revokeObjectURL(preview); $("edit-image").src=preview; $("edit-image").hidden=false;
+      status("image-status", `Foto lista: ${Math.ceil(blob.size/1024)} KB. Se subirá al guardar.`, "success");
+    } catch (error) { if (revision === imageRevision) status("image-status", error.message, "error"); }
+    finally { if (revision === imageRevision) imageBusy=false; }
+  });
   $("search").addEventListener("input", renderList);
   $("edit-form").addEventListener("input", () => { dirty = true; status("save-status", "Cambios pendientes de guardar."); });
+  function refreshPricingEligibility() {
+    if (saving) return;
+    const packs = window.KP_PRICES.packs($("edit-variants").value.split("\n").map(v=>v.trim()).filter(Boolean));
+    $("edit-auto-price").disabled = !packs || (!selected?.isNew && window.KP_PRICES.unitFromText($("edit-price").value) === null);
+  }
+  $("edit-variants").addEventListener("input", refreshPricingEligibility);
+  $("edit-price").addEventListener("input", refreshPricingEligibility);
+  $("edit-type").addEventListener("change", () => {
+    if (!selected?.isNew) return;
+    if ($("edit-type").value !== "custom" && $("edit-variants").value === "100 unidades\n250 unidades\n500 unidades") {
+      $("edit-variants").value="Pack 50 u. ($0)\nPack 100 u. ($0)\nPack 200 u. ($0)";
+      $("edit-number").value="0"; $("edit-auto-price").checked=true; $("edit-auto-price").disabled=false; syncPrices();
+    }
+  });
   $("edit-number").addEventListener("input", syncPrices);
   $("edit-auto-price").addEventListener("change", () => { dirty = true; syncPrices(); status("save-status", "Cambios pendientes de guardar."); });
   $("cancel").addEventListener("click", () => { if (selected && !saving && mayDiscard()) selectRow(selected); });
@@ -101,10 +149,12 @@
   window.addEventListener("beforeunload", event => { if (dirty || saving) { event.preventDefault(); event.returnValue = ""; } });
   $("edit-form").addEventListener("submit", async event => {
     event.preventDefault(); if (!selected || saving) return;
-    const row = selected;
+    if (imageBusy) { status("save-status", "Espera a que termine la preparación de la foto.", "error"); return; }
+    const row = selected; const isNew = Boolean(row.isNew);
     let data;
     try {
-      data = {...row.data};
+      data = {...row.data, id:row.id,category:$("edit-category").value,type:$("edit-type").value,image:pendingImage ? pendingImage.url : $("edit-existing-image").value};
+      if (!data.image) throw new Error("Selecciona una imagen del catálogo o sube una foto antes de guardar.");
       for (const field of ["name", "subtitle", "price"]) data[field] = $("edit-" + field).value.trim();
       for (const field of ["variants", "specs"]) data[field] = $("edit-" + field).value.split("\n").map(s => s.trim()).filter(Boolean);
       const numeric = $("edit-number").value.trim();
@@ -118,22 +168,29 @@
     saving = true;
     const published = $("edit-published").checked;
     for (const input of $("edit-form").elements) input.disabled = true;
-    $("logout").disabled = true; $("reload").disabled = true; renderList();
+    $("logout").disabled = true; $("reload").disabled = true; $("new-product").disabled=true; renderList();
     status("save-status", "Guardando cambios…");
     try {
-      const result = await client.from("kp_products").update({data, published}).eq("id", row.id).eq("version", row.version).select("id,data,published,version,updated_at,sort_order").maybeSingle();
+      if (pendingImage && !pendingImage.uploaded) {
+        status("save-status", "Subiendo foto…");
+        const upload = await client.storage.from("kp-productos").upload(pendingImage.name,pendingImage.blob,{contentType:"image/webp",cacheControl:"31536000",upsert:false});
+        if (upload.error) throw upload.error;
+        pendingImage.uploaded=true;
+      }
+      status("save-status", isNew ? "Creando producto…" : "Guardando cambios…");
+      const result = isNew ? await client.from("kp_products").insert({id:row.id,data,published,sort_order:row.sort_order}).select("id,data,published,version,updated_at,sort_order").single() : await client.from("kp_products").update({data, published}).eq("id", row.id).eq("version", row.version).select("id,data,published,version,updated_at,sort_order").maybeSingle();
       if (result.error) throw result.error;
       if (!result.data) { status("save-status", "El producto cambió en otra sesión. Conserva tus cambios, pulsa Actualizar lista y vuelve a revisarlos.", "error"); return; }
-      rows = rows.map(r => r.id === row.id ? result.data : r); selectRow(result.data);
+      rows = isNew ? [...rows,result.data] : rows.map(r => r.id === row.id ? result.data : r); $("search").value=""; selectRow(result.data);
       $("product-count").textContent = `${rows.length} productos · ${rows.filter(r => r.published).length} visibles en la tienda`;
-      status("save-status", "Cambios guardados. Recarga la tienda para verlos.", "success");
+      status("save-status", isNew ? "Producto creado. Activa Mostrar en el catálogo cuando esté listo." : "Cambios guardados. Recarga la tienda para verlos.", "success");
     } catch (error) {
-      status("save-status", "No se guardaron los cambios. Revisa tu conexión y tu sesión antes de reintentar.", "error");
+      status("save-status", "No se guardaron los cambios. Revisa conexión y sesión. Si es la primera carga, comprueba que ejecutaste 04-nuevos-productos.sql. Actualiza la lista si el producto ya se creó en otro intento.", "error");
     } finally {
       saving = false;
       for (const input of $("edit-form").elements) input.disabled = false;
-      $("edit-auto-price").disabled = !(window.KP_PRICES.unitFromText(selected.data.price) !== null && window.KP_PRICES.packs(selected.data.variants) !== null);
-      $("logout").disabled = false; $("reload").disabled = false; renderList();
+      refreshPricingEligibility();
+      $("logout").disabled = false; $("reload").disabled = false; $("new-product").disabled=false; renderList();
     }
   });
   $("logout").addEventListener("click", async () => {

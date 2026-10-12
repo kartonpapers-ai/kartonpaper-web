@@ -109,3 +109,43 @@ Supabase Auth y RLS. Un Preview de Cloudflare tampoco es privado por defecto.
 `vendor/supabase-2.117.3.js` es la distribución UMD oficial de
 `@supabase/supabase-js` 2.117.3, licencia MIT incluida en
 `vendor/SUPABASE-LICENSE.txt`. Se sirve localmente, sin depender de un CDN en el login.
+
+## Agregar productos y fotos
+
+Activación en el proyecto de desarrollo existente:
+
+1. Ejecutar una sola vez `supabase/04-nuevos-productos.sql` en una consulta nueva
+   de SQL Editor. No repetir 01, 02 ni 03. La migración conserva los productos,
+   activa INSERT solo para el administrador y crea el bucket `kp-productos`.
+2. Subir los archivos de esta entrega a la rama `desarrollo/admin`, conservando
+   carpetas. Abrir el nuevo Preview o el alias `desarrollo-admin…/admin/`.
+3. Pulsar **Agregar producto**. Completar nombre, categoría, forma de venta,
+   descripción, características y opciones. Reutilizar una foto del catálogo o
+   subir JPG/PNG/WebP. Cada producto recibe un identificador único automático.
+4. Para packs, seleccionar Compra de packs o Packs y personalización y editar
+   el precio por unidad. Las cantidades iniciales 50/100/200 son ejemplos:
+   ajustarlas antes de publicar. Para cotizaciones, mantener el modo manual.
+5. Crear producto. Comienza oculto. Revisar todos los datos; activar
+   **Mostrar en el catálogo**, guardar y recargar la tienda del mismo Preview.
+
+Prueba de aceptación: crear un producto de prueba oculto con foto; comprobar que
+no aparece en la tienda. Publicarlo y comprobar categoría, imagen, precio,
+variantes, personalización o carrito según su forma de venta. Después ocultarlo.
+También probar en móvil. La subida real a Supabase requiere esta activación;
+las pruebas locales usan un servicio simulado para el flujo de subida.
+
+Las fotos son públicas, incluso si el producto está oculto: usar solo imágenes de
+catálogo. No subir archivos privados de clientes. El navegador conserva proporción,
+no amplía originales, reduce a 1600 px como máximo y convierte a WebP; si el archivo
+sigue pesado intenta 1000 px. Se admite un original de hasta 10 MB y 24 megapíxeles;
+el archivo resultante debe pesar como máximo 1 MB. Los nombres son únicos para
+no sobrescribir fotos ni depender de invalidar caché.
+
+Si la foto se sube pero falla el guardado del producto, el mismo formulario la
+reutiliza al reintentar. Si se cierra la pestaña o se descarta, puede quedar una
+foto sin producto asociado. La limpieza y eliminación de fotos se implementarán
+más adelante; no se borra automáticamente una foto que otro producto podría usar.
+
+La ruta de Storage admitida por la migración está limitada al proyecto de desarrollo
+`qdclylextthpzxtijvpx`. Para una base de producción nueva, adaptar esa URL antes
+de ejecutar la migración. No se ha publicado este cambio en main.
