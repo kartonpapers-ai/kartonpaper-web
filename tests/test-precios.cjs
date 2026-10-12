@@ -1,0 +1,10 @@
+const assert=require('assert/strict'),fs=require('fs'),vm=require('vm');
+const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('admin/precios.js','utf8'),ctx);const p=ctx.window.KP_PRICES;
+const packs=['Pack 50 u. ($33.500)','Pack 100 u. ($67.000)','Pack 200 u. ($134.000)'];
+const result=JSON.parse(JSON.stringify(p.calculate('690',p.packs(packs))));
+assert.deepEqual(result,{priceNum:690,price:'$690 + IVA c/u',variants:['Pack 50 u. ($34.500)','Pack 100 u. ($69.000)','Pack 200 u. ($138.000)']});
+for(const n of ['', '-1','1.5','Infinity','9007199254740992'])assert.throws(()=>p.calculate(n,p.packs(packs)));
+assert.throws(()=>p.calculate('9007199254740991',[200]));assert.equal(p.calculate('0',[50]).priceNum,0);
+for(const options of [[],['Cotización con logo'],['Pack 50 u. ($33.500)','100 unidades'],['Dorado (Pack 100 u.)']])assert.equal(p.packs(options),null);
+assert.equal(p.unitFromText('Cotización con logo'),null);assert.equal(p.unitFromText('$14.900 (Pack 10 u.)'),null);assert.equal(p.unitFromText('$1.200 + IVA c/u'),1200);
+console.log('OK precios: packs, pesos chilenos, cotizaciones, precios especiales, cero, inválidos y desbordamiento.');

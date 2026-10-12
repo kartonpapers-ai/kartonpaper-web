@@ -60,9 +60,21 @@ todavía: una contraseña olvidada puede restablecerse desde el dashboard de Sup
 
 ## Precios y pedidos guardados
 
-Se preservan las condiciones comerciales existentes. El precio visible, el valor
-numérico y los precios escritos en variantes no se recalculan automáticamente.
-Revisarlos juntos al editar. El checkout actual solicita cotización y confirmación;
+Los productos con precio por unidad neto y opciones del tipo `Pack 50 u. ($33.500)`
+activan el cálculo de packs. Editar **Precio por unidad, neto (CLP)** actualiza la
+vista previa del texto visible y cada total (cantidad × precio). Guardar envía los
+tres campos juntos a Supabase; no hace falta ejecutar SQL ni cambiar la tienda.
+El cálculo usa pesos enteros, permite cero y rechaza negativos o totales inválidos.
+
+Desactivar **Calcular packs desde el precio por unidad** permite cantidades nuevas,
+descuentos o precios especiales; esa elección se conserva al guardar. Cotizaciones,
+medidas, cajas y packs con precio propio mantienen el modo manual. En ese modo hay
+que revisar por separado texto, referencia numérica y opciones. No se calculan IVA,
+descuentos ni promociones. Si había valores inconsistentes, el modo automático
+parte del precio por unidad escrito en el texto visible: revisar los totales antes
+de guardar. Recargar la tienda Preview para ver los cambios.
+
+El checkout actual solicita cotización y confirmación;
 no procesa pagos ni constituye una confirmación automática de precio/disponibilidad.
 
 Al recargar la tienda conectada, se revalidan los productos del carrito y se

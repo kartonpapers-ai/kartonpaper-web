@@ -36,7 +36,27 @@
     $("edit-number").value = row.data.priceNum ?? "";
     $("edit-variants").value = row.data.variants.join("\n"); $("edit-specs").value = row.data.specs.join("\n");
     $("edit-published").checked = row.published;
-    status("save-status", ""); renderList();
+    const eligible = window.KP_PRICES.unitFromText(row.data.price) !== null && window.KP_PRICES.packs(row.data.variants) !== null;
+    $("edit-auto-price").disabled = !eligible;
+    $("edit-auto-price").checked = eligible && row.data.pricingMode !== "manual";
+    if ($("edit-auto-price").checked) $("edit-number").value = window.KP_PRICES.unitFromText(row.data.price);
+    $("pricing-help").textContent = eligible ? "Revisa los totales antes de guardar. El cálculo usa el mismo precio por unidad para todos los packs." : "Este producto usa cotización, medidas o precios especiales. Conserva la edición manual.";
+    syncPrices(); status("save-status", ""); renderList();
+  }
+  function syncPrices() {
+    const automatic = $("edit-auto-price").checked;
+    $("edit-price").readOnly = automatic; $("edit-variants").readOnly = automatic;
+    $("number-label").textContent = automatic ? "Precio por unidad, neto (CLP)" : "Precio numérico de referencia (CLP)";
+    $("edit-number").required = automatic;
+    $("number-help").textContent = automatic ? "Cambia este valor. El texto y los packs se calculan juntos, sin IVA." : "Opcional. En modo manual debes revisar también el texto visible y los precios de los packs.";
+    $("variants-help").textContent = automatic ? "Totales netos: cantidad × precio por unidad. Desactiva el cálculo para editar cantidades o aplicar precios especiales." : "Cada opción se edita por separado. Conserva el formato Pack 50 u. ($34.500) si quieres activar el cálculo.";
+    status("pricing-status", "");
+    if (!automatic) return;
+    try {
+      const quantities = window.KP_PRICES.packs($("edit-variants").value.split("\n").map(s => s.trim()).filter(Boolean));
+      const calculated = window.KP_PRICES.calculate($("edit-number").value.trim(), quantities);
+      $("edit-price").value = calculated.price; $("edit-variants").value = calculated.variants.join("\n");
+    } catch (error) { status("pricing-status", error.message, "error"); }
   }
   async function loadRows() {
     $("reload").disabled = true;
@@ -74,6 +94,8 @@
   });
   $("search").addEventListener("input", renderList);
   $("edit-form").addEventListener("input", () => { dirty = true; status("save-status", "Cambios pendientes de guardar."); });
+  $("edit-number").addEventListener("input", syncPrices);
+  $("edit-auto-price").addEventListener("change", () => { dirty = true; syncPrices(); status("save-status", "Cambios pendientes de guardar."); });
   $("cancel").addEventListener("click", () => { if (selected && !saving && mayDiscard()) selectRow(selected); });
   $("reload").addEventListener("click", () => { if (!saving && mayDiscard()) loadRows(); });
   window.addEventListener("beforeunload", event => { if (dirty || saving) { event.preventDefault(); event.returnValue = ""; } });
@@ -87,6 +109,10 @@
       for (const field of ["variants", "specs"]) data[field] = $("edit-" + field).value.split("\n").map(s => s.trim()).filter(Boolean);
       const numeric = $("edit-number").value.trim();
       if (numeric) data.priceNum = Number(numeric); else delete data.priceNum;
+      if ($("edit-auto-price").checked) {
+        const calculated = window.KP_PRICES.calculate(numeric, window.KP_PRICES.packs(data.variants));
+        Object.assign(data, calculated, {pricingMode:"unit"});
+      } else data.pricingMode = "manual";
       window.KP_CATALOG.validate(data);
     } catch (error) { status("save-status", error.message, "error"); return; }
     saving = true;
@@ -106,6 +132,7 @@
     } finally {
       saving = false;
       for (const input of $("edit-form").elements) input.disabled = false;
+      $("edit-auto-price").disabled = !(window.KP_PRICES.unitFromText(selected.data.price) !== null && window.KP_PRICES.packs(selected.data.variants) !== null);
       $("logout").disabled = false; $("reload").disabled = false; renderList();
     }
   });

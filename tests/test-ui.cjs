@@ -8,7 +8,7 @@ class Loader extends ResourceLoader{
  constructor(enabled){super();this.enabled=enabled;}
  fetch(url){const u=new URL(url);if(u.hostname!=='kp.test')return null;
  if(u.pathname.includes('/vendor/'))return Promise.resolve(Buffer.from(''));
- if(u.pathname==='/data/config.js'&&this.enabled)return Promise.resolve(Buffer.from(config));
+ if(u.pathname==='/data/config.js')return Promise.resolve(Buffer.from(this.enabled ? config : 'window.KP_CONFIG={enabled:false};'));
  const p=path.join(root,u.pathname);if(fs.existsSync(p)&&fs.statSync(p).isFile())return Promise.resolve(fs.readFileSync(p));return null;}
 }
 const pause=()=>new Promise(r=>setTimeout(r,30));
@@ -23,6 +23,13 @@ async function page(file,enabled,before){const errors=[],vc=new VirtualConsole()
  p=await page('admin/index.html',true,w=>w.supabase={createClient:()=>api});const el=id=>p.doc.getElementById(id);
  el('email').value='jorge@example.test';el('password').value='errada';el('login-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.equal(el('workspace').hidden,true);assert.match(el('login-status').textContent,/No pudimos/);
  el('password').value='correcta';el('login-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.equal(el('workspace').hidden,false);assert.equal(p.doc.querySelectorAll('.product-row').length,20);
+ p.doc.querySelector('.product-row').click();assert.equal(el('edit-auto-price').checked,true);assert.equal(el('edit-price').readOnly,true);
+ el('edit-number').value='690';el('edit-number').dispatchEvent(new p.w.Event('input',{bubbles:true}));
+ assert.equal(el('edit-price').value,'$690 + IVA c/u');assert.match(el('edit-variants').value,/34\.500/);
+ el('edit-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();
+ assert.equal(rows[0].data.priceNum,690);assert.equal(rows[0].data.price,'$690 + IVA c/u');assert.deepEqual(Array.from(rows[0].data.variants),['Pack 50 u. ($34.500)','Pack 100 u. ($69.000)','Pack 200 u. ($138.000)']);
+ el('edit-auto-price').checked=false;el('edit-auto-price').dispatchEvent(new p.w.Event('change',{bubbles:true}));el('edit-price').value='Precio especial';
+ el('edit-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.equal(rows[0].data.price,'Precio especial');assert.equal(el('edit-price').readOnly,false);
  el('search').value='doypack';el('search').dispatchEvent(new p.w.Event('input'));assert.equal(p.doc.querySelectorAll('.product-row').length,1);
  p.doc.querySelector('.product-row').click();assert.equal(el('edit-form').hidden,false);el('edit-price').value='Cotización revisada';el('edit-price').dispatchEvent(new p.w.Event('input',{bubbles:true}));el('edit-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.match(el('save-status').textContent,/guardados/);assert.equal(rows.find(r=>r.data.category==='doypack').data.price,'Cotización revisada');
  const doypack=rows.find(r=>r.data.category==='doypack');doypack.version++;

@@ -11,6 +11,7 @@
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
   <script defer src="../js/catalogo-remoto.js"></script>
+  <script defer src="precios.js"></script>
   <script defer src="admin.js"></script>
 </head>
 <body>
@@ -44,9 +45,12 @@
             <div class="editor-heading"><img id="edit-image" alt=""><div><h2 id="edit-title">Editar producto</h2><p id="edit-id"></p></div></div>
             <label for="edit-name">Nombre del producto</label><input id="edit-name" required maxlength="150">
             <label for="edit-subtitle">Descripción breve</label><input id="edit-subtitle" required maxlength="500">
-            <label for="edit-price">Precio o texto visible</label><input id="edit-price" required maxlength="150"><p class="field-help">Ejemplo: $670 + IVA c/u, o Cotización con logo.</p>
-            <label for="edit-number">Precio numérico de referencia (CLP)</label><input id="edit-number" type="number" min="0" step="1"><p class="field-help">Opcional. El texto visible y los valores de cada pack se editan por separado.</p>
-            <label for="edit-variants">Opciones de venta · una por línea</label><textarea id="edit-variants" rows="4" required></textarea><p class="field-help">Si cambia un precio por unidad, revisa también los precios escritos en los packs.</p>
+            <label class="checkbox"><input id="edit-auto-price" type="checkbox" aria-describedby="pricing-help"> Calcular packs desde el precio por unidad</label>
+            <p id="pricing-help" class="field-help"></p>
+            <label id="number-label" for="edit-number">Precio por unidad, neto (CLP)</label><input id="edit-number" type="number" min="0" step="1" aria-describedby="number-help"><p id="number-help" class="field-help"></p>
+            <label for="edit-price">Precio o texto visible</label><input id="edit-price" required maxlength="150">
+            <label for="edit-variants">Opciones de venta · una por línea</label><textarea id="edit-variants" rows="4" required></textarea><p id="variants-help" class="field-help"></p>
+            <p id="pricing-status" role="status" aria-live="polite"></p>
             <label for="edit-specs">Características · una por línea</label><textarea id="edit-specs" rows="3" required></textarea>
             <label class="checkbox"><input id="edit-published" type="checkbox"> Mostrar en el catálogo</label>
             <div class="save-bar"><button id="save" type="submit" class="primary">Guardar cambios</button><button id="cancel" type="button" class="secondary">Descartar cambios</button></div>
