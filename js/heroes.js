@@ -8,8 +8,8 @@
   if(p.title.length>120)throw new Error('El título admite hasta 120 caracteres.');
   for(const f of ['highlight','badge','badgeStatus'])if(typeof p[f]!=='string'||p[f].length>120)throw new Error('Revisa los textos breves.');
   if(!/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)) {
-   const c=window.KP_CATALOG.configuration(),prefix=c&&c.supabaseUrl.replace(/\/$/,'')+'/storage/v1/object/public/kp-heroes/';
-   if(!prefix||!p.image.startsWith(prefix)||!/^[a-z0-9-]+\.webp$/.test(p.image.slice(prefix.length)))throw new Error('Selecciona una imagen del hero o sube una nueva.');
+   const c=window.KP_CATALOG.configuration(),prefix=c&&c.supabaseUrl.replace(/\/$/,'')+'/storage/v1/object/public/';
+   if(!prefix||!p.image.startsWith(prefix)||!/^kp-(heroes|productos)\/[a-z0-9-]+\.webp$/.test(p.image.slice(prefix.length)))throw new Error('Selecciona una imagen del hero o sube una nueva.');
   }
   if(!Array.isArray(p.trust)||p.trust.length>3||p.trust.some(x=>typeof x!=='string'||!x.trim()||x.length>120))throw new Error('Usa hasta tres características, una por línea.');
   for(const f of ['primary','secondary']) {
@@ -21,9 +21,11 @@
   if(p.layout==='layered') {
    const b=p.background,pos=p.product;
    if(!b||!['solid','gradient'].includes(b.kind)||!/^#[0-9a-fA-F]{6}$/.test(b.color)||!/^#[0-9a-fA-F]{6}$/.test(b.color2))throw new Error('Revisa los colores del fondo.');
+   if(pos?.shadow!==undefined&&typeof pos.shadow!=='boolean')throw new Error('Sombra de producto inválida.');
    const bounds={size:[25,80],x:[55,85],mobileSize:[50,100],mobileX:[35,65]};
    for(const [key,[min,max]]of Object.entries(bounds))if(!pos||!Number.isInteger(pos[key])||pos[key]<min||pos[key]>max)throw new Error('Revisa el tamaño y la posición del producto.');
   }
+  if(p.colors!==undefined){if(!p.colors||typeof p.colors!=='object'||['title','text','accent','button','buttonText'].some(k=>!/^#[0-9a-fA-F]{6}$/.test(p.colors[k])))throw new Error('Colores de campaña inválidos.');}
   return p;
  }
  function visible(row,products,now=Date.now()) {
@@ -42,9 +44,12 @@
   validate(p); const tag=index===0?'h1':'h2';
   const layered=p.layout==='layered';
   const background=layered ? (p.background.kind==='gradient' ? `linear-gradient(120deg, ${p.background.color}, ${p.background.color2})` : p.background.color) : '';
-  const style=layered ? ` style="--hero-background:${background};--product-size:${p.product.size}%;--product-x:${p.product.x}%;--mobile-size:${p.product.mobileSize}%;--mobile-x:${p.product.mobileX}%"` : '';
+  const vars=[];
+  if(layered)vars.push(`--hero-background:${background}`,`--product-shadow:${p.product.shadow===false?'none':'drop-shadow(0 18px 20px rgba(30,45,38,.14))'}`,`--product-size:${p.product.size}%`,`--product-x:${p.product.x}%`,`--mobile-size:${p.product.mobileSize}%`,`--mobile-x:${p.product.mobileX}%`);
+  if(p.colors)for(const key of ['title','text','accent','button','buttonText'])vars.push(`--hero-${key}:${p.colors[key]}`);
+  const style=vars.length?` style="${vars.join(';')}"`:'';
 
-  return `<div class="hero-slide${layered?' hero-layered':''}${index===0?' active':''}" aria-hidden="${index!==0}"${index!==0?' inert':''} data-slide-index="${index}"${style}><div class="hero-grid"><div class="hero-copy"><${tag} class="hero-title">${escape(p.title)}${p.highlight?' <span>'+escape(p.highlight)+'</span>':''}</${tag}><p class="hero-lead">${escape(p.lead)}</p><div class="hero-actions">${button(p.primary)}${button(p.secondary,true)}</div>${p.trust.length?'<div class="hero-trust-bar">'+p.trust.map(t=>'<div class="trust-item"><span class="trust-icon">✓</span> <span>'+escape(t)+'</span></div>').join('')+'</div>':''}</div><div class="hero-media-wrapper"><img src="${escape(p.image)}" alt="${escape(p.alt)}" width="1920" height="1080" decoding="async"${index===0?' fetchpriority="high"':' loading="lazy"'}>${p.badge||p.badgeStatus?'<div class="hero-media-badge"><span>'+escape(p.badge)+'</span><span>'+escape(p.badgeStatus)+'</span></div>':''}</div></div></div>`;
+  return `<div class="hero-slide${layered?' hero-layered':''}${p.colors?' hero-colors':''}${index===0?' active':''}" aria-hidden="${index!==0}"${index!==0?' inert':''} data-slide-index="${index}"${style}><div class="hero-grid"><div class="hero-copy"><${tag} class="hero-title">${escape(p.title)}${p.highlight?' <span>'+escape(p.highlight)+'</span>':''}</${tag}><p class="hero-lead">${escape(p.lead)}</p><div class="hero-actions">${button(p.primary)}${button(p.secondary,true)}</div>${p.trust.length?'<div class="hero-trust-bar">'+p.trust.map(t=>'<div class="trust-item"><span class="trust-icon">✓</span> <span>'+escape(t)+'</span></div>').join('')+'</div>':''}</div><div class="hero-media-wrapper"><img src="${escape(p.image)}" alt="${escape(p.alt)}" width="1920" height="1080" decoding="async"${index===0?' fetchpriority="high"':' loading="lazy"'}>${p.badge||p.badgeStatus?'<div class="hero-media-badge"><span>'+escape(p.badge)+'</span><span>'+escape(p.badgeStatus)+'</span></div>':''}</div></div></div>`;
  }
  async function load() {
   const c=window.KP_CATALOG.configuration();if(!c)return null;

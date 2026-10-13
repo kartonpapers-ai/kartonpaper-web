@@ -24,3 +24,9 @@ verifican manualmente en el Preview tras activar la migración.
 La migración 05 añade pruebas de campañas y permisos. `test-heroes.cjs` cubre
 la página del editor y el hero conectado, con API simulada; incluye programación,
 fotos, conflictos, botones y ocultación de destinos no publicados.
+
+Paso 7 añade pruebas reales SQL de `kp_hero_assets` (lectura/inserción admin,
+rechazo anon y no-admin, direcciones, tamaño máximo, duplicados y ausencia de
+borrado/edición), reutilización de fotos de productos y validación de colores.
+La prueba de heroes simula búsqueda, filtros, elección de imagen sin subirla,
+colores en preview y guardado, y reintento de registro sin duplicar la subida.

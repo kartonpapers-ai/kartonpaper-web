@@ -241,3 +241,25 @@ Prueba adicional: crear una campaña por capas con un PNG transparente, cambiar
 ambos colores y los controles de tamaño/posición, revisar escritorio y móvil,
 guardar y comprobarla en la tienda Preview. No se han convertido automáticamente
 las siete escenas anteriores en recortes transparentes.
+
+## Biblioteca de heroes · paso 7
+
+Ejecutar `supabase/07-biblioteca-heroes.sql` una vez después de 05. No requiere
+repetir 05 o 06. El SQL crea `kp_hero_assets`, con lectura e inserción reservadas
+al administrador por permisos y RLS. Los productos y campañas permanecen intactos.
+También permite reutilizar las direcciones del bucket `kp-productos` en campañas
+y valida cinco colores opcionales, estrictamente hexadecimales.
+
+La biblioteca vive en Heroes y promociones. Reúne fotos del catálogo, de campañas
+y subidas independientes, sin repetir direcciones. Tiene búsqueda, filtro por
+categoría y selección con descripción accesible. Las nuevas fotos pasan por el
+optimizador existente y se almacenan en `kp-heroes`. La subida y el registro se
+realizan antes de usarlas; si falla el registro se puede reintentar sin otra subida.
+No elimina fondos, no comprime de nuevo las fotos actuales y no incluye borrado.
+
+Las campañas nuevas parten ocultas, con fondo blanco y colores editables. Las
+anteriores conservan sus valores y el color heredado mientras no se personalice.
+Se aceptan JPG de producto con fondo blanco y PNG/WebP transparentes. Comprobar
+el tono del fondo real y la resolución antes de publicar. Las campañas nuevas no añaden sombra artificial, para evitar un rectángulo
+sombreado en fotos blancas. El control «Añadir sombra suave» puede activarse en
+recortes; campañas anteriores conservan su sombra mientras no se desactive.

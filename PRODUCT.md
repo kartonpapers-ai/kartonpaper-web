@@ -38,3 +38,9 @@ Conservar el logo de KartonPaper y la identidad del sitio publicado.
 - Guardar cambios en almacenamiento persistente, sin editar HTML.
 - Proteger escrituras en la base de datos, además de mostrar un formulario de acceso.
 - Confirmar diseños y plazos antes de comprometer producción.
+
+## Biblioteca de campañas
+
+Fotos de catálogo y campañas reutilizables, más subidas independientes con nombre
+y categoría. Nuevas campañas con fondo blanco, fotos opacas o transparentes y
+colores editables; las campañas existentes conservan sus configuraciones.
