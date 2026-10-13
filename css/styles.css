@@ -1658,3 +1658,13 @@ html { scroll-padding-top: 196px; }
   html { scroll-padding-top: 140px; }
   .footer-brand img { width: 320px; }
 }
+
+.hero[hidden]{display:none!important}
+
+.kp-connected #hero-slider-section:not([data-ready]){display:none!important}
+
+/* Hero por capas: fondo CSS y producto transparente independiente. */
+.hero-layered .hero-media-wrapper{background:var(--hero-background)}
+.hero-layered .hero-media-wrapper img{position:absolute;left:var(--product-x);top:50%;transform:translate(-50%,-50%);width:var(--product-size);height:85%;object-fit:contain;object-position:center;filter:drop-shadow(0 18px 20px rgba(30,45,38,.14));}
+.hero-layered .hero-media-wrapper::after{background:linear-gradient(90deg,rgba(255,255,255,.88) 0%,rgba(255,255,255,.86) 60%,transparent 72%)}
+@media(max-width:1000px){.hero-layered .hero-grid{min-height:1000px;align-items:flex-start;padding-bottom:470px}.hero-layered .hero-copy{width:100%}.hero-layered .hero-media-wrapper img{left:var(--mobile-x);top:auto;bottom:105px;transform:translateX(-50%);width:var(--mobile-size);height:340px;object-fit:contain}.hero-layered .hero-media-wrapper::after{background:linear-gradient(180deg,rgba(255,255,255,.88) 0%,rgba(255,255,255,.88) calc(100% - 450px),transparent calc(100% - 370px),transparent 100%)}.hero-layered .hero-media-badge{bottom:82px}}

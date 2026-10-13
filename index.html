@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=logo-20261008">
+  <script src="data/config.js"></script>
+  <script>if(window.KP_CONFIG?.enabled)document.documentElement.classList.add("kp-connected");</script>
 </head>
 <body>
   <a class="skip-link" href="#catalogo">Saltar al catálogo</a>
@@ -487,8 +489,8 @@
   <!-- ========================================================================
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
-  <script src="data/config.js"></script>
   <script src="js/catalogo-remoto.js"></script>
+  <script src="js/heroes.js"></script>
   <script src="data/productos.js"></script>
   <script>
 
@@ -960,111 +962,45 @@
     // Controlador del Hero Banner Carousel / Slider
     // ------------------------------------------------------------------------
     function initHeroSlider() {
-      const slides = document.querySelectorAll(".hero-slide");
-      const dots = document.querySelectorAll(".hero-dot");
-      const prevBtn = document.getElementById("hero-prev-btn");
-      const nextBtn = document.getElementById("hero-next-btn");
-      const sliderSection = document.getElementById("hero-slider-section");
-      if (!slides.length) return;
-
-      let currentSlide = 0;
-      let slideInterval = null;
-      let manuallyPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const pauseBtn = document.getElementById("hero-pause-btn");
-      const intervalDelay = 8000; // 5.5 segundos por diapositiva
-
-      function goToSlide(n) {
-        slides[currentSlide].classList.remove("active");
-        slides[currentSlide].setAttribute("aria-hidden", "true");
-        slides[currentSlide].inert = true;
-        dots[currentSlide]?.removeAttribute("aria-current");
-        dots[currentSlide]?.classList.remove("active");
-
-        currentSlide = (n + slides.length) % slides.length;
-
-        slides[currentSlide].classList.add("active");
-        slides[currentSlide].setAttribute("aria-hidden", "false");
-        slides[currentSlide].inert = false;
-        dots[currentSlide]?.setAttribute("aria-current", "true");
-        dots[currentSlide]?.classList.add("active");
+      const section=document.getElementById("hero-slider-section"),slides=section.querySelectorAll(".hero-slide"),dots=section.querySelectorAll(".hero-dot");
+      if(!slides.length||section.hidden)return ()=>{};
+      const events=new AbortController(); let current=0,timer=null,paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const listen=(el,event,fn)=>el?.addEventListener(event,fn,{signal:events.signal});
+      const stop=()=>{clearInterval(timer);timer=null;};
+      const start=()=>{stop();if(slides.length>1&&!paused&&!document.hidden&&!section.contains(document.activeElement))timer=setInterval(()=>go(current+1),8000);};
+      function go(n) {
+        slides[current].classList.remove("active");slides[current].setAttribute("aria-hidden","true");slides[current].inert=true;
+        dots[current]?.classList.remove("active");dots[current]?.removeAttribute("aria-current");
+        current=(n+slides.length)%slides.length;
+        slides[current].classList.add("active");slides[current].setAttribute("aria-hidden","false");slides[current].inert=false;
+        dots[current]?.classList.add("active");dots[current]?.setAttribute("aria-current","true");
       }
-
-      function next() {
-        goToSlide(currentSlide + 1);
-      }
-
-      function prev() {
-        goToSlide(currentSlide - 1);
-      }
-
-      function startTimer() {
-        stopTimer();
-        if (!manuallyPaused && !sliderSection?.contains(document.activeElement)) slideInterval = setInterval(next, intervalDelay);
-      }
-
-      function stopTimer() {
-        if (slideInterval) {
-          clearInterval(slideInterval);
-          slideInterval = null;
+      const pause=document.getElementById("hero-pause-btn");
+      const label=()=>{pause.textContent=paused?"Reanudar":"Pausar";pause.setAttribute("aria-pressed",String(paused));};label();
+      listen(pause,"click",()=>{paused=!paused;label();paused?stop():start();});
+      listen(document.getElementById("hero-next-btn"),"click",()=>{go(current+1);start();});
+      listen(document.getElementById("hero-prev-btn"),"click",()=>{go(current-1);start();});
+      dots.forEach((d,i)=>listen(d,"click",()=>{go(i);start();}));
+      listen(section,"mouseenter",stop);listen(section,"mouseleave",start);listen(section,"focusin",stop);
+      listen(section,"focusout",event=>{if(!section.contains(event.relatedTarget))start();});
+      listen(document,"visibilitychange",()=>document.hidden?stop():start());
+      listen(section,"click",event=>{
+        const button=event.target.closest("[data-hero-action]");if(!button)return;
+        const action=button.dataset.heroAction,target=button.dataset.target;
+        if(action==="filter-cat") {
+          document.querySelector(`.filter-tab[data-category="${target}"]`)?.click();
+          document.getElementById("catalogo")?.scrollIntoView({behavior:"smooth"});
+        } else {
+          const product=productsDB.find(p=>p.id===(action==="customize-posavasos"?"posavasos-personalizados":target));if(!product)return;
+          if(action==="customize-product"||action==="customize-posavasos") {if(product.type!=="stock")openCustomizer(product);}
+          else if(action==="view-product") {
+            document.querySelector(`.filter-tab[data-category="${product.category}"]`)?.click();
+            const control=document.querySelector(`[data-action][data-id="${product.id}"]`);
+            control?.closest(".product-card")?.scrollIntoView({behavior:"smooth",block:"center"});control?.focus({preventScroll:true});
+          }
         }
-      }
-
-      pauseBtn?.addEventListener("click", () => {
-        manuallyPaused = !manuallyPaused;
-        pauseBtn.textContent = manuallyPaused ? "Reanudar" : "Pausar";
-        pauseBtn.setAttribute("aria-pressed", String(manuallyPaused));
-        manuallyPaused ? stopTimer() : startTimer();
       });
-      pauseBtn.textContent = manuallyPaused ? "Reanudar" : "Pausar";
-      pauseBtn.setAttribute("aria-pressed", String(manuallyPaused));
-      sliderSection?.addEventListener("focusin", stopTimer);
-      sliderSection?.addEventListener("focusout", event => { if (!sliderSection.contains(event.relatedTarget)) startTimer(); });
-
-      // Flechas
-      nextBtn?.addEventListener("click", () => {
-        next();
-        startTimer();
-      });
-
-      prevBtn?.addEventListener("click", () => {
-        prev();
-        startTimer();
-      });
-
-      // Puntos
-      dots.forEach((dot, idx) => {
-        dot.addEventListener("click", () => {
-          goToSlide(idx);
-          startTimer();
-        });
-      });
-
-      // Pausar rotación en hover para mejor lectura del cliente
-      sliderSection?.addEventListener("mouseenter", stopTimer);
-      sliderSection?.addEventListener("mouseleave", startTimer);
-
-      // Acciones de botones dentro de las diapositivas
-      document.querySelectorAll("[data-hero-action='filter-cat']").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const targetCat = btn.dataset.target;
-          const matchingTab = document.querySelector(`.filter-tab[data-category="${targetCat}"]`);
-          if (matchingTab) {
-            matchingTab.click();
-            document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
-          }
-        });
-      });
-
-      document.querySelectorAll("[data-hero-action='customize-posavasos']").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const posavasosCustom = productsDB.find(p => p.id === "posavasos-personalizados");
-          if (posavasosCustom) {
-            openCustomizer(posavasosCustom);
-          }
-        });
-      });
-
-      startTimer();
+      start();return ()=>{stop();events.abort();};
     }
 
     // ------------------------------------------------------------------------
@@ -1072,6 +1008,8 @@
     // ------------------------------------------------------------------------
     document.addEventListener("DOMContentLoaded", async () => {
       const status = document.getElementById("catalog-status");
+      const heroResult = KP_HERO.load().then(rows=>({rows}),error=>({error}));
+      if(window.KP_CONFIG?.enabled)document.getElementById("hero-slider-section").hidden=true;
       checkoutWaBtn.disabled = true;
       checkoutEmailBtn.disabled = true;
       // Con conexión activa, no mostrar la copia estática ni sus precios antiguos.
@@ -1104,7 +1042,17 @@
       }
       renderProducts("all");
       updateCartUI();
-      initHeroSlider();
+      const hero = await heroResult;
+      if(hero.error)document.getElementById("hero-slider-section").hidden=true;
+      else if(hero.rows!==null)KP_HERO.render(hero.rows,productsDB);
+      let stopSlider=initHeroSlider(),expiryTimer;
+      function scheduleExpiry() {
+        if(!hero.rows)return;
+        const future=hero.rows.map(r=>Date.parse(r.ends_at)).filter(t=>t>Date.now());
+        if(!future.length)return;
+        expiryTimer=setTimeout(()=>{stopSlider();KP_HERO.render(hero.rows,productsDB);stopSlider=initHeroSlider();scheduleExpiry();},Math.min(2147483647,Math.max(1,Math.min(...future)-Date.now()+100)));
+      }
+      scheduleExpiry();window.addEventListener("pagehide",()=>{stopSlider();clearTimeout(expiryTimer);},{once:true});
     });
   </script>
 </body>

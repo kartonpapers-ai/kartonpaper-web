@@ -5,7 +5,7 @@
   const categoryNames = {cerveza:"Cerveza",reposteria:"Repostería",gastronomia:"Gastronomía",bolsas:"Bolsas",doypack:"Doypack",posavasos:"Posavasos"};
   function status(id, message, kind = "") { $(id).textContent = message; $(id).className = kind; }
   function setLogin() {
-    $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
+    $("campaign-nav").hidden = true; $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
     rows = []; selected = null; dirty = false; activeUser = null; resetImage();
     $("product-list").replaceChildren(); $("edit-form").reset(); $("edit-form").hidden = true;
   }
@@ -91,7 +91,7 @@
       const {data: allowed, error} = await client.rpc("kp_is_admin");
       if (error || allowed !== true) throw new Error("Sin autorización");
       activeUser = userResult.data.user.id;
-      $("login-view").hidden = true; $("workspace").hidden = false; $("logout").hidden = false;
+      $("campaign-nav").hidden = false; $("login-view").hidden = true; $("workspace").hidden = false; $("logout").hidden = false;
       $("password").value = ""; status("login-status", ""); await loadRows();
     } catch (error) {
       await client.auth.signOut({scope:"local"}); setLogin();

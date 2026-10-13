@@ -1,10 +1,12 @@
 const assert=require('assert/strict'),fs=require('fs'),vm=require('vm');
 (async()=>{
+ let transparent=true;
  let dimensions={width:3000,height:2000},closed=0,drawn,blobSize=400000,convertedType='image/webp';
- const canvas={getContext:()=>({drawImage:(_b,_x,_y,w,h)=>drawn=[w,h]}),toBlob:fn=>fn({size:blobSize,type:convertedType})};
+ const canvas={getContext:()=>({getImageData:()=>({data:new Uint8ClampedArray([255,255,255,transparent?0:255])}),drawImage:(_b,_x,_y,w,h)=>drawn=[w,h]}),toBlob:fn=>fn({size:blobSize,type:convertedType})};
  const ctx={window:{},createImageBitmap:async()=>({...dimensions,close:()=>closed++}),document:{createElement:()=>canvas}};
  vm.createContext(ctx);vm.runInContext(fs.readFileSync('admin/imagenes.js','utf8'),ctx);const prepare=ctx.window.KP_IMAGES.prepare;
- const file={size:5000000,type:'image/png'};await prepare(file);assert.deepEqual(drawn,[1600,1067]);assert.equal(closed,1);
+ const file={size:5000000,type:'image/png'};await prepare(file);assert.deepEqual(drawn,[1600,1067]);assert.equal(closed,1);await prepare(file,{hero:true});assert.deepEqual(drawn,[1920,1280]);
+ await prepare(file,{hero:true,transparent:true});transparent=false;await assert.rejects(prepare(file,{hero:true,transparent:true}));transparent=true;await assert.rejects(prepare({...file,type:'image/jpeg'},{hero:true,transparent:true}));
  dimensions={width:400,height:200};await prepare(file);assert.deepEqual(drawn,[400,200]);
  await assert.rejects(prepare({...file,type:'image/svg+xml'}));await assert.rejects(prepare({...file,size:11*1024*1024}));
  dimensions={width:10000,height:10000};await assert.rejects(prepare(file));

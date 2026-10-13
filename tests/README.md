@@ -20,3 +20,7 @@ La migración 04 se prueba con tablas de Storage simuladas en PostgreSQL: verifi
 INSERT de productos y objetos, rechazo de otros usuarios, formatos y publicación.
 Las pruebas de imágenes simulan la API canvas; conversión y subida reales se
 verifican manualmente en el Preview tras activar la migración.
+
+La migración 05 añade pruebas de campañas y permisos. `test-heroes.cjs` cubre
+la página del editor y el hero conectado, con API simulada; incluye programación,
+fotos, conflictos, botones y ocultación de destinos no publicados.

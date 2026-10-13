@@ -2,7 +2,7 @@
   "name": "kartonpaper-web",
   "private": true,
   "scripts": {
-    "test": "node tests/test-db.cjs && node tests/test-precios.cjs && node tests/test-imagenes.cjs && node tests/test-ui.cjs"
+    "test": "node tests/test-db.cjs && node tests/test-precios.cjs && node tests/test-imagenes.cjs && node tests/test-ui.cjs && node tests/test-heroes.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",

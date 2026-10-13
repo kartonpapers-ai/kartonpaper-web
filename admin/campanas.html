@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Heroes y promociones · KartonPaper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin.css">
+  <script defer src="../vendor/supabase-2.117.3.js"></script>
+  <script defer src="../data/config.js"></script>
+  <script defer src="../js/catalogo-remoto.js"></script>
+  <script defer src="imagenes.js"></script>
+  <script defer src="../js/heroes.js"></script>
+  <script defer src="campanas.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../" aria-label="Volver a KartonPaper"><img src="../images/kartonpaper-logo-lockup.webp" alt="KartonPaper.cl"></a>
+    <div class="header-actions"><a href="./">Productos</a><a href="../" target="_blank" rel="noopener">Ver tienda</a><button id="logout" class="secondary" hidden>Cerrar sesión</button></div>
+  </header>
+  <main>
+    <section id="login-view" class="login-layout">
+      <div class="welcome"><h1>Tu catálogo,<br>a tu ritmo.</h1><p>Prepara tus campañas y programa cuándo aparecen en la portada.</p><div class="mint-rule"></div></div>
+      <div class="login-panel"><h2>Administración</h2><p>Acceso personal a KartonPaper.</p>
+        <form id="login-form">
+          <label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required maxlength="254">
+          <label for="password">Contraseña</label><div class="password-field"><input id="password" type="password" autocomplete="current-password" required maxlength="256"><button id="show-password" type="button" class="secondary" aria-pressed="false">Mostrar</button></div>
+          <button id="login-button" class="primary" type="submit">Entrar al panel</button>
+        </form>
+        <p id="login-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <section id="workspace" hidden>
+      <div class="workspace-heading"><div><h1>Heroes y promociones</h1><p id="campaign-count">Cargando campañas…</p></div><div class="header-actions"><button id="new-campaign" type="button" class="primary">Crear campaña</button><button id="reload" type="button" class="secondary">Actualizar lista</button></div></div>
+      <div class="workspace-layout">
+        <section class="catalog-list" aria-label="Campañas"><label for="search">Buscar campaña</label><input id="search" type="search" placeholder="Título de la campaña"><div id="campaign-list" class="product-list"></div><p id="list-status" role="status" aria-live="polite"></p></section>
+        <section class="editor" aria-label="Editar campaña"><div id="editor-empty"><h2>Elige un hero o crea una campaña</h2><p>Edita texto, imagen, botones y fechas. La imagen ocupa todo el ancho, con espacio para el texto a la izquierda.</p></div>
+          <form id="campaign-form" hidden>
+            <h2 id="edit-heading">Editar campaña</h2>
+            <label for="draft-product">Preparar texto desde un producto</label><div class="draft-row"><select id="draft-product"><option value="">Selecciona un producto visible</option></select><button type="button" id="draft-button" class="secondary">Usar producto</button></div><p class="field-help">Copia su nombre y descripción y enlaza al producto. Revisa los textos; no cambia el precio del catálogo.</p>
+            <label for="title">Título</label><input id="title" required maxlength="120">
+            <label for="highlight">Segunda parte del título</label><input id="highlight" maxlength="120"><p class="field-help">Opcional. Se muestra con la tipografía destacada del hero.</p>
+            <label for="lead">Descripción</label><textarea id="lead" rows="3" required maxlength="500"></textarea>
+            <label for="layout">Composición del hero</label><select id="layout"><option value="layered">Producto transparente + fondo editable</option><option value="scene">Escena completa</option></select>
+            <div id="layer-controls">
+              <fieldset><legend>Fondo</legend><label for="background-kind">Tipo de fondo</label><select id="background-kind"><option value="solid">Color uniforme</option><option value="gradient">Degradado suave</option></select><div class="product-options"><div><label for="background-color">Color principal</label><input id="background-color" type="color" value="#c3e6d0"></div><div id="background-secondary"><label for="background-color-2">Segundo color</label><input id="background-color-2" type="color" value="#f6eee5"></div></div><p class="field-help">El texto conserva un velo claro para mantenerse legible sobre el fondo.</p></fieldset>
+              <fieldset><legend>Producto en escritorio</legend><label for="product-size">Tamaño · porcentaje del ancho</label><input id="product-size" type="range" min="25" max="80" value="50"><output id="product-size-value" for="product-size">50 %</output><label for="product-x">Posición horizontal</label><input id="product-x" type="range" min="55" max="85" value="75"><output id="product-x-value" for="product-x">75 %</output></fieldset>
+              <fieldset><legend>Producto en móvil</legend><label for="mobile-size">Tamaño · porcentaje del ancho</label><input id="mobile-size" type="range" min="50" max="100" value="90"><output id="mobile-size-value" for="mobile-size">90 %</output><label for="mobile-x">Posición horizontal</label><input id="mobile-x" type="range" min="35" max="65" value="50"><output id="mobile-x-value" for="mobile-x">50 %</output><p class="field-help">En móvil el producto aparece debajo del texto. Revisa ambas vistas antes de guardar.</p></fieldset>
+            </div>
+            <label for="existing-image">Imagen del hero</label><select id="existing-image"><option value="">Selecciona una imagen o sube una nueva</option></select>
+            <label for="hero-file">Subir imagen del hero</label><input id="hero-file" type="file" accept="image/jpeg,image/png,image/webp"><p id="hero-image-help" class="field-help">Recomendado: 1920 × 1080 px. Texto limpio a la izquierda y producto protagonista a la derecha. Original hasta 10 MB; se convierte a WebP, máximo 1 MB. El panel no genera una escena nueva.</p><p id="image-status" role="status" aria-live="polite"></p>
+            <label for="alt">Descripción de la imagen</label><input id="alt" required maxlength="500"><p class="field-help">Describe los envases de la escena para accesibilidad.</p>
+            <fieldset><legend>Botón principal</legend><label for="primary-label">Texto del botón</label><input id="primary-label" maxlength="100" required><div class="product-options"><div><label for="primary-kind">Acción</label><select id="primary-kind"><option value="categoria">Ver categoría</option><option value="producto">Ver producto</option><option value="personalizar">Personalizar producto</option><option value="whatsapp">Consultar por WhatsApp</option></select></div><div><label for="primary-target">Destino</label><select id="primary-target"></select></div></div></fieldset>            <fieldset><legend>Botón secundario</legend><label for="secondary-label">Texto del botón</label><input id="secondary-label" maxlength="100" ><div class="product-options"><div><label for="secondary-kind">Acción</label><select id="secondary-kind"><option value="none">Sin botón secundario</option><option value="categoria">Ver categoría</option><option value="producto">Ver producto</option><option value="personalizar">Personalizar producto</option><option value="whatsapp">Consultar por WhatsApp</option></select></div><div><label for="secondary-target">Destino</label><select id="secondary-target"></select></div></div></fieldset>
+            <label for="trust">Características · hasta tres, una por línea</label><textarea id="trust" rows="3"></textarea>
+            <div class="product-options"><div><label for="badge">Texto sobre la imagen</label><input id="badge" maxlength="120"></div><div><label for="badgeStatus">Estado o nota breve</label><input id="badgeStatus" maxlength="120"></div></div>
+            <label for="sort-order">Orden de aparición</label><input id="sort-order" type="number" min="0" max="9999" step="1" required><p class="field-help">Los números menores aparecen primero. Para destacar una campaña, asigna un número menor que el resto.</p>
+            <fieldset><legend>Programación</legend><div class="product-options"><div><label for="starts-at">Inicio</label><input id="starts-at" type="datetime-local"></div><div><label for="ends-at">Término</label><input id="ends-at" type="datetime-local"></div></div><p id="timezone-help" class="field-help"></p></fieldset>
+            <label class="checkbox"><input id="published" type="checkbox"> Activar campaña en la portada</label><p id="schedule-status" role="status" aria-live="polite"></p>
+            <div class="save-bar"><button id="save" type="submit" class="primary">Guardar campaña</button><button id="cancel" type="button" class="secondary">Descartar cambios</button></div><p id="save-status" role="status" aria-live="polite"></p>
+          </form>
+          <section id="preview-section" hidden aria-label="Vista previa"><div class="workspace-heading"><h2>Vista previa</h2><div class="header-actions"><button id="preview-desktop" type="button" class="secondary" aria-pressed="true">Escritorio</button><button id="preview-mobile" type="button" class="secondary" aria-pressed="false">Móvil</button></div></div><p class="field-help">Muestra tus cambios antes de guardar. El botón se prueba en Ver tienda después de publicar.</p><div id="preview-shell"><iframe id="preview" title="Vista previa de la campaña" sandbox="" tabindex="-1"></iframe></div><p id="preview-status" role="status" aria-live="polite"></p></section>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

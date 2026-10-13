@@ -149,3 +149,95 @@ más adelante; no se borra automáticamente una foto que otro producto podría u
 La ruta de Storage admitida por la migración está limitada al proyecto de desarrollo
 `qdclylextthpzxtijvpx`. Para una base de producción nueva, adaptar esa URL antes
 de ejecutar la migración. No se ha publicado este cambio en main.
+
+## Heroes y promociones
+
+Activación en desarrollo:
+
+1. Ejecutar una sola vez `supabase/05-heroes.sql` en una consulta nueva. Crea
+   `kp_campaigns`, sus permisos y el bucket `kp-heroes`. Carga los siete heroes
+   originales sin tocar precios ni productos. No repetir las migraciones 01–04.
+2. Subir esta entrega a `desarrollo/admin` conservando las carpetas. Abrir el
+   último Preview o `https://desarrollo-admin.kartonpaper-web.pages.dev/admin/`.
+3. Entrar en **Heroes y promociones**. También se puede abrir `/admin/campanas.html`.
+   Reutiliza la sesión de la pestaña; el acceso sigue limitado al administrador.
+4. Editar un hero existente o Crear campaña. Completar título, segunda parte
+   opcional, descripción, imagen y su descripción accesible, botones y hasta tres
+   características. La composición mantiene la imagen a ancho completo debajo
+   del texto. El fondo menta y el velo de lectura permanecen.
+5. Revisar la vista previa en escritorio y móvil. Activar y guardar cuando esté
+   listo; una campaña nueva comienza oculta. Recargar Ver tienda del mismo Preview.
+
+Imágenes: original JPG/PNG/WebP hasta 10 MB y 24 megapíxeles. Recomendado 1920×1080,
+con área limpia para texto a la izquierda y producto protagonista a la derecha.
+Se optimiza a WebP hasta 1920 px (1600 px si es necesario), máximo 1 MB. El archivo
+no se amplía y se conserva proporción. Las fotos del bucket son públicas aun si la
+campaña está oculta; usar solo material de portada. No se genera ni recompone una
+escena con IA. Se puede reutilizar cualquiera de las imágenes de los heroes.
+
+**Usar producto** prepara un borrador de título y descripción y un botón hacia
+ese producto. No inserta precios en el hero ni ofrece descuentos por sí solo.
+Revisar los textos antes de guardar. Un texto con precio escrito manualmente
+requiere actualización manual si cambia el catálogo. Los descuentos reales se
+configuran en Productos. No hay detección automática de productos de baja venta.
+
+Botones: Ver categoría, Ver producto (lleva a su tarjeta), Personalizar producto
+(abre el formulario para productos que admiten personalización), o el WhatsApp
+habitual de KartonPaper. No se admiten enlaces externos arbitrarios. Si un producto
+se oculta después, una campaña dirigida a él deja de mostrarse al recargar.
+
+Programación: fechas opcionales de inicio y término, en la zona horaria del equipo
+que muestra el formulario. Se guardan en UTC y la base de datos solo entrega al
+público campañas activadas dentro del período vigente. Inicio inclusivo, término
+exclusivo; término debe ser posterior a inicio. Campañas futuras aparecen en nuevas
+visitas o al recargar. En una página ya abierta se retiran las campañas al terminar
+su período, sin volver a textos antiguos. No se envían recordatorios ni se publican
+redes sociales. Menor Orden de aparición = primero; a igualdad se ordena por ID.
+
+Si todas las campañas están ocultas, finalizadas o la conexión falla, se oculta
+el hero y el catálogo sigue disponible. Con Supabase desactivado se conservan
+los siete heroes estáticos del HTML. El nuevo HTML evita mostrar esa copia antigua
+mientras se carga la portada conectada.
+
+Prueba de aceptación: editar un hero, guardar y confirmar texto/imagen y botón en
+la tienda. Crear una campaña oculta con imagen propia; revisar ambos tamaños;
+activarla sin fechas para comprobarla. Programar inicio futuro para verificar que
+no aparezca todavía; poner término pasado para comprobar que se retire. Volver a
+ocultar la campaña de prueba. No publicar en main antes de completar esta revisión.
+
+Los tests de PostgreSQL verifican permisos, fechas, formatos, conflictos y carga de
+los siete heroes. La interfaz y la subida se prueban con un servicio simulado; la
+subida y las vistas reales se verifican tras activar la migración en Cloudflare.
+La migración limita fotos al proyecto `qdclylextthpzxtijvpx`; adaptar esa referencia
+antes de usarla en un proyecto de producción distinto.
+
+### Hero por capas con transparencia
+
+Cada campaña puede usar **Producto transparente + fondo editable** o **Escena
+completa**. Los siete heroes originales permanecen como escenas completas; las
+campañas nuevas proponen el formato por capas.
+
+En el formato por capas, el producto es una imagen recortada PNG/WebP y el fondo
+se dibuja con CSS, como color uniforme o degradado de dos colores. El título,
+texto, botones y características siguen en HTML. Hay controles independientes
+para tamaño y posición horizontal en escritorio y móvil. En pantallas de hasta
+1000 px el producto aparece debajo del texto. Un velo claro protege la lectura.
+La vista previa móvil contempla la altura adicional de esta composición.
+
+Subir una imagen recortada: el panel verifica que tenga píxeles transparentes y
+conserva el canal alfa al convertir a WebP. No recorta productos ni elimina fondos.
+Un PNG opaco requiere editarse antes o utilizar Escena completa. Si se reutiliza
+una imagen de escena con fondo en el modo por capas, su fondo sigue siendo visible;
+seleccionar un recorte adecuado. La sombra CSS es suave y puede sumarse a una
+sombra incluida en el propio recorte.
+
+Esta entrega actualizada incluye las capas en `05-heroes.sql`. Si todavía no se
+ejecutó esa migración, ejecutar el 05 actualizado. Si ya se ejecutó la versión
+anterior de 05, ejecutar únicamente `06-capas-hero.sql`; no repetir 05. El 06
+actualiza los controles de validación sin modificar las campañas existentes.
+Usar el ZIP actualizado `kartonpaper-paso-6-heroes-capas.zip` para subir el código.
+
+Prueba adicional: crear una campaña por capas con un PNG transparente, cambiar
+ambos colores y los controles de tamaño/posición, revisar escritorio y móvil,
+guardar y comprobarla en la tienda Preview. No se han convertido automáticamente
+las siete escenas anteriores en recortes transparentes.
