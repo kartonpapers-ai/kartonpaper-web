@@ -86,10 +86,10 @@
         subtitle: "Cuadrados de 15 × 15 cm para envolver alfajores artesanales",
         type: "stock",
         image: "images/papel-aluminio-alfajores.webp",
-        price: "Desde $8.900",
-        priceNum: 8900,
+        price: "$12.300 + IVA (Pack 100 u.)",
+        priceNum: 12300,
         specs: ["Medida 15 × 15 cm", "Acabado brillante", "Apto alimentos"],
-        variants: ["Dorado metalizado (Pack 100 u.)", "Rosado metalizado (Pack 100 u.)", "Dorado metalizado (Pack 500 u. $36.900)", "Rosado metalizado (Pack 500 u. $36.900)"]
+        variants: ["Dorado metalizado (Pack 100 u. $12.300 + IVA)","Rosado metalizado (Pack 100 u. $12.300 + IVA)","Dorado metalizado (Pack 500 u. $61.500 + IVA)","Rosado metalizado (Pack 500 u. $61.500 + IVA)"]
       },
       {
         id: "reposteria-cajas-decoradas",
@@ -110,9 +110,10 @@
         subtitle: "Cartulina blanca 320 g/m² · Mica transparente",
         type: "custom",
         image: "images/reposteria-caja-3-alfajores.webp",
-        price: "Cotización con logo",
+        price: "$391 + IVA c/u",
+        priceNum: 391,
         specs: ["Capacidad 3 alfajores", "Personalizable", "Mínimo 100 u."],
-        variants: ["100 unidades", "250 unidades", "500 unidades"]
+        variants: ["100 unidades","250 unidades","500 unidades"]
       },
       {
         id: "reposteria-caja-4-alfajores",
@@ -121,9 +122,10 @@
         subtitle: "Medida 14 × 14 × 3 cm · Cartulina blanca 320 g/m²",
         type: "custom",
         image: "images/reposteria-caja-4-alfajores.webp",
-        price: "Cotización con logo",
+        price: "$391 + IVA c/u",
+        priceNum: 391,
         specs: ["14 × 14 × 3 cm", "Mica transparente", "Mínimo 100 u."],
-        variants: ["100 unidades", "250 unidades", "500 unidades"]
+        variants: ["100 unidades","250 unidades","500 unidades"]
       },
       {
         id: "reposteria-caja-6-alfajores",
@@ -132,9 +134,10 @@
         subtitle: "Medida 19 × 14 × 3 cm · Cartulina blanca 320 g/m²",
         type: "custom",
         image: "images/reposteria-caja-6-alfajores.webp",
-        price: "Cotización con logo",
+        price: "$397 + IVA c/u",
+        priceNum: 397,
         specs: ["19 × 14 × 3 cm", "Visor transparente", "Mínimo 100 u."],
-        variants: ["100 unidades", "250 unidades", "500 unidades"]
+        variants: ["100 unidades","250 unidades","500 unidades"]
       },
 
       // 3. Gastronomía Compostable (Bagasse con impresión en tapa)
@@ -145,7 +148,8 @@
         subtitle: "Fibra de caña compostable · Personalización en tapa",
         type: "custom",
         image: "images/bagasse-caja-pollo-1.webp",
-        price: "Cotización con logo",
+        price: "$522 + IVA c/u",
+        priceNum: 522,
         specs: ["100% compostable", "Impresión en tapa", "Cierre seguro"],
         variants: ["Modelo Pollo 1 Bagasse"]
       },
@@ -156,7 +160,8 @@
         subtitle: "Clamshell compostable para hamburgueserías y cafeterías",
         type: "custom",
         image: "images/bagasse-sandwich-6x6.webp",
-        price: "Cotización con logo",
+        price: "$303 + IVA c/u",
+        priceNum: 303,
         specs: ["Formato 6 × 6 pulgadas", "Resistente a grasa", "Impresión en tapa"],
         variants: ["Modelo 6 × 6 Bagasse"]
       },
@@ -167,7 +172,8 @@
         subtitle: "Incluye tapa · Para ensaladas, poke, sopas y pastas",
         type: "custom",
         image: "images/bagasse-bowl-850-con-tapa.webp",
-        price: "Cotización con logo",
+        price: "$352 + IVA c/u",
+        priceNum: 352,
         specs: ["Capacidad 850 ml", "Tapa hermética", "Compostable"],
         variants: ["Marmita Bowl 850 ml con tapa"]
       },
@@ -178,7 +184,8 @@
         subtitle: "Envase compostable para menús ejecutivos y viandas",
         type: "custom",
         image: "images/bagasse-colacion-c205-900.webp",
-        price: "Cotización con logo",
+        price: "$394 + IVA c/u",
+        priceNum: 394,
         specs: ["Capacidad 900 ml", "Caña de azúcar", "Impresión en tapa"],
         variants: ["Modelo Porta Colación C205 900ml"]
       },
@@ -191,15 +198,10 @@
         subtitle: "Kraft natural resistente · Para tiendas, delivery y eventos",
         type: "custom",
         image: "images/bolsa-papel-kraft-asa-plana.webp",
-        price: "Cotización por medida",
+        price: "Desde $292 + IVA c/u",
+        priceNum: 292,
         specs: ["Papel kraft", "Asas planas", "Impresión con logo"],
-        variants: [
-          "14 × 20 × 8 cm (pequeña)",
-          "14 × 40 × 8 cm (para botellas)",
-          "22 × 30 × 10 cm (mediana)",
-          "30 × 41 × 12 cm (grande)",
-          "45 × 48 × 15 cm (extra grande)"
-        ]
+        variants: ["14 × 20 × 8 cm (pequeña) · $292 + IVA c/u","14 × 40 × 8 cm (para botellas) · $343 + IVA c/u","22 × 30 × 10 cm (mediana) · $316 + IVA c/u","30 × 41 × 12 cm (grande) · $518 + IVA c/u","45 × 48 × 15 cm (extra grande) · $712 + IVA c/u"]
       },
       {
         id: "bolsa-papel-blanca",
@@ -208,15 +210,10 @@
         subtitle: "Papel blanco satinado · Presentación limpia y elegante",
         type: "custom",
         image: "images/bolsa-papel-blanca-asa-plana.webp",
-        price: "Cotización por medida",
+        price: "Desde $292 + IVA c/u",
+        priceNum: 292,
         specs: ["Papel blanco", "Asas planas", "Impresión con logo"],
-        variants: [
-          "14 × 20 × 8 cm (pequeña)",
-          "14 × 40 × 8 cm (para botellas)",
-          "22 × 30 × 10 cm (mediana)",
-          "30 × 41 × 12 cm (grande)",
-          "45 × 48 × 15 cm (extra grande)"
-        ]
+        variants: ["14 × 20 × 8 cm (pequeña) · $292 + IVA c/u","14 × 40 × 8 cm (para botellas) · $343 + IVA c/u","22 × 30 × 10 cm (mediana) · $316 + IVA c/u","30 × 41 × 12 cm (grande) · $518 + IVA c/u","45 × 48 × 15 cm (extra grande) · $712 + IVA c/u"]
       },
 
       // 5. Doypack Kraft con Ventana
@@ -227,16 +224,10 @@
         subtitle: "Barrera contra grasa y humedad · Para café, té y frutos secos",
         type: "custom",
         image: "images/doypack-kraft-ventana.webp",
-        price: "Cotización según medida",
+        price: "Desde $174 + IVA c/u",
+        priceNum: 174,
         specs: ["Cierre Ziplock", "Interior laminado", "Impresión 1 o 2 caras"],
-        variants: [
-          "10 × 15 + 3 cm",
-          "12 × 20 + 4 cm",
-          "14 × 20 + 4 cm",
-          "16 × 24 + 4 cm",
-          "20 × 29 + 5 cm",
-          "25 × 35 + 5 cm"
-        ]
+        variants: ["10 × 15 + 3 cm · $174 + IVA c/u","12 × 20 + 4 cm · $219 + IVA c/u","14 × 20 + 4 cm · $255 + IVA c/u","16 × 24 + 4 cm · $343 + IVA c/u","20 × 29 + 5 cm · $558 + IVA c/u","25 × 35 + 5 cm · $570 + IVA c/u"]
       },
 
       // 6. Posavasos de Pulpa Mecánica Absorbente (NUEVO)
