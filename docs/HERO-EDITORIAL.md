@@ -2,8 +2,13 @@
 
 La portada implementa el hero aprobado en `KartonPaper_hero_producto_protagonista.html`.
 El titular «Tu marca merece ser vista.» permanece fijo. Los seis selectores cambian
-la foto, el mensaje de apoyo, la descripción, el pie y la acción principal. No hay
-rotación automática; los controles inferiores pausan o repiten la animación.
+la foto, el mensaje de apoyo, la descripción, el pie y la acción principal. Las categorías rotan automáticamente cada 3 segundos, con transición de imagen de
+1,6 segundos. El titular permanece fijo. Pausar detiene la rotación y la animación;
+Reanudar permite continuar. Repetir animación vuelve a mostrar la entrada del titular.
+La rotación se suspende al pasar el puntero sobre el hero, al enfocar sus controles,
+al salir del área visible o al ocultar la pestaña. Con movimiento reducido no hay
+rotación automática ni transiciones. Las actualizaciones automáticas no se anuncian
+repetidamente al lector de pantalla.
 
 ## Fotos iniciales
 

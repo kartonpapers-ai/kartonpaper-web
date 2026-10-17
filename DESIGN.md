@@ -113,7 +113,7 @@ Seis botones con miniatura, nombre y estado `aria-pressed`. La selección usa su
 
 ### Movimiento
 
-La entrada del titular revela líneas; la foto entra con desplazamiento y escala leves. «Pausar» y «Repetir animación» controlan estas animaciones, no un carrusel automático. `prefers-reduced-motion` elimina movimiento y las animaciones en curso se cancelan al cambiar categoría.
+La entrada del titular revela líneas; la foto entra con desplazamiento y escala leves. Las seis categorías rotan cada 3000 ms, manteniendo fijo el h1; la transición de foto dura 1600 ms y la del apoyo y descripción, 1200 ms. «Pausar» detiene tanto la rotación como las animaciones y permite reanudarlas; «Repetir animación» reproduce la entrada del titular y la foto. La rotación se suspende al pasar el puntero sobre el hero, mientras el foco está dentro, cuando la pestaña está oculta o el hero queda fuera de pantalla. `prefers-reduced-motion` desactiva la rotación y el movimiento; las animaciones en curso se cancelan al cambiar categoría.
 
 ## Do's and Don'ts
 
