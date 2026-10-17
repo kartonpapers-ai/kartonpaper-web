@@ -62,6 +62,9 @@ Este documento registra la portada aprobada en `KartonPaper_hero_producto_protag
 
 El logo y el resto del sitio conservan su identidad existente. Estos tokens no establecen reglas nuevas para catálogo, precios, carrito, personalizador ni administrador.
 
+La superficie de operación del administrador se documenta por separado en
+[`docs/DESIGN-ADMIN.md`](docs/DESIGN-ADMIN.md), sin modificar estas reglas del hero.
+
 **Key Characteristics:**
 - Producto real como foco de la composición.
 - Blanco continuo y acentos verdes contenidos.

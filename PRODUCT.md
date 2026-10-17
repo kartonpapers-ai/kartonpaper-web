@@ -37,6 +37,17 @@ sustituir foto y mensajes de su categoría. Los siete banners originales se cons
 en la administración; las escenas completas no participan en esta portada.
 Ver `docs/HERO-EDITORIAL.md` para la correspondencia de campos y el alcance.
 
+El panel de operación reúne Productos, Precios, Campañas y Finanzas en
+`admin/index.html`. Precios abre la ficha pública para editar; Campañas conserva
+su página existente. Finanzas guarda fichas por variante en `kp_finance`, con
+acceso restringido al administrador por RLS (`supabase/09-finanzas-privadas.sql`).
+Los costos se importan desde un JSON privado local, fuera del repositorio. El
+cálculo separa merma, comisión, gastos por pedido e IVA y permite simular márgenes
+sin publicar precios ni ofertas. Evidencia funcional: `admin/dashboard.js`,
+`admin/finanzas.js` y `admin/finanzas-calculo.js`; esta descripción no acredita
+pruebas reales en navegador. Operación en `docs/PANEL-FINANZAS.md` y tokens locales
+en `docs/DESIGN-ADMIN.md`.
+
 ## Product Principles
 
 - Una fuente de productos para la tienda y el panel.

@@ -6,6 +6,7 @@
   function status(id, message, kind = "") { $(id).textContent = message; $(id).className = kind; }
   function setLogin() {
     $("campaign-nav").hidden = true; $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
+    window.KP_PANEL?.clear();
     rows = []; selected = null; dirty = false; activeUser = null; resetImage();
     $("product-list").replaceChildren(); $("edit-form").reset(); $("edit-form").hidden = true;
   }
@@ -18,7 +19,7 @@
     if (value && !seen.has(value)) $("edit-existing-image").add(new Option("Imagen actual", value));
     $("edit-existing-image").value = value;
   }
-  function mayDiscard() { return !dirty || window.confirm("Tienes cambios sin guardar. ¿Quieres descartarlos?"); }
+  function mayDiscard() { return (!dirty || window.confirm("Tienes cambios sin guardar. ¿Quieres descartarlos?")) && (!window.KP_FINANCE || window.KP_FINANCE.mayLeave()); }
   function renderList() {
     const query = $("search").value.trim().toLocaleLowerCase("es");
     const filtered = rows.filter(r => [r.data.name, r.data.category, categoryNames[r.data.category]].join(" ").toLocaleLowerCase("es").includes(query));
@@ -77,7 +78,7 @@
       rows = data; selected = null; dirty = false;
       $("edit-form").hidden = true; $("editor-empty").hidden = false;
       $("product-count").textContent = `${rows.length} productos · ${rows.filter(r => r.published).length} visibles en la tienda`;
-      renderList();
+      renderList(); window.KP_PANEL?.setCatalog(rows);
     } catch (error) {
       status("list-status", "No se pudo cargar el catálogo. Revisa la conexión y pulsa Actualizar lista.", "error");
     } finally { $("reload").disabled = false; }
@@ -92,12 +93,13 @@
       if (error || allowed !== true) throw new Error("Sin autorización");
       activeUser = userResult.data.user.id;
       $("campaign-nav").hidden = false; $("login-view").hidden = true; $("workspace").hidden = false; $("logout").hidden = false;
-      $("password").value = ""; status("login-status", ""); await loadRows();
+      $("password").value = ""; status("login-status", ""); window.KP_PANEL?.connect(client); await loadRows();
     } catch (error) {
       await client.auth.signOut({scope:"local"}); setLogin();
       status("login-status", "Esta cuenta no tiene acceso al administrador. Revisa el usuario autorizado en Supabase.", "error");
     }
   }
+  window.KP_ADMIN_UI={mayLeave:()=>!saving&&mayDiscard(),editProduct:id=>{const row=rows.find(r=>r.id===id);if(row)selectRow(row);}};
   $("show-password").addEventListener("click", () => {
     const show = $("password").type === "password"; $("password").type = show ? "text" : "password";
     $("show-password").textContent = show ? "Ocultar" : "Mostrar"; $("show-password").setAttribute("aria-pressed", String(show));
@@ -183,6 +185,7 @@
       if (!result.data) { status("save-status", "El producto cambió en otra sesión. Conserva tus cambios, pulsa Actualizar lista y vuelve a revisarlos.", "error"); return; }
       rows = isNew ? [...rows,result.data] : rows.map(r => r.id === row.id ? result.data : r); $("search").value=""; selectRow(result.data);
       $("product-count").textContent = `${rows.length} productos · ${rows.filter(r => r.published).length} visibles en la tienda`;
+      window.KP_PANEL?.setCatalog(rows);
       status("save-status", isNew ? "Producto creado. Activa Mostrar en el catálogo cuando esté listo." : "Cambios guardados. Recarga la tienda para verlos.", "success");
     } catch (error) {
       status("save-status", "No se guardaron los cambios. Revisa conexión y sesión. Si es la primera carga, comprueba que ejecutaste 04-nuevos-productos.sql. Actualiza la lista si el producto ya se creó en otro intento.", "error");
