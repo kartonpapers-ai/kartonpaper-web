@@ -63,6 +63,7 @@
   }finally{clearTimeout(timer);}
  }
  function render(rows,products) {
+  if(document.getElementById("hero-slider-section")?.dataset.editorial)return window.KP_EDITORIAL.render(rows,products);
   const section=document.getElementById('hero-slider-section'),carousel=section.querySelector('.hero-carousel'),controls=carousel.querySelector('.hero-controls');
   carousel.querySelectorAll('.hero-slide').forEach(x=>x.remove());
   section.dataset.ready="true";

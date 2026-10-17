@@ -30,7 +30,12 @@ Conservar el logo de KartonPaper y la identidad del sitio publicado.
 
 ## Evidence on Hand
 
-20 productos en `data/productos.js`, seis categorías y siete banners en `index.html`.
+20 productos en `data/productos.js` y seis categorías. La portada implementa el hero
+aprobado `KartonPaper_hero_producto_protagonista.html`: titular fijo y seis fotos
+curadas de producto seleccionables. Campañas vigentes por capas sobre blanco pueden
+sustituir foto y mensajes de su categoría. Los siete banners originales se conservan
+en la administración; las escenas completas no participan en esta portada.
+Ver `docs/HERO-EDITORIAL.md` para la correspondencia de campos y el alcance.
 
 ## Product Principles
 
