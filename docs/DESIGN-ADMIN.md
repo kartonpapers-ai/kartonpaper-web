@@ -78,6 +78,25 @@ primero» y estados textuales; conservar la cola activa como vista inicial y el
 historial accesible por filtro. El editor comparte la disposición adaptable de
 Ventas, sin cambiar el hero ni los tokens de la portada.
 
+## Redes y marketing
+
+La séptima pestaña prolonga la superficie blanca, el acento índigo y Libre Franklin
+del administrador, con los tokens ya descritos; no incorpora la tipografía ni la
+paleta editorial del hero. El formulario ordena cuentas, selección de semana,
+brief, contenido y revisión de resultados. La preparación de cuentas se abre en
+un desplegable; cada uno de los seis borradores usa otro `details` cuyo resumen
+expone canal, fecha, formato y estado. Mantener estos estados como texto visible.
+
+En escritorio, cada cuenta alinea nombre, estado y enlace en tres columnas
+(`160px 180px minmax(0,1fr)`, separación de `20px`); la apertura de semana alinea
+fecha, historial y botón. A ≤800px pasan a dos columnas y el nombre de cuenta
+ocupa toda la fila; a ≤480px se apilan. Los párrafos se limitan a `75ch`, las
+piezas se separan con líneas y relleno vertical de `24px`, y los textos largos
+usan áreas de al menos `110px`. Reutilizar etiquetas, foco, botones y barra de
+guardado compartidos. El estado de carga y guardado y el resultado de cálculo
+se anuncian con regiones vivas; distinguir pendiente de cero y dejar explícitos
+el registro manual, CLP netos y la referencia interna a Campañas.
+
 ## Límites de edición
 
 Mantener logo, hero, catálogo público, carrito y campañas existentes dentro de sus

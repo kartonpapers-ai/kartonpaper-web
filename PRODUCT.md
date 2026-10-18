@@ -62,6 +62,15 @@ Producción guarda OT en `kp_production`, protegida por RLS
 por línea de venta, cola por prioridad y orden manual, historial sin borrado y
 consumo real pendiente hasta registrarlo. Operación y límites en `docs/PRODUCCION.md`.
 
+Redes y marketing guarda en `kp_social/workspace` las cuatro cuentas y una campaña
+por semana, con seis borradores editables, historial de hasta 104 semanas y
+resultados comerciales manuales. La migración `supabase/12-redes-marketing.sql`
+restringe el acceso por RLS y el guardado usa control optimista de versión.
+La relación con Campañas es una referencia interna; no modifica la web. No crea
+cuentas sociales ni conecta API, publica contenido o mide resultados automáticamente.
+Operación y respaldo JSON de solo exportación en `docs/REDES-MARKETING.md`;
+propuesta de lanzamiento y rutina en `docs/ESTRATEGIA-REDES.md`.
+
 ## Product Principles
 
 - Una fuente de productos para la tienda y el panel.
