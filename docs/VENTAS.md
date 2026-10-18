@@ -44,6 +44,13 @@ Cada pedido guarda una copia del nombre, variante y precio acordados. Editar el
 catálogo después no recalcula ventas guardadas. Cambiar la selección de producto
 o variante en el formulario sí puede reemplazar el precio propuesto.
 
+Con Producción activada mediante el archivo 11, una línea que ya tiene OT conserva
+su producto, nombre, variante y posición: no eliminarla ni reordenarla; agregar
+una línea nueva para otro trabajo. Cantidad y precio siguen siendo editables,
+pero no actualizan la OT guardada. Revisar ambos registros por separado. Anular
+una venta tampoco cancela sus OT; cambiar ese estado en Producción. Ver
+`docs/PRODUCCION.md`. Esta protección se instala con el archivo 11, sin repetir 10.
+
 ## Importes y pagos
 
 Los importes son CLP. El neto de cada línea es cantidad × neto unitario (hasta dos

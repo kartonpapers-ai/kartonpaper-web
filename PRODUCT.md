@@ -23,7 +23,9 @@ Panel de uso personal con correo y contraseña, sin enlace en la navegación pú
 ni registro de usuarios. El panel administra productos existentes y permite crear productos con fotos.
 Heroes, promociones con fechas e imágenes nuevas se administran desde el panel.
 Ventas registra pedidos manuales privados con varios productos, abonos y devoluciones;
-no emite facturas ni sincroniza el carrito público. El asistente se incorpora después.
+no emite facturas ni sincroniza el carrito público. Producción organiza OT privadas
+manuales o por línea de venta, con avance y tinta estimada/real; no controla la
+impresora ni sincroniza ventas o costos. El asistente se incorpora después.
 Precios, mínimos y plazos requieren confirmación comercial de Jorge.
 
 ## Brand Commitments
@@ -39,7 +41,7 @@ sustituir foto y mensajes de su categoría. Los siete banners originales se cons
 en la administración; las escenas completas no participan en esta portada.
 Ver `docs/HERO-EDITORIAL.md` para la correspondencia de campos y el alcance.
 
-El panel de operación reúne Productos, Precios, Campañas, Finanzas y Ventas en
+El panel de operación reúne Productos, Precios, Campañas, Finanzas, Ventas y Producción en
 `admin/index.html`. Precios abre la ficha pública para editar; Campañas conserva
 su página existente. Finanzas guarda fichas por variante en `kp_finance`, con
 acceso restringido al administrador por RLS (`supabase/09-finanzas-privadas.sql`).
@@ -54,6 +56,11 @@ Ventas guarda copias de precios y variantes acordados en `kp_sales`, protegida
 por RLS (`supabase/10-ventas-privadas.sql`), con IVA 19%, seguimiento de saldo,
 filtros y CSV privado. No incluye datos iniciales de clientes. Operación y límites
 en `docs/VENTAS.md`; sus resúmenes son operativos, no contables.
+
+Producción guarda OT en `kp_production`, protegida por RLS
+(`supabase/11-produccion-privada.sql`, requiere Ventas). Mantiene una OT vinculada
+por línea de venta, cola por prioridad y orden manual, historial sin borrado y
+consumo real pendiente hasta registrarlo. Operación y límites en `docs/PRODUCCION.md`.
 
 ## Product Principles
 
