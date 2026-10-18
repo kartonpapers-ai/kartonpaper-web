@@ -21,7 +21,9 @@ Sitio HTML/CSS/JavaScript publicado en Cloudflare Pages desde GitHub. Desarrollo
 en `desarrollo/admin`; producción en `main`. Mantener el catálogo y diseño actual.
 Panel de uso personal con correo y contraseña, sin enlace en la navegación pública
 ni registro de usuarios. El panel administra productos existentes y permite crear productos con fotos.
-Heroes, promociones con fechas e imágenes nuevas se administran desde el panel. Pedidos y asistente se incorporan en etapas siguientes.
+Heroes, promociones con fechas e imágenes nuevas se administran desde el panel.
+Ventas registra pedidos manuales privados con varios productos, abonos y devoluciones;
+no emite facturas ni sincroniza el carrito público. El asistente se incorpora después.
 Precios, mínimos y plazos requieren confirmación comercial de Jorge.
 
 ## Brand Commitments
@@ -37,7 +39,7 @@ sustituir foto y mensajes de su categoría. Los siete banners originales se cons
 en la administración; las escenas completas no participan en esta portada.
 Ver `docs/HERO-EDITORIAL.md` para la correspondencia de campos y el alcance.
 
-El panel de operación reúne Productos, Precios, Campañas y Finanzas en
+El panel de operación reúne Productos, Precios, Campañas, Finanzas y Ventas en
 `admin/index.html`. Precios abre la ficha pública para editar; Campañas conserva
 su página existente. Finanzas guarda fichas por variante en `kp_finance`, con
 acceso restringido al administrador por RLS (`supabase/09-finanzas-privadas.sql`).
@@ -47,6 +49,11 @@ sin publicar precios ni ofertas. Evidencia funcional: `admin/dashboard.js`,
 `admin/finanzas.js` y `admin/finanzas-calculo.js`; esta descripción no acredita
 pruebas reales en navegador. Operación en `docs/PANEL-FINANZAS.md` y tokens locales
 en `docs/DESIGN-ADMIN.md`.
+
+Ventas guarda copias de precios y variantes acordados en `kp_sales`, protegida
+por RLS (`supabase/10-ventas-privadas.sql`), con IVA 19%, seguimiento de saldo,
+filtros y CSV privado. No incluye datos iniciales de clientes. Operación y límites
+en `docs/VENTAS.md`; sus resúmenes son operativos, no contables.
 
 ## Product Principles
 

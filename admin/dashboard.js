@@ -1,6 +1,6 @@
 (function(){
  'use strict';const $=id=>document.getElementById(id);let rows=[],authorized=false;
- const panels={products:'workspace',prices:'prices-panel',finance:'finance-panel'};
+ const panels={products:'workspace',prices:'prices-panel',finance:'finance-panel',sales:'sales-panel'};
  function show(name){if(!authorized)return;for(const [key,id]of Object.entries(panels))$(id).hidden=key!==name;document.querySelectorAll('[data-panel]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.panel===name)));}
  function renderPrices(){
   const query=$('price-search').value.trim().toLocaleLowerCase('es');$('price-rows').replaceChildren();
@@ -14,9 +14,9 @@
  $('module-campaigns').addEventListener('click',event=>{if(!window.KP_ADMIN_UI.mayLeave())event.preventDefault();});
  $('price-search').addEventListener('input',renderPrices);
  window.KP_PANEL=Object.freeze({
-  connect(client){authorized=true;$('panel-overview').hidden=false;show('products');window.KP_FINANCE.connect(client);},
-  clear(){authorized=false;rows=[];$('panel-overview').hidden=true;$('prices-panel').hidden=true;$('finance-panel').hidden=true;$('price-rows').replaceChildren();window.KP_FINANCE.clear();for(const id of ['summary-products','summary-visible','summary-costs','summary-reviewed'])$(id).textContent='—';},
-  setCatalog(value){rows=value;$('summary-products').textContent=rows.length;$('summary-visible').textContent=rows.filter(row=>row.published).length;renderPrices();window.KP_FINANCE.setCatalog(rows);},
+  connect(client){authorized=true;$('panel-overview').hidden=false;show('products');window.KP_FINANCE.connect(client);window.KP_SALES.connect(client);},
+  clear(){authorized=false;rows=[];$('panel-overview').hidden=true;$('prices-panel').hidden=true;$('finance-panel').hidden=true;$('sales-panel').hidden=true;$('price-rows').replaceChildren();window.KP_FINANCE.clear();window.KP_SALES.clear();for(const id of ['summary-products','summary-visible','summary-costs','summary-reviewed'])$(id).textContent='—';},
+  setCatalog(value){rows=value;$('summary-products').textContent=rows.length;$('summary-visible').textContent=rows.filter(row=>row.published).length;renderPrices();window.KP_FINANCE.setCatalog(rows);window.KP_SALES.setCatalog(rows);},
   busy(value){document.querySelectorAll('[data-panel]').forEach(button=>button.disabled=value);$('logout').disabled=value;}
  });
 })();

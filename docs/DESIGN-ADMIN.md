@@ -8,7 +8,7 @@ sin verificación visual en navegador.
 La intención es un panel mínimo y profesional: navegación explícita, lista o
 tabla para comparar, formulario para editar y resultados financieros al lado.
 El color señala acciones y estados; los números usan cifras tabulares. El panel
-presenta tareas de productos, precios, campañas y costos sin añadir decoración.
+presenta tareas de productos, precios, campañas, costos y ventas sin añadir decoración.
 
 ## Tokens observados
 
@@ -42,7 +42,7 @@ trasladar las fuentes editoriales de la portada al panel.
 
 El contenedor principal llega a 1280px, con márgenes interiores horizontales de
 24px y relleno superior operativo de 28px. La navegación **Productos**, **Precios**,
-**Campañas**, **Finanzas** está bajo un resumen con divisiones finas. Los botones
+**Campañas**, **Finanzas**, **Ventas** está bajo un resumen con divisiones finas. Los botones
 activos usan `aria-pressed` y fondo de acento. Campañas es un enlace a su página.
 
 Productos usa columnas de lista `minmax(260px,360px)` y editor flexible, separadas
@@ -61,6 +61,13 @@ Los formularios agrupan compra, fabricación y venta en `fieldset`. Las funcione
 menos frecuentes se abren con `details`: precio y opciones, importación y cálculo
 desde embalaje. Mantener etiquetas visibles, foco de teclado, estados textuales,
 ayudas sobre unidad/IVA y protección de cambios sin guardar.
+
+Ventas reutiliza los tokens, botones, tabla y resultados existentes. Su quinta
+pestaña reúne filtros, resumen de pedidos y editor con líneas de productos y
+movimientos de pago. Los totales quedan junto a las notas, sin posición fija;
+a ≤800px pasan a una columna y a ≤480px se apilan filtros y campos. Mantener
+explícitas las etiquetas de unidad, neto, IVA y fecha de venta; distinguir el
+estado del pedido del estado de pago sin depender solo del color.
 
 ## Límites de edición
 

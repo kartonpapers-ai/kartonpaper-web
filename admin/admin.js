@@ -19,7 +19,7 @@
     if (value && !seen.has(value)) $("edit-existing-image").add(new Option("Imagen actual", value));
     $("edit-existing-image").value = value;
   }
-  function mayDiscard() { return (!dirty || window.confirm("Tienes cambios sin guardar. ¿Quieres descartarlos?")) && (!window.KP_FINANCE || window.KP_FINANCE.mayLeave()); }
+  function mayDiscard() { return (!dirty || window.confirm("Tienes cambios sin guardar. ¿Quieres descartarlos?")) && (!window.KP_FINANCE || window.KP_FINANCE.mayLeave()) && (!window.KP_SALES || window.KP_SALES.mayLeave()); }
   function renderList() {
     const query = $("search").value.trim().toLocaleLowerCase("es");
     const filtered = rows.filter(r => [r.data.name, r.data.category, categoryNames[r.data.category]].join(" ").toLocaleLowerCase("es").includes(query));
