@@ -7,7 +7,7 @@
   for (const f of ['title','lead','image','alt']) if(typeof p[f]!=='string'||!p[f].trim()||p[f].length>500) throw new Error('Completa el campo '+f+'.');
   if(p.title.length>120)throw new Error('El título admite hasta 120 caracteres.');
   for(const f of ['highlight','badge','badgeStatus'])if(typeof p[f]!=='string'||p[f].length>120)throw new Error('Revisa los textos breves.');
-  if(!/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)) {
+  if(!(/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)||/^images\/campanas\/(?:[a-z0-9][a-z0-9-]*\/){1,4}[a-zA-Z0-9][a-zA-Z0-9_-]*\.(webp|png|jpe?g)$/.test(p.image))) {
    const c=window.KP_CATALOG.configuration(),prefix=c&&c.supabaseUrl.replace(/\/$/,'')+'/storage/v1/object/public/';
    if(!prefix||!p.image.startsWith(prefix)||!/^kp-(heroes|productos)\/[a-z0-9-]+\.webp$/.test(p.image.slice(prefix.length)))throw new Error('Selecciona una imagen del hero o sube una nueva.');
   }

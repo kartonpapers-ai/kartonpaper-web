@@ -101,3 +101,21 @@ crecer sin superponerse a la foto. Archivos WebP en
 Una campaña válida del administrador para Repostería sigue teniendo prioridad y
 recupera la composición normal. Rotación, pausa, teclado y movimiento reducido
 mantienen el comportamiento existente. No se agrega un editor de imágenes al panel.
+
+
+## Biblioteca de fotos de campañas
+
+Campañas > Elegir de la biblioteca carga `images/campanas/catalogo.json` después
+de iniciar sesión y al actualizar la lista. Registra las ocho imágenes originales
+01–08 (con sus extensiones reales) y las dos composiciones de hero. Los archivos
+se conservan en GitHub; no se duplican en Supabase. La búsqueda «Rostro» encuentra
+las ocho originales, y el filtro Repostería incluye toda esta colección.
+
+Ejecutar una vez `supabase/13-carpeta-campanas.sql` para permitir guardar las rutas
+de esta carpeta en campañas. La migración es repetible y conserva datos, permisos
+y validaciones previas. La biblioteca se puede ver antes de ejecutar el SQL.
+
+Registrar en el catálogo JSON cada imagen nueva que se suba a GitHub: un navegador
+no puede listar por sí solo los archivos de una carpeta del hosting. Si falla la
+carga del catálogo, se avisa y se mantienen disponibles las fotos existentes.
+Esta biblioteca se abre desde Campañas; no se agrega aún un selector a Redes.
