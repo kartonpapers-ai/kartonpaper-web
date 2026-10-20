@@ -119,3 +119,18 @@ Registrar en el catálogo JSON cada imagen nueva que se suba a GitHub: un navega
 no puede listar por sí solo los archivos de una carpeta del hosting. Si falla la
 carga del catálogo, se avisa y se mantienen disponibles las fotos existentes.
 Esta biblioteca se abre desde Campañas; no se agrega aún un selector a Redes.
+
+
+## Ajuste móvil · producto antes de las acciones
+
+Hasta 900 px, la campaña de envoltorios presenta titular, fotografía, apoyo y
+acciones. `display: contents` en el contenedor no semántico de copia permite
+reordenar los elementos con flex sin duplicar texto, enlaces ni fotografías.
+Los dos botones comparten una cuadrícula de dos columnas con área táctil mínima
+de 50 px y etiquetas que pueden ocupar dos líneas. En teléfono, se omiten solo
+las flechas decorativas y se compacta la tipografía del titular y los espacios.
+Se conservan los párrafos y los destinos, el foco y las preferencias de movimiento.
+A más de 900 px no cambia la composición de escritorio. La hoja CSS tiene una
+nueva versión en `index.html` para evitar que el navegador conserve la anterior.
+Comprobación funcional: prueba existente de rotación. Revisión visual pendiente
+sobre el teléfono real; se usaron las capturas aportadas como evidencia del fallo.
