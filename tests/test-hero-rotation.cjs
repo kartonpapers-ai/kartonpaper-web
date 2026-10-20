@@ -12,8 +12,18 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
  const stop=w.KP_EDITORIAL.init({products:[],openCustomizer(){}});
  const selected=()=>doc.querySelector('[data-hero-category][aria-pressed="true"]').dataset.heroCategory;
  function tick(){assert.equal(timers.size,1);const [id,timer]=timers.entries().next().value;assert.equal(timer.ms,3000);timers.delete(id);timer.fn();}
- assert.equal(selected(),'reposteria');tick();assert.equal(selected(),'gastronomia');assert.equal(doc.getElementById('eh-support').parentElement.getAttribute('aria-live'),'off');
+ assert.equal(selected(),'reposteria');
+ assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-campaign'),true);
+ assert.match(doc.querySelector('.eh-headline').textContent,/Dulces por dentro/);
+ assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/movil.webp$/);
+ assert.match(doc.getElementById('eh-quote').href,/envoltorios/);
+ tick();
+ assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-campaign'),false);
+ assert.equal(doc.getElementById('eh-photo-mobile').hasAttribute('srcset'),false);
+ assert.equal(doc.querySelector('.eh-headline').textContent,'Tu marcamereceser vista.');
+ assert.equal(selected(),'gastronomia');assert.equal(doc.getElementById('eh-support').parentElement.getAttribute('aria-live'),'off');
  for(const category of ['bolsas','doypack','cerveza','posavasos','reposteria']){tick();assert.equal(selected(),category);}
+ assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/movil.webp$/);
  doc.getElementById('eh-pause').click();assert.equal(timers.size,0);assert.equal(doc.getElementById('eh-pause').getAttribute('aria-pressed'),'true');
  doc.getElementById('eh-pause').click();tick();assert.equal(selected(),'gastronomia');
  const hero=doc.getElementById('hero-slider-section');hero.dispatchEvent(new w.Event('mouseenter'));assert.equal(timers.size,0);hero.dispatchEvent(new w.Event('mouseleave'));assert.equal(timers.size,1);

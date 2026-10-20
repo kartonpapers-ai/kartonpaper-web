@@ -83,3 +83,21 @@ El catálogo, sus precios y filtros, carrito, personalizador y logo mantienen su
 reglas existentes. Esta entrega no introduce un nuevo sistema visual para el resto
 del sitio. Con campañas ausentes o sin conexión, el hero mantiene sus seis valores
 curados; esto no modifica el tratamiento de fallos del catálogo conectado.
+
+
+## Campaña de envoltorios · octubre 2026
+
+Repostería abre con «Dulces por dentro. Inolvidables por fuera.» y cotización de
+**envoltorios**, sin cambiar los precios ni el catálogo. Imágenes generadas con IA,
+no fotografías de fabricación real. El texto se conserva en HTML/JS, fuera del
+bitmap. Las otras categorías recuperan el titular habitual y su composición.
+
+`picture` elige la composición móvil hasta 900 px y la horizontal en escritorio.
+En móvil, la copia fluye encima de la fotografía; el encuadre retira solo la franja
+blanca superior, conservando el arte de los productos. El texto ampliado puede
+crecer sin superponerse a la foto. Archivos WebP en
+`images/campanas/envases-con-personalidad/hero/`.
+
+Una campaña válida del administrador para Repostería sigue teniendo prioridad y
+recupera la composición normal. Rotación, pausa, teclado y movimiento reducido
+mantienen el comportamiento existente. No se agrega un editor de imágenes al panel.

@@ -1,6 +1,19 @@
 (function(){
  'use strict';
  const defaults={"reposteria": {"label": "Repostería", "image": "images/reposteria-caja-6-alfajores.webp", "support": "El sabor conquista. La presentación invita.", "intro": "Cajas para alfajores, personalizadas con tu logo.", "detail": "Caja con ventana · 6 alfajores"}, "gastronomia": {"label": "Gastronomía", "image": "images/bagasse-caja-pollo-1.webp", "support": "Tu cocina tiene identidad. Tu envase también.", "intro": "Envases de bagazo de caña con personalización en la tapa.", "detail": "Bagazo de caña · Caja Pollo 1"}, "bolsas": {"label": "Bolsas", "image": "images/bolsa-papel-kraft-asa-plana.webp", "support": "Que tu marca acompañe cada entrega.", "intro": "Bolsas de papel kraft y blancas, personalizadas con tu logo.", "detail": "Papel kraft · Asa plana"}, "doypack": {"label": "Doypack", "image": "images/doypack-kraft-ventana.webp", "support": "Una buena presentación empieza por fuera.", "intro": "Doypack kraft con ventana y cierre zip, personalizados.", "detail": "Kraft con ventana · Cierre zip"}, "cerveza": {"label": "Cerveza", "image": "images/beer-maleta-3x330-approved.webp", "support": "Tu cerveza tiene carácter. Su caja también.", "intro": "Packs personalizados para tu cerveza artesanal.", "detail": "Maleta kraft · 3 botellas de 330 cc"}, "posavasos": {"label": "Posavasos", "image": "images/posavasos-chile-souvenir.webp", "support": "Pequeños detalles. Una marca que se recuerda.", "intro": "Posavasos de pulpa absorbente con tu gráfica.", "detail": "Pulpa absorbente · Gráfica personalizada"}};
+ Object.assign(defaults.reposteria,{
+  campaign:true,
+  thumbnail:'images/reposteria-caja-6-alfajores.webp',
+  image:'images/campanas/envases-con-personalidad/hero/alfajores-personalidad-escritorio.webp',
+  mobileImage:'images/campanas/envases-con-personalidad/hero/alfajores-personalidad-movil.webp',
+  headline:['Dulces por dentro.','Inolvidables','por fuera.'],
+  support:'Envoltorios personalizados que le dan carácter a tu marca.',
+  intro:'Tu logo o gráfica. Una presentación para recordar.',
+  detail:'Envoltorios personalizados · Repostería',
+  alt:'Alfajores en envoltorios rosado con un gato y dorado con un vampiro, junto a papel metalizado y un alfajor de chocolate.',
+  quoteLabel:'Cotizar envoltorios',quoteSubject:'envoltorios personalizados para alfajores',
+  exploreLabel:'Ver repostería'
+ });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
  const section=()=>document.getElementById('hero-slider-section');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -18,10 +31,16 @@
  function choose(category,motion=false,automatic=false){
   if(!entries[category])return;selected=category;const p=entries[category];
   el('support').parentElement.setAttribute('aria-live',automatic?'off':'polite');
-  el('photo').src=p.image;el('photo').alt=p.detail;el('support').textContent=p.support;el('intro').textContent=p.intro;el('caption').textContent=p.detail;
-  el('quote').href='https://wa.me/56930332416?text='+encodeURIComponent('Hola, quiero cotizar '+p.label.toLowerCase()+' con mi logo.');
-  el('explore-label').textContent=p.action?.label||'Explorar envases';
-  buttons().forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.heroCategory===category));button.querySelector('img').src=entries[button.dataset.heroCategory].image;});
+  section().classList.toggle('eh-campaign',Boolean(p.campaign));
+  section().querySelectorAll('.eh-line-inner').forEach((line,i)=>{line.textContent=(p.headline||['Tu marca','merece','ser vista.'])[i];});
+  const mobile=el('photo-mobile');
+  if(mobile){if(p.mobileImage)mobile.srcset=p.mobileImage;else mobile.removeAttribute('srcset');}
+  el('quote-label').textContent=p.quoteLabel||'Cotizar con mi logo';
+  el('photo').width=p.campaign?1774:1100;el('photo').height=p.campaign?887:1000;
+  el('photo').src=p.image;el('photo').alt=p.alt||p.detail;el('support').textContent=p.support;el('intro').textContent=p.intro;el('caption').textContent=p.detail;
+  el('quote').href='https://wa.me/56930332416?text='+encodeURIComponent('Hola, quiero cotizar '+(p.quoteSubject||p.label.toLowerCase())+' con mi logo.');
+  el('explore-label').textContent=p.action?.label||p.exploreLabel||'Explorar envases';
+  buttons().forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.heroCategory===category));button.querySelector('img').src=entries[button.dataset.heroCategory].thumbnail||entries[button.dataset.heroCategory].image;});
   if(motion)animate();
  }
  function render(rows,products){
@@ -33,7 +52,7 @@
    const action=p.primary;
    const category=action.kind==='categoria'?action.target:products.find(product=>product.id===action.target)?.category;
    if(!defaults[category]||assigned.has(category))continue;assigned.add(category);
-   entries[category]={...defaults[category],image:p.image,detail:p.alt,support:[p.title,p.highlight].filter(Boolean).join(' '),intro:p.lead,action};
+   entries[category]={...defaults[category],campaign:false,mobileImage:null,headline:null,quoteLabel:null,quoteSubject:null,exploreLabel:null,image:p.image,alt:p.alt,detail:p.alt,support:[p.title,p.highlight].filter(Boolean).join(' '),intro:p.lead,action};
   }
   section().hidden=false;section().dataset.ready='true';choose(selected);return active;
  }

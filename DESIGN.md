@@ -129,3 +129,13 @@ La entrada del titular revela líneas; la foto entra con desplazamiento y escala
 - **Don't** extender esta composición ni sus fuentes al catálogo sin una decisión posterior.
 - **Don't** convertir los antiguos banners de escena completa en fondos de este hero.
 - **Don't** cambiar el titular aprobado al seleccionar una categoría o publicar una campaña.
+
+
+## Excepción de campaña autorizada · envoltorios
+
+La campaña de Repostería de octubre 2026 usa una escena generada con IA sobre
+blanco, con archivos distintos para escritorio y móvil, y el titular «Dulces por
+dentro. Inolvidables por fuera.». En escritorio el texto queda a la izquierda;
+en móvil fluye encima de la foto para permitir su ampliación. El titular general
+se recupera en las otras categorías. Esta excepción sustituye para esa campaña
+las reglas de h1 fijo y foto en zona independiente; el resto del sitio se conserva.
