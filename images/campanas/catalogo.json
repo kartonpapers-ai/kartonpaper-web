@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "campanas": [
+    {
+      "id": "envases-con-personalidad",
+      "nombre": "Envases con personalidad",
+      "imagenes": [
+        {
+          "id": "alfajores-rostro-dorado",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-dorado.jpg",
+          "ancho": 768,
+          "alto": 1376,
+          "tipo": "image/jpeg",
+          "texto_publicitario_integrado": false,
+          "origen": "Imagen generada con IA y aportada por el dueño",
+          "descripcion": "Rostro formado con alfajores dorados, cordones y una sonrisa de alfajor sobre fondo blanco; mano en la zona inferior.",
+          "versiones": {}
+        }
+      ]
+    }
+  ]
+}
