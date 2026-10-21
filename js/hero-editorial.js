@@ -27,6 +27,19 @@
   quoteLabel:'Cotizar compostables',quoteSubject:'envases de bagazo de caña con personalización en la tapa',
   exploreLabel:'Ver compostables'
  });
+ Object.assign(defaults.posavasos,{
+  campaign:true,
+  thumbnail:'images/posavasos-chile-souvenir.webp',
+  image:'images/campanas/posavasos-con-personalidad/hero/posavasos-mixed-media-escritorio.webp',
+  mobileImage:'images/campanas/posavasos-con-personalidad/vertical/posavasos-mixed-media-movil.webp',
+  headline:['Tu marca,','en cada','encuentro.'],
+  support:'Pequeño formato. Grandes historias.',
+  intro:'Posavasos de pulpa absorbente personalizados con tu logo o gráfica.',
+  detail:'Pulpa absorbente · Gráfica personalizada',
+  alt:'Cinco posavasos de pulpa con diseños de San Pedro de Atacama, Bahía Inglesa, Desierto Florido y dos diseños de línea negra, junto a pequeños personajes ilustrados.',
+  quoteLabel:'Cotizar posavasos',quoteSubject:'posavasos de pulpa absorbente personalizados',
+  exploreLabel:'Ver posavasos'
+ });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
  const section=()=>document.getElementById('hero-slider-section');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -45,6 +58,7 @@
   if(!entries[category])return;selected=category;const p=entries[category];
   el('support').parentElement.setAttribute('aria-live',automatic?'off':'polite');
   section().classList.toggle('eh-campaign',Boolean(p.campaign));
+  section().classList.toggle('eh-posavasos',category==='posavasos'&&Boolean(p.campaign));
   section().classList.toggle('eh-compostables',category==='gastronomia'&&Boolean(p.campaign));
   section().querySelectorAll('.eh-line-inner').forEach((line,i)=>{line.textContent=(p.headline||['Tu marca','merece','ser vista.'])[i];});
   const mobile=el('photo-mobile');

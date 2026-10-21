@@ -142,3 +142,7 @@ El hero predeterminado de Repostería usa ahora la campaña `cajas-alfajores-mix
 ## Compostables con personalidad · KP
 
 Gastronomía usa la campaña `compostables-con-personalidad`: hero panorámico de 1942 × 809 y móvil de 941 × 1672. El envase conserva su logo esbozado solo en la superficie superior de la tapa. El mensaje explica que la personalización se hace exclusivamente en la tapa. El botón Ver compostables abre Gastronomía y la cotización indica bagazo de caña. Las dos imágenes también están registradas en la biblioteca de campañas.
+
+## Posavasos con personalidad
+
+Hero propio de escritorio y móvil para Posavasos, con fotografía de producto y personajes dibujados. Mensaje: Tu marca, en cada encuentro. Botones: Ver posavasos y Cotizar posavasos. Cinco originales y dos heroes registrados en la biblioteca de campañas. El encuadre móvil centrado conserva los diseños completos.

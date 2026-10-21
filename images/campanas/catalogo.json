@@ -188,6 +188,82 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "posavasos-con-personalidad",
+      "nombre": "Posavasos con personalidad",
+      "imagenes": [
+        {
+          "id": "posavasos-original-01",
+          "nombre": "Posavasos · San Pedro de Atacama",
+          "archivo": "posavasos-con-personalidad/originales/coaster-1.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 92432,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-02",
+          "nombre": "Posavasos · Bahía Inglesa",
+          "archivo": "posavasos-con-personalidad/originales/coaster-2.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 90114,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-03",
+          "nombre": "Posavasos · Desierto Florido",
+          "archivo": "posavasos-con-personalidad/originales/coaster-3.png",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 2805763,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-04",
+          "nombre": "Posavasos · Geometría en negro",
+          "archivo": "posavasos-con-personalidad/originales/coaster-4.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 432637,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-05",
+          "nombre": "Posavasos · Emblema de líneas",
+          "archivo": "posavasos-con-personalidad/originales/coaster-5.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 63181,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-mixed-media-escritorio",
+          "nombre": "Posavasos · Hero escritorio",
+          "archivo": "posavasos-con-personalidad/hero/posavasos-mixed-media-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 280616,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-mixed-media-movil",
+          "nombre": "Posavasos · Hero móvil y redes",
+          "archivo": "posavasos-con-personalidad/vertical/posavasos-mixed-media-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 328006,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        }
+      ]
     }
   ]
 }

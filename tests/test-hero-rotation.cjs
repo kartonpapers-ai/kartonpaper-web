@@ -27,7 +27,17 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
  assert.match(doc.getElementById('eh-caption').textContent,/solo en la tapa/);
  assert.equal(doc.querySelector('.eh-headline').textContent,'Tu cocina.Tu marca.Tu envase.');
  assert.equal(selected(),'gastronomia');assert.equal(doc.getElementById('eh-support').parentElement.getAttribute('aria-live'),'off');
- for(const category of ['bolsas','doypack','cerveza','posavasos','reposteria']){tick();assert.equal(selected(),category);}
+ for(const category of ['bolsas','doypack','cerveza','posavasos','reposteria']){
+  tick();assert.equal(selected(),category);
+  if(category==='posavasos'){
+   assert.match(doc.getElementById('eh-photo').src,/posavasos-mixed-media-escritorio.webp$/);
+   assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/posavasos-mixed-media-movil.webp$/);
+   assert.match(doc.getElementById('eh-quote').href,/posavasos/);
+   assert.equal(doc.getElementById('eh-explore-label').textContent,'Ver posavasos');
+   assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-posavasos'),true);
+  }
+ }
+ assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-posavasos'),false);
  assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/mixed-media-vertical.webp$/);
  doc.getElementById('eh-pause').click();assert.equal(timers.size,0);assert.equal(doc.getElementById('eh-pause').getAttribute('aria-pressed'),'true');
  doc.getElementById('eh-pause').click();tick();assert.equal(selected(),'gastronomia');

@@ -48,3 +48,8 @@
 @media(max-width:900px){
  .eh-campaign.eh-compostables .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
 }
+
+/* Encuadre centrado para conservar los cinco posavasos y sus personajes en móvil. */
+@media(max-width:900px){
+ .eh-campaign.eh-posavasos .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
+}
