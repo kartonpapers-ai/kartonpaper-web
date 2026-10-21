@@ -43,3 +43,8 @@
  .eh-campaign .eh-action{padding-inline:8px;font-size:13px}
  .eh-campaign .eh-action svg{display:none}
 }
+
+/* Centra el recorte móvil para conservar los dos cocineros del hero de bagazo. */
+@media(max-width:900px){
+ .eh-campaign.eh-compostables .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
+}

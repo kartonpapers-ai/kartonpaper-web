@@ -138,3 +138,7 @@ sobre el teléfono real; se usaron las capturas aportadas como evidencia del fal
 ## Cajas de alfajores · octubre 2026
 
 El hero predeterminado de Repostería usa ahora la campaña `cajas-alfajores-mixed-media`: cajas blancas con visor de mica para 3, 4 y 6 alfajores. Se actualizan también la fuente móvil, la descripción y la cotización de cajas. El HTML inicial y JavaScript coinciden para evitar mostrar envoltorios antes de inicializar. La campaña de envoltorios permanece disponible en la biblioteca.
+
+## Compostables con personalidad · KP
+
+Gastronomía usa la campaña `compostables-con-personalidad`: hero panorámico de 1942 × 809 y móvil de 941 × 1672. El envase conserva su logo esbozado solo en la superficie superior de la tapa. El mensaje explica que la personalización se hace exclusivamente en la tapa. El botón Ver compostables abre Gastronomía y la cotización indica bagazo de caña. Las dos imágenes también están registradas en la biblioteca de campañas.

@@ -14,6 +14,19 @@
   quoteLabel:'Cotizar cajas',quoteSubject:'cajas de cartulina con visor para 3, 4 y 6 alfajores',
   exploreLabel:'Ver repostería'
  });
+ Object.assign(defaults.gastronomia,{
+  campaign:true,
+  thumbnail:'images/bagasse-caja-pollo-1.webp',
+  image:'images/campanas/compostables-con-personalidad/hero/compostables-kp-escritorio.webp',
+  mobileImage:'images/campanas/compostables-con-personalidad/vertical/compostables-kp-movil.webp',
+  headline:['Tu cocina.','Tu marca.','Tu envase.'],
+  support:'Envases de bagazo de caña con tu identidad.',
+  intro:'Personalizamos la tapa con tu logo o gráfica. Para gastronomía y delivery.',
+  detail:'Bagazo de caña · Personalización solo en la tapa',
+  alt:'Envase cerrado de bagazo de caña con un logo KP suavemente esbozado solo en la tapa, acompañado de dos cocineros ilustrados.',
+  quoteLabel:'Cotizar compostables',quoteSubject:'envases de bagazo de caña con personalización en la tapa',
+  exploreLabel:'Ver compostables'
+ });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
  const section=()=>document.getElementById('hero-slider-section');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -32,6 +45,7 @@
   if(!entries[category])return;selected=category;const p=entries[category];
   el('support').parentElement.setAttribute('aria-live',automatic?'off':'polite');
   section().classList.toggle('eh-campaign',Boolean(p.campaign));
+  section().classList.toggle('eh-compostables',category==='gastronomia'&&Boolean(p.campaign));
   section().querySelectorAll('.eh-line-inner').forEach((line,i)=>{line.textContent=(p.headline||['Tu marca','merece','ser vista.'])[i];});
   const mobile=el('photo-mobile');
   if(mobile){if(p.mobileImage)mobile.srcset=p.mobileImage;else mobile.removeAttribute('srcset');}

@@ -162,6 +162,32 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "compostables-con-personalidad",
+      "nombre": "Compostables con personalidad · KP",
+      "imagenes": [
+        {
+          "id": "compostables-kp-escritorio",
+          "nombre": "Bagazo de caña · Hero escritorio",
+          "archivo": "compostables-con-personalidad/hero/compostables-kp-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 45538,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "compostables-kp-movil",
+          "nombre": "Bagazo de caña · Hero móvil y redes",
+          "archivo": "compostables-con-personalidad/vertical/compostables-kp-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 42796,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": false
+        }
+      ]
     }
   ]
 }

@@ -20,9 +20,12 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
  assert.match(doc.getElementById('eh-photo').src,/cajas-alfajores-mixed-media-escritorio.webp$/);
  assert.match(doc.getElementById('eh-caption').textContent,/3, 4 y 6 alfajores/);
  tick();
- assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-campaign'),false);
- assert.equal(doc.getElementById('eh-photo-mobile').hasAttribute('srcset'),false);
- assert.equal(doc.querySelector('.eh-headline').textContent,'Tu marcamereceser vista.');
+ assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-campaign'),true);
+ assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/compostables-kp-movil.webp$/);
+ assert.match(doc.getElementById('eh-photo').src,/compostables-kp-escritorio.webp$/);
+ assert.match(doc.getElementById('eh-quote').href,/bagazo/);
+ assert.match(doc.getElementById('eh-caption').textContent,/solo en la tapa/);
+ assert.equal(doc.querySelector('.eh-headline').textContent,'Tu cocina.Tu marca.Tu envase.');
  assert.equal(selected(),'gastronomia');assert.equal(doc.getElementById('eh-support').parentElement.getAttribute('aria-live'),'off');
  for(const category of ['bolsas','doypack','cerveza','posavasos','reposteria']){tick();assert.equal(selected(),category);}
  assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/mixed-media-vertical.webp$/);
