@@ -134,3 +134,7 @@ A más de 900 px no cambia la composición de escritorio. La hoja CSS tiene una
 nueva versión en `index.html` para evitar que el navegador conserve la anterior.
 Comprobación funcional: prueba existente de rotación. Revisión visual pendiente
 sobre el teléfono real; se usaron las capturas aportadas como evidencia del fallo.
+
+## Cajas de alfajores · octubre 2026
+
+El hero predeterminado de Repostería usa ahora la campaña `cajas-alfajores-mixed-media`: cajas blancas con visor de mica para 3, 4 y 6 alfajores. Se actualizan también la fuente móvil, la descripción y la cotización de cajas. El HTML inicial y JavaScript coinciden para evitar mostrar envoltorios antes de inicializar. La campaña de envoltorios permanece disponible en la biblioteca.

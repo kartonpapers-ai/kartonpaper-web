@@ -4,14 +4,14 @@
  Object.assign(defaults.reposteria,{
   campaign:true,
   thumbnail:'images/reposteria-caja-6-alfajores.webp',
-  image:'images/campanas/envases-con-personalidad/hero/alfajores-personalidad-escritorio.webp',
-  mobileImage:'images/campanas/envases-con-personalidad/hero/alfajores-personalidad-movil.webp',
+  image:'images/campanas/cajas-alfajores-mixed-media/hero/cajas-alfajores-mixed-media-escritorio.webp',
+  mobileImage:'images/campanas/cajas-alfajores-mixed-media/vertical/cajas-alfajores-mixed-media-vertical.webp',
   headline:['Dulces por dentro.','Inolvidables','por fuera.'],
-  support:'Envoltorios personalizados que le dan carácter a tu marca.',
-  intro:'Tu logo o gráfica. Una presentación para recordar.',
-  detail:'Envoltorios personalizados · Repostería',
-  alt:'Alfajores en envoltorios rosado con un gato y dorado con un vampiro, junto a papel metalizado y un alfajor de chocolate.',
-  quoteLabel:'Cotizar envoltorios',quoteSubject:'envoltorios personalizados para alfajores',
+  support:'Cajas que le dan protagonismo a tus alfajores.',
+  intro:'Cartulina blanca con visor de mica. Formatos para 3, 4 y 6 alfajores.',
+  detail:'Cajas con visor · 3, 4 y 6 alfajores',
+  alt:'Cajas de cartulina blanca con visor de mica para 3, 4 y 6 alfajores, acompañadas de pequeños pasteleros ilustrados.',
+  quoteLabel:'Cotizar cajas',quoteSubject:'cajas de cartulina con visor para 3, 4 y 6 alfajores',
   exploreLabel:'Ver repostería'
  });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
@@ -36,7 +36,7 @@
   const mobile=el('photo-mobile');
   if(mobile){if(p.mobileImage)mobile.srcset=p.mobileImage;else mobile.removeAttribute('srcset');}
   el('quote-label').textContent=p.quoteLabel||'Cotizar con mi logo';
-  el('photo').width=p.campaign?1774:1100;el('photo').height=p.campaign?887:1000;
+  el('photo').width=p.campaign?1942:1100;el('photo').height=p.campaign?809:1000;
   el('photo').src=p.image;el('photo').alt=p.alt||p.detail;el('support').textContent=p.support;el('intro').textContent=p.intro;el('caption').textContent=p.detail;
   el('quote').href='https://wa.me/56930332416?text='+encodeURIComponent('Hola, quiero cotizar '+(p.quoteSubject||p.label.toLowerCase())+' con mi logo.');
   el('explore-label').textContent=p.action?.label||p.exploreLabel||'Explorar envases';
