@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "campanas": [
+    {
+      "id": "envases-con-personalidad",
+      "nombre": "Envases con personalidad",
+      "imagenes": [
+        {
+          "id": "alfajores-rostro-01",
+          "nombre": "Alfajores · Rostro 01",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-01.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 107098,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-02",
+          "nombre": "Alfajores · Rostro 02",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-02.jpg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 618044,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-03",
+          "nombre": "Alfajores · Rostro 03",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-03.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 96269,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-04",
+          "nombre": "Alfajores · Rostro 04",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-04.png",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 2365827,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-05",
+          "nombre": "Alfajores · Rostro 05",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-05.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 565381,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-06",
+          "nombre": "Alfajores · Rostro 06",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-06.jpg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 541909,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-07",
+          "nombre": "Alfajores · Rostro 07",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-07.jpg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 192869,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-rostro-08",
+          "nombre": "Alfajores · Rostro 08",
+          "archivo": "envases-con-personalidad/originales/alfajores-rostro-08.jpg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 618044,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-personalidad-escritorio",
+          "nombre": "Alfajores · Hero escritorio",
+          "archivo": "envases-con-personalidad/hero/alfajores-personalidad-escritorio.webp",
+          "ancho": 1774,
+          "alto": 887,
+          "bytes": 134740,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "alfajores-personalidad-movil",
+          "nombre": "Alfajores · Hero móvil",
+          "archivo": "envases-con-personalidad/hero/alfajores-personalidad-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 155864,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        }
+      ]
+    },
+    {
+      "id": "cajas-alfajores-mixed-media",
+      "nombre": "Cajas de alfajores · Mixed Media",
+      "imagenes": [
+        {
+          "id": "cajas-alfajores-mixed-media-escritorio",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Hero escritorio",
+          "archivo": "cajas-alfajores-mixed-media/hero/cajas-alfajores-mixed-media-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 102862,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-mixed-media-vertical",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Vertical redes y móvil",
+          "archivo": "cajas-alfajores-mixed-media/vertical/cajas-alfajores-mixed-media-vertical.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 139194,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-original-01",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Original 01",
+          "archivo": "cajas-alfajores-mixed-media/originales/cajas-alfajores-01.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 176565,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-original-02",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Original 02",
+          "archivo": "cajas-alfajores-mixed-media/originales/cajas-alfajores-02.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 625897,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-original-03",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Original 03",
+          "archivo": "cajas-alfajores-mixed-media/originales/cajas-alfajores-03.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 550422,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        }
+      ]
+    },
+    {
+      "id": "compostables-con-personalidad",
+      "nombre": "Compostables con personalidad · KP",
+      "imagenes": [
+        {
+          "id": "compostables-kp-escritorio",
+          "nombre": "Bagazo de caña · Hero escritorio",
+          "archivo": "compostables-con-personalidad/hero/compostables-kp-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 45538,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "compostables-kp-movil",
+          "nombre": "Bagazo de caña · Hero móvil y redes",
+          "archivo": "compostables-con-personalidad/vertical/compostables-kp-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 42796,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": false
+        }
+      ]
+    },
+    {
+      "id": "posavasos-con-personalidad",
+      "nombre": "Posavasos con personalidad",
+      "imagenes": [
+        {
+          "id": "posavasos-original-01",
+          "nombre": "Posavasos · San Pedro de Atacama",
+          "archivo": "posavasos-con-personalidad/originales/coaster-1.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 92432,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-02",
+          "nombre": "Posavasos · Bahía Inglesa",
+          "archivo": "posavasos-con-personalidad/originales/coaster-2.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 90114,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-03",
+          "nombre": "Posavasos · Desierto Florido",
+          "archivo": "posavasos-con-personalidad/originales/coaster-3.png",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 2805763,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-04",
+          "nombre": "Posavasos · Geometría en negro",
+          "archivo": "posavasos-con-personalidad/originales/coaster-4.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 432637,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-original-05",
+          "nombre": "Posavasos · Emblema de líneas",
+          "archivo": "posavasos-con-personalidad/originales/coaster-5.jpg",
+          "ancho": 572,
+          "alto": 1024,
+          "bytes": 63181,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-mixed-media-escritorio",
+          "nombre": "Posavasos · Hero escritorio",
+          "archivo": "posavasos-con-personalidad/hero/posavasos-mixed-media-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 280616,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "posavasos-mixed-media-movil",
+          "nombre": "Posavasos · Hero móvil y redes",
+          "archivo": "posavasos-con-personalidad/vertical/posavasos-mixed-media-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 328006,
+          "categoria": "posavasos",
+          "texto_publicitario_integrado": false
+        }
+      ]
+    }
+  ]
+}
