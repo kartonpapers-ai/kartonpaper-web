@@ -106,6 +106,62 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "cajas-alfajores-mixed-media",
+      "nombre": "Cajas de alfajores · Mixed Media",
+      "imagenes": [
+        {
+          "id": "cajas-alfajores-mixed-media-escritorio",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Hero escritorio",
+          "archivo": "cajas-alfajores-mixed-media/hero/cajas-alfajores-mixed-media-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 102862,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-mixed-media-vertical",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Vertical redes y móvil",
+          "archivo": "cajas-alfajores-mixed-media/vertical/cajas-alfajores-mixed-media-vertical.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 139194,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-original-01",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Original 01",
+          "archivo": "cajas-alfajores-mixed-media/originales/cajas-alfajores-01.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 176565,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-original-02",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Original 02",
+          "archivo": "cajas-alfajores-mixed-media/originales/cajas-alfajores-02.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 625897,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cajas-alfajores-original-03",
+          "nombre": "Cajas 3, 4 y 6 alfajores · Original 03",
+          "archivo": "cajas-alfajores-mixed-media/originales/cajas-alfajores-03.jpeg",
+          "ancho": 768,
+          "alto": 1376,
+          "bytes": 550422,
+          "categoria": "reposteria",
+          "texto_publicitario_integrado": false
+        }
+      ]
     }
   ]
 }
