@@ -300,6 +300,42 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "doypack-con-personalidad",
+      "nombre": "Doypack con personalidad",
+      "imagenes": [
+        {
+          "id": "doypack-mixed-media-escritorio",
+          "nombre": "Doypack · Hero escritorio",
+          "archivo": "doypack-con-personalidad/hero/doypack-mixed-media-escritorio.webp",
+          "ancho": 1942,
+          "alto": 810,
+          "bytes": 206028,
+          "categoria": "doypack",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "doypack-mixed-media-movil",
+          "nombre": "Doypack · Hero móvil y redes",
+          "archivo": "doypack-con-personalidad/vertical/doypack-mixed-media-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 162738,
+          "categoria": "doypack",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "doypack-original",
+          "nombre": "Doypack · Original aportado",
+          "archivo": "doypack-con-personalidad/originales/hero-doypack.png",
+          "ancho": 1672,
+          "alto": 941,
+          "bytes": 2954879,
+          "categoria": "doypack",
+          "texto_publicitario_integrado": false
+        }
+      ]
     }
   ]
 }

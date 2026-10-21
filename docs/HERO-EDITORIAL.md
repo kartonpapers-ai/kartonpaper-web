@@ -150,3 +150,7 @@ Hero propio de escritorio y móvil para Posavasos, con fotografía de producto y
 ## Bolsas con personalidad
 
 Hero de Bolsas: imagen de escritorio 1942 × 809 y móvil 941 × 1672, con fondo menta suavizado y personajes de línea negra. Mensaje: Tu marca, lista para salir. Botones Ver bolsas y Cotizar bolsas. El original aportado y ambas versiones se conservan en images/campanas/bolsas-con-personalidad y se registran en la biblioteca de campañas. Los diseños y marcas sobre las bolsas forman parte de las referencias visuales.
+
+## Doypack con personalidad
+
+Hero de escritorio 1942 × 810 y móvil 941 × 1672, con fondo menta y personajes dibujados. Mensaje: Tu producto, con identidad propia. Botones Ver doypack y Cotizar doypack. Ambas versiones y el original aportado están registrados en la biblioteca. El contenedor comparte la altura 2:1 de las campañas de escritorio, conservando la corrección de Bolsas.

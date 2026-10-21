@@ -29,6 +29,13 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
  assert.equal(selected(),'gastronomia');assert.equal(doc.getElementById('eh-support').parentElement.getAttribute('aria-live'),'off');
  for(const category of ['bolsas','doypack','cerveza','posavasos','reposteria']){
   tick();assert.equal(selected(),category);
+  if(category==='doypack'){
+   assert.match(doc.getElementById('eh-photo').src,/doypack-mixed-media-escritorio.webp$/);
+   assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/doypack-mixed-media-movil.webp$/);
+   assert.match(doc.getElementById('eh-quote').href,/doypack/);
+   assert.equal(doc.getElementById('eh-explore-label').textContent,'Ver doypack');
+   assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-doypack'),true);
+  }else assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-doypack'),false);
   if(category==='bolsas'){
    assert.match(doc.getElementById('eh-photo').src,/bolsas-mixed-media-escritorio.webp$/);
    assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/bolsas-mixed-media-movil.webp$/);

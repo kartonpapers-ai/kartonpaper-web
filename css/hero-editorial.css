@@ -62,3 +62,12 @@
 @media(max-width:900px){
  .eh-campaign.eh-bolsas .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
 }
+
+/* Doypack mantiene la altura 2:1 compartida por los heroes de campaña. */
+@media(min-width:901px){
+ .eh-campaign.eh-doypack .eh-hero{background:#dcefe4}
+ .eh-campaign.eh-doypack .eh-stage img{object-fit:contain}
+}
+@media(max-width:900px){
+ .eh-campaign.eh-doypack .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
+}

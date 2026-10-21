@@ -53,6 +53,19 @@
   quoteLabel:'Cotizar bolsas',quoteSubject:'bolsas de papel personalizadas',
   exploreLabel:'Ver bolsas'
  });
+ Object.assign(defaults.doypack,{
+  campaign:true,
+  thumbnail:'images/doypack-kraft-ventana.webp',
+  image:'images/campanas/doypack-con-personalidad/hero/doypack-mixed-media-escritorio.webp',
+  mobileImage:'images/campanas/doypack-con-personalidad/vertical/doypack-mixed-media-movil.webp',
+  headline:['Tu producto,','con identidad','propia.'],
+  support:'Doypack que muestran lo mejor de tu marca.',
+  intro:'Kraft con ventana y cierre zip, personalizados con tu logo o gráfica.',
+  detail:'Doypack kraft · Ventana y cierre zip',
+  alt:'Tres doypacks kraft personalizados sobre fondo verde suave, con un personaje dibujado sirviendo té y un perrito junto al envase de snacks.',
+  quoteLabel:'Cotizar doypack',quoteSubject:'doypack kraft personalizados',
+  exploreLabel:'Ver doypack'
+ });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
  const section=()=>document.getElementById('hero-slider-section');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -71,6 +84,7 @@
   if(!entries[category])return;selected=category;const p=entries[category];
   el('support').parentElement.setAttribute('aria-live',automatic?'off':'polite');
   section().classList.toggle('eh-campaign',Boolean(p.campaign));
+  section().classList.toggle('eh-doypack',category==='doypack'&&Boolean(p.campaign));
   section().classList.toggle('eh-bolsas',category==='bolsas'&&Boolean(p.campaign));
   section().classList.toggle('eh-posavasos',category==='posavasos'&&Boolean(p.campaign));
   section().classList.toggle('eh-compostables',category==='gastronomia'&&Boolean(p.campaign));
