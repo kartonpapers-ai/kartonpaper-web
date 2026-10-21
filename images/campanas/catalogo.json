@@ -264,6 +264,42 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "bolsas-con-personalidad",
+      "nombre": "Bolsas con personalidad",
+      "imagenes": [
+        {
+          "id": "bolsas-mixed-media-escritorio",
+          "nombre": "Bolsas · Hero escritorio",
+          "archivo": "bolsas-con-personalidad/hero/bolsas-mixed-media-escritorio.webp",
+          "ancho": 1942,
+          "alto": 809,
+          "bytes": 80440,
+          "categoria": "bolsas",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "bolsas-mixed-media-movil",
+          "nombre": "Bolsas · Hero móvil y redes",
+          "archivo": "bolsas-con-personalidad/vertical/bolsas-mixed-media-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 77282,
+          "categoria": "bolsas",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "bolsas-original",
+          "nombre": "Bolsas · Original aportado",
+          "archivo": "bolsas-con-personalidad/originales/hero-bolsas.png",
+          "ancho": 1672,
+          "alto": 940,
+          "bytes": 2396395,
+          "categoria": "bolsas",
+          "texto_publicitario_integrado": false
+        }
+      ]
     }
   ]
 }

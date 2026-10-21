@@ -53,3 +53,12 @@
 @media(max-width:900px){
  .eh-campaign.eh-posavasos .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
 }
+
+/* Fondo menta de la campaña de bolsas, sin franjas blancas en escritorio. */
+@media(min-width:901px){
+ .eh-campaign.eh-bolsas .eh-hero{aspect-ratio:1942/809;background:#dcefe4}
+ .eh-campaign.eh-bolsas .eh-stage img{object-fit:contain}
+}
+@media(max-width:900px){
+ .eh-campaign.eh-bolsas .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
+}

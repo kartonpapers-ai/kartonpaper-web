@@ -40,6 +40,19 @@
   quoteLabel:'Cotizar posavasos',quoteSubject:'posavasos de pulpa absorbente personalizados',
   exploreLabel:'Ver posavasos'
  });
+ Object.assign(defaults.bolsas,{
+  campaign:true,
+  thumbnail:'images/bolsa-papel-kraft-asa-plana.webp',
+  image:'images/campanas/bolsas-con-personalidad/hero/bolsas-mixed-media-escritorio.webp',
+  mobileImage:'images/campanas/bolsas-con-personalidad/vertical/bolsas-mixed-media-movil.webp',
+  headline:['Tu marca,','lista para','salir.'],
+  support:'Que cada entrega lleve tu identidad.',
+  intro:'Bolsas de papel kraft y blancas, personalizadas con tu logo o gráfica.',
+  detail:'Bolsas de papel · Personalización con tu gráfica',
+  alt:'Bolsa blanca y bolsa kraft sobre un fondo verde suave, con un pequeño skater dibujado y un personaje sentado en una plataforma.',
+  quoteLabel:'Cotizar bolsas',quoteSubject:'bolsas de papel personalizadas',
+  exploreLabel:'Ver bolsas'
+ });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
  const section=()=>document.getElementById('hero-slider-section');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -58,6 +71,7 @@
   if(!entries[category])return;selected=category;const p=entries[category];
   el('support').parentElement.setAttribute('aria-live',automatic?'off':'polite');
   section().classList.toggle('eh-campaign',Boolean(p.campaign));
+  section().classList.toggle('eh-bolsas',category==='bolsas'&&Boolean(p.campaign));
   section().classList.toggle('eh-posavasos',category==='posavasos'&&Boolean(p.campaign));
   section().classList.toggle('eh-compostables',category==='gastronomia'&&Boolean(p.campaign));
   section().querySelectorAll('.eh-line-inner').forEach((line,i)=>{line.textContent=(p.headline||['Tu marca','merece','ser vista.'])[i];});

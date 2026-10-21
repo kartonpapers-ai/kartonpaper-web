@@ -146,3 +146,7 @@ Gastronomía usa la campaña `compostables-con-personalidad`: hero panorámico d
 ## Posavasos con personalidad
 
 Hero propio de escritorio y móvil para Posavasos, con fotografía de producto y personajes dibujados. Mensaje: Tu marca, en cada encuentro. Botones: Ver posavasos y Cotizar posavasos. Cinco originales y dos heroes registrados en la biblioteca de campañas. El encuadre móvil centrado conserva los diseños completos.
+
+## Bolsas con personalidad
+
+Hero de Bolsas: imagen de escritorio 1942 × 809 y móvil 941 × 1672, con fondo menta suavizado y personajes de línea negra. Mensaje: Tu marca, lista para salir. Botones Ver bolsas y Cotizar bolsas. El original aportado y ambas versiones se conservan en images/campanas/bolsas-con-personalidad y se registran en la biblioteca de campañas. Los diseños y marcas sobre las bolsas forman parte de las referencias visuales.
