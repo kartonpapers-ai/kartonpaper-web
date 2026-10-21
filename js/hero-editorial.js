@@ -66,6 +66,19 @@
   quoteLabel:'Cotizar doypack',quoteSubject:'doypack kraft personalizados',
   exploreLabel:'Ver doypack'
  });
+ Object.assign(defaults.cerveza,{
+  campaign:true,
+  thumbnail:'images/beer-maleta-3x330-approved.webp',
+  image:'images/campanas/cerveza-con-personalidad/hero/cerveza-mixed-media-escritorio.webp',
+  mobileImage:'images/campanas/cerveza-con-personalidad/vertical/cerveza-mixed-media-movil.webp',
+  headline:['Tu cerveza,','con sello','propio.'],
+  support:'Packs que llevan el carácter de tu marca.',
+  intro:'Maletas y wraps de cartulina kraft, personalizados con tu logo o gráfica.',
+  detail:'Cartulina kraft · Packs personalizados',
+  alt:'Maleta kraft para tres botellas y wraps para cuatro y seis botellas de cerveza artesanal sobre fondo blanco, con pequeños maestros cerveceros dibujados.',
+  quoteLabel:'Cotizar packs',quoteSubject:'packs de cartulina kraft personalizados para cerveza artesanal',
+  exploreLabel:'Ver packs de cerveza'
+ });
  let entries={...defaults},selected='reposteria',hooks={},animations=[],paused=false,run=0;
  const section=()=>document.getElementById('hero-slider-section');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -84,6 +97,7 @@
   if(!entries[category])return;selected=category;const p=entries[category];
   el('support').parentElement.setAttribute('aria-live',automatic?'off':'polite');
   section().classList.toggle('eh-campaign',Boolean(p.campaign));
+  section().classList.toggle('eh-cerveza',category==='cerveza'&&Boolean(p.campaign));
   section().classList.toggle('eh-doypack',category==='doypack'&&Boolean(p.campaign));
   section().classList.toggle('eh-bolsas',category==='bolsas'&&Boolean(p.campaign));
   section().classList.toggle('eh-posavasos',category==='posavasos'&&Boolean(p.campaign));

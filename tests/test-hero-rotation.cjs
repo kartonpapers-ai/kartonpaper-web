@@ -29,6 +29,13 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
  assert.equal(selected(),'gastronomia');assert.equal(doc.getElementById('eh-support').parentElement.getAttribute('aria-live'),'off');
  for(const category of ['bolsas','doypack','cerveza','posavasos','reposteria']){
   tick();assert.equal(selected(),category);
+  if(category==='cerveza'){
+   assert.match(doc.getElementById('eh-photo').src,/cerveza-mixed-media-escritorio.webp$/);
+   assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/cerveza-mixed-media-movil.webp$/);
+   assert.match(doc.getElementById('eh-quote').href,/cerveza/);
+   assert.equal(doc.getElementById('eh-explore-label').textContent,'Ver packs de cerveza');
+   assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-cerveza'),true);
+  }else assert.equal(doc.getElementById('hero-slider-section').classList.contains('eh-cerveza'),false);
   if(category==='doypack'){
    assert.match(doc.getElementById('eh-photo').src,/doypack-mixed-media-escritorio.webp$/);
    assert.match(doc.getElementById('eh-photo-mobile').getAttribute('srcset'),/doypack-mixed-media-movil.webp$/);

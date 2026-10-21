@@ -154,3 +154,7 @@ Hero de Bolsas: imagen de escritorio 1942 × 809 y móvil 941 × 1672, con fondo
 ## Doypack con personalidad
 
 Hero de escritorio 1942 × 810 y móvil 941 × 1672, con fondo menta y personajes dibujados. Mensaje: Tu producto, con identidad propia. Botones Ver doypack y Cotizar doypack. Ambas versiones y el original aportado están registrados en la biblioteca. El contenedor comparte la altura 2:1 de las campañas de escritorio, conservando la corrección de Bolsas.
+
+## Cerveza artesanal con personalidad
+
+Hero de escritorio y móvil con fondo blanco, tres formatos de packs kraft y maestros cerveceros dibujados. Mensaje: Tu cerveza, con sello propio. Botones Ver packs de cerveza y Cotizar packs. Ambas versiones y el original aportado están en la biblioteca de campañas. Conserva la altura compartida de los heroes. Dimensiones exactas y pesos registrados en images/campanas/catalogo.json.

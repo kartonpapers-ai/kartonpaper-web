@@ -336,6 +336,42 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "cerveza-con-personalidad",
+      "nombre": "Cerveza artesanal con personalidad",
+      "imagenes": [
+        {
+          "id": "cerveza-mixed-media-escritorio",
+          "nombre": "Cerveza · Hero escritorio",
+          "archivo": "cerveza-con-personalidad/hero/cerveza-mixed-media-escritorio.webp",
+          "ancho": 1941,
+          "alto": 810,
+          "bytes": 83080,
+          "categoria": "cerveza",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cerveza-mixed-media-movil",
+          "nombre": "Cerveza · Hero móvil y redes",
+          "archivo": "cerveza-con-personalidad/vertical/cerveza-mixed-media-movil.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 105416,
+          "categoria": "cerveza",
+          "texto_publicitario_integrado": false
+        },
+        {
+          "id": "cerveza-original",
+          "nombre": "Cerveza · Original aportado",
+          "archivo": "cerveza-con-personalidad/originales/beer-overview-approved.jpg",
+          "ancho": 1600,
+          "alto": 800,
+          "bytes": 488822,
+          "categoria": "cerveza",
+          "texto_publicitario_integrado": false
+        }
+      ]
     }
   ]
 }

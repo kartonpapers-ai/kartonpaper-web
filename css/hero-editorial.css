@@ -71,3 +71,8 @@
 @media(max-width:900px){
  .eh-campaign.eh-doypack .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
 }
+
+/* Cerveza comparte la altura de campaña y conserva completos los packs en móvil. */
+@media(max-width:900px){
+ .eh-campaign.eh-cerveza .eh-stage img{height:100%;top:0;bottom:auto;object-fit:cover;object-position:center}
+}
