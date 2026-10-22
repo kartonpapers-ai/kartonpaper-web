@@ -7,7 +7,7 @@
   <title>Administración · KartonPaper</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css?v=redes-20261018">
+  <link rel="stylesheet" href="../css/admin.css?v=starken-20261022">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
   <script defer src="../js/catalogo-remoto.js"></script>
@@ -15,13 +15,14 @@
   <script defer src="precios.js"></script>
   <script defer src="finanzas-calculo.js?v=1"></script>
   <script defer src="finanzas.js?v=1"></script>
+  <script defer src="traslados.js?v=starken-20261022"></script>
   <script defer src="ventas-calculo.js?v=1"></script>
   <script defer src="ventas.js?v=redes-20261018"></script>
   <script defer src="produccion-calculo.js?v=1"></script>
   <script defer src="produccion.js?v=1"></script>
   <script defer src="redes-modelo.js?v=1"></script>
   <script defer src="redes.js?v=1"></script>
-  <script defer src="dashboard.js?v=redes-20261018"></script>
+  <script defer src="dashboard.js?v=starken-20261022"></script>
   <script defer src="admin.js?v=redes-20261018"></script>
 </head>
 <body>
@@ -80,6 +81,14 @@
     </section>
 <section id="prices-panel" hidden aria-labelledby="prices-heading"><div class="workspace-heading"><div><h2 id="prices-heading">Precios de venta</h2><p>Precios publicados en el catálogo. Los cambios se guardan desde la ficha del producto.</p></div></div><label for="price-search">Buscar producto o categoría</label><input id="price-search" type="search" placeholder="Nombre o categoría"><div class="table-scroll"><table class="data-table"><caption class="sr-only">Precios públicos por producto</caption><thead><tr><th scope="col">Producto</th><th scope="col">Precio neto</th><th scope="col">Opciones de venta</th><th scope="col">Acción</th></tr></thead><tbody id="price-rows"></tbody></table></div></section>
 <section id="finance-panel" hidden aria-labelledby="finance-heading"><div class="workspace-heading"><div><h2 id="finance-heading">Finanzas por producto</h2><p>Costos privados y simulación de rentabilidad. No cambia los precios de la tienda.</p></div><div class="header-actions"><button id="fin-new" class="primary" type="button">Nueva ficha</button><button id="fin-reload" class="secondary" type="button">Actualizar</button><button id="fin-export" class="secondary" type="button">Exportar respaldo</button></div></div>
+<section class="trip-section" aria-labelledby="trip-heading">
+<div class="workspace-heading"><div><h3 id="trip-heading">Traslados a Starken · La Cisterna</h3><p>Costo interno de taller a agencia. El flete de Starken lo paga el destinatario.</p></div><button id="trip-reload" class="secondary" type="button">Actualizar viajes</button></div>
+<p id="trip-status" role="status" aria-live="polite"></p>
+<div id="trip-setup" class="setup-note" hidden><p>Para guardar los viajes, ejecuta el archivo 15 en SQL Editor de Supabase y pulsa Actualizar viajes.</p><a href="../supabase/15-traslados-starken.sql" download>Descargar 15-traslados-starken.sql</a></div>
+<div class="trip-workspace"><form id="trip-form"><fieldset><legend id="trip-title">Registrar un viaje</legend><div class="product-options"><div><label for="trip-date">Fecha del viaje</label><input id="trip-date" type="date" min="2000-01-01" max="2100-12-31" required></div><div><label for="trip-cost">Costo total del viaje (CLP)</label><input id="trip-cost" type="number" min="0" max="1000000000" step="1" value="1500" required></div><div><label for="trip-orders">Pedidos transportados</label><input id="trip-orders" type="number" min="1" max="10000" step="1" value="1" required></div></div><label for="trip-reference">Clientes o referencias de los pedidos (opcional)</label><textarea id="trip-reference" rows="2" maxlength="1000" placeholder="Ej.: V001, V002; o nombres de clientes"></textarea><p id="trip-allocation" class="field-help" aria-live="polite"></p><label class="checkbox"><input id="trip-voided" type="checkbox">Viaje anulado: conservar sin sumar al gasto</label><div class="save-bar"><button id="trip-save" class="primary" type="submit">Guardar viaje</button><button id="trip-new" class="secondary" type="button">Nuevo / descartar cambios</button></div></fieldset></form>
+<div><label for="trip-month">Mes de los viajes</label><input id="trip-month" type="month" min="2000-01" max="2100-12"><p id="trip-summary" role="status"></p><div class="table-scroll"><table class="data-table"><caption class="sr-only">Viajes privados a Starken del mes seleccionado</caption><thead><tr><th scope="col">Fecha</th><th scope="col">Costo del viaje</th><th scope="col">Pedidos</th><th scope="col">Promedio / pedido</th><th scope="col">Referencias</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead><tbody id="trip-rows"></tbody></table></div></div></div>
+<p class="field-help">El costo inicial de $1.500 es editable. Se registra cada viaje una vez; el promedio es informativo y no se suma automáticamente a las fichas por producto ni a Ventas. Evita contabilizar el mismo traslado también en otros gastos. El importe se conserva como lo ingresas, sin calcular IVA sobre él.</p>
+</section>
 <p id="fin-status" role="status" aria-live="polite"></p><div id="fin-setup" hidden class="setup-note"><h3>Activar el guardado privado</h3><p>Ejecuta el archivo 09 en SQL Editor de Supabase y pulsa Actualizar. Esta preparación crea el espacio privado de costos.</p><a href="../supabase/09-finanzas-privadas.sql" download>Descargar 09-finanzas-privadas.sql</a></div>
 <details class="import-block"><summary>Importar mis costos o un respaldo</summary><p>Elige el archivo JSON de costos. Primero verás cuántas fichas agrega. Las fichas existentes se conservan.</p><label for="fin-file">Archivo privado de costos (.json)</label><input type="file" id="fin-file" accept="application/json,.json"><p id="fin-import-status" role="status" aria-live="polite"></p><button id="fin-import" type="button" class="secondary" disabled>Agregar fichas faltantes</button></details>
 <label for="fin-search">Buscar producto, variante o proveedor</label><input id="fin-search" type="search" placeholder="Ej.: alfajores, kraft, Junaplast"><div class="table-scroll finance-table"><table class="data-table"><caption class="sr-only">Costos privados por variante</caption><thead><tr><th scope="col">Producto / variante</th><th scope="col">Base/u</th><th scope="col">Impresión/u</th><th scope="col">Costo completo/u</th><th scope="col">Margen oferta</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead><tbody id="fin-rows"></tbody></table></div>

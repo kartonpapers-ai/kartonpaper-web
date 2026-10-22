@@ -7,7 +7,7 @@
  function status(id,text,kind=''){$(id).textContent=text;$(id).className=kind;}
  function product(id){return products.find(row=>row.id===id)?.data;}
  function name(data){return product(data.product_id)?.name||data.product_id;}
- function mayLeave(){return !busy&&(!dirty||window.confirm('Tienes cambios de costos sin guardar. ¿Quieres descartarlos?'));}
+ function mayLeave(){return (!window.KP_TRIPS||window.KP_TRIPS.mayLeave())&&!busy&&(!dirty||window.confirm('Tienes cambios de costos sin guardar. ¿Quieres descartarlos?'));}
  function rowResult(row){try{return calc.calculate(row.data);}catch(error){return {complete:false,invalid:true};}}
  function stats(){
   $('summary-costs').textContent=ready?rows.length:'—';$('summary-reviewed').textContent=ready?rows.filter(row=>rowResult(row).complete).length:'—';
