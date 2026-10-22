@@ -344,28 +344,100 @@
 
       // 4. Bolsas de Papel con Asas Planas
       {
-        id: "bolsa-papel-kraft",
-        category: "bolsas",
-        name: "Bolsas de papel kraft con asas planas",
-        subtitle: "Kraft natural resistente · Para tiendas, delivery y eventos",
-        type: "custom",
-        image: "images/bolsa-papel-kraft-asa-plana.webp",
-        price: "Desde $292 + IVA c/u",
-        priceNum: 292,
-        specs: ["Papel kraft", "Asas planas", "Impresión con logo"],
-        variants: ["14 × 20 × 8 cm (pequeña) · $292 + IVA c/u","14 × 40 × 8 cm (para botellas) · $343 + IVA c/u","22 × 30 × 10 cm (mediana) · $316 + IVA c/u","30 × 41 × 12 cm (grande) · $518 + IVA c/u","45 × 48 × 15 cm (extra grande) · $712 + IVA c/u"]
+        "id": "bolsa-papel-kraft",
+        "category": "bolsas",
+        "name": "Bolsas de papel kraft con asas planas",
+        "subtitle": "Kraft natural resistente · Para tiendas, delivery y eventos",
+        "type": "custom",
+        "image": "images/bolsa-papel-kraft-asa-plana.webp",
+        "price": "Desde $292 + IVA c/u",
+        "priceNum": 292,
+        "specs": [
+          "Papel kraft",
+          "Asas planas",
+          "Impresión con logo"
+        ],
+        "variants": [
+          "14 × 20 × 8 cm (pequeña) · $292 + IVA c/u",
+          "14 × 40 × 8 cm (para botellas) · $343 + IVA c/u",
+          "22 × 30 × 10 cm (mediana) · $316 + IVA c/u",
+          "30 × 41 × 12 cm (grande) · $518 + IVA c/u",
+          "45 × 48 × 15 cm (extra grande) · $712 + IVA c/u"
+        ],
+        "quantityRules": [
+          {
+            "variant": "14 × 20 × 8 cm (pequeña)",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "14 × 40 × 8 cm (para botellas)",
+            "step": 400
+          },
+          {
+            "variant": "22 × 30 × 10 cm (mediana)",
+            "step": 400
+          },
+          {
+            "variant": "30 × 41 × 12 cm (grande)",
+            "step": 200
+          },
+          {
+            "variant": "45 × 48 × 15 cm (extra grande)",
+            "step": 150
+          }
+        ]
       },
       {
-        id: "bolsa-papel-blanca",
-        category: "bolsas",
-        name: "Bolsas de papel blancas con asas planas",
-        subtitle: "Papel blanco satinado · Presentación limpia y elegante",
-        type: "custom",
-        image: "images/bolsa-papel-blanca-asa-plana.webp",
-        price: "Desde $292 + IVA c/u",
-        priceNum: 292,
-        specs: ["Papel blanco", "Asas planas", "Impresión con logo"],
-        variants: ["14 × 20 × 8 cm (pequeña) · $292 + IVA c/u","14 × 40 × 8 cm (para botellas) · $343 + IVA c/u","22 × 30 × 10 cm (mediana) · $316 + IVA c/u","30 × 41 × 12 cm (grande) · $518 + IVA c/u","45 × 48 × 15 cm (extra grande) · $712 + IVA c/u"]
+        "id": "bolsa-papel-blanca",
+        "category": "bolsas",
+        "name": "Bolsas de papel blancas con asas planas",
+        "subtitle": "Papel blanco satinado · Presentación limpia y elegante",
+        "type": "custom",
+        "image": "images/bolsa-papel-blanca-asa-plana.webp",
+        "price": "Desde $292 + IVA c/u",
+        "priceNum": 292,
+        "specs": [
+          "Papel blanco",
+          "Asas planas",
+          "Impresión con logo"
+        ],
+        "variants": [
+          "14 × 20 × 8 cm (pequeña) · $292 + IVA c/u",
+          "14 × 40 × 8 cm (para botellas) · $343 + IVA c/u",
+          "22 × 30 × 10 cm (mediana) · $316 + IVA c/u",
+          "30 × 41 × 12 cm (grande) · $518 + IVA c/u",
+          "45 × 48 × 15 cm (extra grande) · $712 + IVA c/u"
+        ],
+        "quantityRules": [
+          {
+            "variant": "14 × 20 × 8 cm (pequeña)",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "14 × 40 × 8 cm (para botellas)",
+            "step": 400
+          },
+          {
+            "variant": "22 × 30 × 10 cm (mediana)",
+            "step": 400
+          },
+          {
+            "variant": "30 × 41 × 12 cm (grande)",
+            "step": 200
+          },
+          {
+            "variant": "45 × 48 × 15 cm (extra grande)",
+            "step": 150
+          }
+        ]
       },
 
       // 5. Doypack Kraft con Ventana

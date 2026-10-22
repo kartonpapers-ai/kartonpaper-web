@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=gastronomia-20261022">
+  <link rel="stylesheet" href="css/styles.css?v=bolsas-20261022">
   <link rel="stylesheet" href="css/hero-editorial.css?v=movil-superpuesto-20261021">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -552,11 +552,14 @@
       );
 
       if (existing) {
+        const product=productsDB.find(p=>p.id===item.id);
+        if (item.isCustom && !KP_CATALOG.validQuantity(product,item.variant,existing.qty+item.qty)) return false;
         existing.qty += item.qty;
       } else {
         cart.push(item);
       }
       saveCart();
+      return true;
     }
 
     function updateCartUI() {
@@ -606,16 +609,21 @@
         // Eventos de cantidad
         itemEl.querySelector("[data-action='minus']").addEventListener("click", () => {
           const decrement = item.unitsPerBox || 1;
-          if (item.qty > decrement) {
-            item.qty -= decrement;
+          const previous = item.quantityOptions ? item.quantityOptions.filter(q=>q<item.qty).at(-1) : item.qty-decrement;
+          if (previous > 0) {
+            item.qty = previous;
           } else {
             cart.splice(index, 1);
           }
           saveCart();
         });
 
-        itemEl.querySelector("[data-action='plus']").addEventListener("click", () => {
-          item.qty += item.unitsPerBox || 1;
+        const plusButton=itemEl.querySelector("[data-action='plus']");
+        const nextQuantity=item.quantityOptions?item.quantityOptions.find(q=>q>item.qty):item.qty+(item.unitsPerBox||1);
+        plusButton.disabled=!nextQuantity||(item.isCustom&&nextQuantity>1000000);
+        plusButton.addEventListener("click", () => {
+          if(!nextQuantity)return;
+          item.qty = nextQuantity;
           saveCart();
         });
 
@@ -670,7 +678,7 @@
         text += `   • Opción/Medida: ${item.variant}\n`;
         text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : 'pack(s)'}\n`;
         text += `   • Referencia: ${item.price}\n`;
-        if (item.unitsPerBox) text += `   • Embalajes completos: ${item.qty / item.unitsPerBox} de ${item.unitsPerBox} unidades · Impresión solo en la tapa\n`;
+        if (item.unitsPerBox) text += `   • Embalajes completos: ${item.qty / item.unitsPerBox} de ${item.unitsPerBox} unidades${item.printingArea==='tapa'?' · Impresión solo en la tapa':''}\n`;
         if (item.sku && !item.isCustom) {
           text += `   • SKU: ${item.sku}\n`;
           text += `   • Unidades totales: ${item.unitsPerPack * item.qty}\n`;
@@ -737,20 +745,8 @@
         document.getElementById("modal-variant-group").hidden = true;
       }
 
-      const step = product.orderStep;
-      const bulk = document.getElementById("modal-bulk-quantity");
-      const bulkHelp = document.getElementById("modal-bulk-help");
-      bulk.setCustomValidity("");
-      bulk.hidden = !step; bulk.required = Boolean(step); bulk.disabled = !step;
-      modalQuantityInput.hidden = Boolean(step); modalQuantityInput.disabled = Boolean(step);
-      document.querySelector("label[for='modal-quantity-input'],label[for='modal-bulk-quantity']").htmlFor = step ? "modal-bulk-quantity" : "modal-quantity-input";
-      bulkHelp.hidden = !step;
-      if (step) {
-        bulk.min = String(step); bulk.step = String(step);
-        bulk.value = String(Number.parseInt(selectedVariant, 10) || step);
-        bulkHelp.textContent = "Venta de " + step + " en " + step + " unidades, por embalajes completos. Impresión solo en la tapa.";
-        document.getElementById("modal-variant-group").hidden = true;
-      }
+      if (selectedVariant && customVariants.includes(selectedVariant)) modalVariantSelect.value = selectedVariant;
+      configureCustomQuantity(product, selectedVariant);
       if (pack?.requiresLogo) {
         modalVariantSelect.value = pack.configuration;
         modalQuantityInput.value = String(pack.quantity);
@@ -759,6 +755,30 @@
       customModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
     }
+
+    const defaultCustomQuantities = Array.from(modalQuantityInput.options, option=>({value:option.value,text:option.textContent}));
+    function configureCustomQuantity(product, selectedVariant = null) {
+      const rule = KP_CATALOG.quantityRule(product, modalVariantSelect.value);
+      const step = rule?.step;
+      const bulk = document.getElementById("modal-bulk-quantity"), help = document.getElementById("modal-bulk-help");
+      bulk.setCustomValidity("");modalQuantityInput.setCustomValidity("");
+      bulk.hidden = !step;bulk.required=Boolean(step);bulk.disabled=!step;
+      modalQuantityInput.hidden=Boolean(step);modalQuantityInput.disabled=Boolean(step);
+      document.querySelector("label[for='modal-quantity-input'],label[for='modal-bulk-quantity']").htmlFor=step?"modal-bulk-quantity":"modal-quantity-input";
+      help.hidden=!rule;
+      modalQuantityInput.replaceChildren();
+      for (const option of rule?.quantities?.map(q=>({value:String(q),text:q+" unidades"}))||defaultCustomQuantities) {
+        const node=document.createElement("option");node.value=option.value;node.textContent=option.text;modalQuantityInput.append(node);
+      }
+      if(step){
+        bulk.min=String(step);bulk.step=String(step);
+        bulk.value=String(product.orderStep?(Number.parseInt(selectedVariant,10)||step):step);
+        help.textContent="Venta de "+step+" en "+step+" unidades, por embalajes completos."+(product.printingArea==='tapa'?" Impresión solo en la tapa.":" Personalización con logo.");
+      } else if(rule?.quantities) help.textContent="Cantidades disponibles para esta medida: "+rule.quantities.join(", ")+" unidades personalizadas.";
+      if(product.orderStep) document.getElementById("modal-variant-group").hidden=true;
+    }
+    modalVariantSelect.addEventListener("change",()=>{if(currentCustomProduct)configureCustomQuantity(currentCustomProduct);});
+    modalQuantityInput.addEventListener("change",()=>modalQuantityInput.setCustomValidity(""));
 
     function closeCustomizer() {
       customModal.classList.remove("open");
@@ -793,16 +813,18 @@
       e.preventDefault();
       if (!currentCustomProduct) return;
 
-      const step = currentCustomProduct.orderStep;
+      const rule = KP_CATALOG.quantityRule(currentCustomProduct, modalVariantSelect.value);
+      const step = rule?.step;
       const bulk = document.getElementById("modal-bulk-quantity");
-      const quantity = step ? Number(bulk.value) : (parseInt(modalQuantityInput.value, 10) || 100);
-      if (step && (!Number.isSafeInteger(quantity) || quantity < step || quantity > 1000000 || quantity % step !== 0)) {
-        bulk.setCustomValidity("Ingresa un múltiplo de " + step + " unidades."); bulk.reportValidity(); return;
+      const quantity = step ? Number(bulk.value) : Number(modalQuantityInput.value);
+      if (!KP_CATALOG.validQuantity(currentCustomProduct, modalVariantSelect.value, quantity)) {
+        const control=step?bulk:modalQuantityInput;
+        control.setCustomValidity(step?"Ingresa un múltiplo de "+step+" unidades.":"Selecciona una de las cantidades disponibles.");control.reportValidity();return;
       }
-      const variant = step ? "Embalaje completo de " + step + " u. · Impresión en tapa"
+      const variant = currentCustomProduct.orderStep ? "Embalaje completo de " + step + " u. · Impresión en tapa"
         : (modalVariantSelect.value || currentCustomProduct.variants?.[0] || "Formato estándar");
 
-      addToCart({
+      const added = addToCart({
         id: currentCustomProduct.id,
         name: currentCustomProduct.name,
         image: currentCustomProduct.image,
@@ -810,10 +832,15 @@
         price: "Cotización con logo",
         isCustom: true,
         logoFile: selectedLogoFileName || "A enviar por WhatsApp",
-        ...(step ? {unitsPerBox:step} : {}),
+        ...(step ? {unitsPerBox:step, printingArea:currentCustomProduct.printingArea||""} : {}),
+        ...(rule?.quantities ? {quantityOptions:rule.quantities} : {}),
         qty: quantity
       });
 
+      if (added === false) {
+        const help=document.getElementById("modal-bulk-help");help.hidden=false;
+        help.textContent="Ya hay un pedido de esta medida en el carrito. Ajusta allí su cantidad a una de las opciones permitidas.";return;
+      }
       closeCustomizer();
       openCart();
     });
@@ -895,12 +922,16 @@
             ? item.isCustom && item.qty % product.orderStep === 0 && item.qty >= product.orderStep && item.qty <= 1000000
               && item.variant === "Embalaje completo de " + product.orderStep + " u. · Impresión en tapa"
             : variants.includes(item.variant);
-          return validVariant && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
+          return validVariant && (!item.isCustom || KP_CATALOG.validQuantity(product,item.variant,item.qty)) && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
             && !(!item.isCustom && KP_CATALOG.packFor(product, item.variant)?.requiresLogo);
         }).map(item => {
           const product = productsDB.find(p => p.id === item.id);
-          return {...item, name:product.name, image:product.image,
-            ...(item.isCustom ? {price:"Cotización con logo", ...(product.orderStep ? {unitsPerBox:product.orderStep} : {})} : KP_CATALOG.packFields(product, item.variant))};
+          const rule=KP_CATALOG.quantityRule(product,item.variant);
+          const {quantityOptions:oldOptions,unitsPerBox:oldBox,printingArea:oldArea,...savedItem}=item;
+          return {...savedItem, name:product.name, image:product.image,
+            ...(item.isCustom&&rule?.step?{unitsPerBox:rule.step,printingArea:product.printingArea||""}:{}),
+            ...(item.isCustom&&rule?.quantities?{quantityOptions:rule.quantities}:{}),
+            ...(item.isCustom ? {price:"Cotización con logo", ...(product.orderStep ? {unitsPerBox:product.orderStep,printingArea:product.printingArea||""} : {})} : KP_CATALOG.packFields(product, item.variant))};
         });
         saveCart();
         status.hidden = productsDB.length > 0;

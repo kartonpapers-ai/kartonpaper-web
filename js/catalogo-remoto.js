@@ -23,6 +23,17 @@
     }
     if ("priceNum" in p && (!Number.isFinite(p.priceNum) || p.priceNum < 0)) throw new Error("Precio numérico inválido.");
     if (p.orderStep !== undefined && (!Number.isSafeInteger(p.orderStep) || p.orderStep < 1 || p.orderStep > 1000000 || p.type !== 'custom')) throw new Error('Revisa las unidades del embalaje.');
+    if (p.quantityRules !== undefined) {
+      if (!Array.isArray(p.quantityRules) || p.quantityRules.length !== p.variants.length || p.type !== 'custom') throw new Error('Revisa las cantidades por medida.');
+      const seen = new Set();
+      for (const rule of p.quantityRules) {
+        if (!rule || typeof rule.variant !== 'string' || seen.has(rule.variant) || !p.variants.some(v=>v.split(' · $')[0]===rule.variant)) throw new Error('Medida inválida en las cantidades.');
+        seen.add(rule.variant);
+        if (rule.quantities !== undefined) {
+          if (rule.step !== undefined || !Array.isArray(rule.quantities) || !rule.quantities.length || rule.quantities.length > 30 || rule.quantities.some((q,i)=>!Number.isSafeInteger(q)||q<1||q>1000000||(i>0&&q<=rule.quantities[i-1]))) throw new Error('Revisa las cantidades permitidas.');
+        } else if (!Number.isSafeInteger(rule.step) || rule.step<1 || rule.step>1000000) throw new Error('Revisa el tamaño del embalaje.');
+      }
+    }
     if (p.packs !== undefined) {
       if (!Array.isArray(p.packs) || !p.packs.length || p.packs.length > 30) throw new Error("Packs inválidos.");
       const skus = new Set();
@@ -81,5 +92,14 @@
       totalNet:pack.totalNet, withoutPrint:pack.withoutPrint,
       price:money(pack.totalNet) + " + IVA / pack"} : {price:product.price};
   }
-  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, packFields});
+  function quantityRule(product,variant) {
+    if (product?.orderStep) return {step:product.orderStep};
+    return product?.quantityRules?.find(rule=>rule.variant===String(variant??'').split(' · $')[0]);
+  }
+  function validQuantity(product,variant,quantity) {
+    if (!Number.isSafeInteger(quantity)||quantity<1||quantity>1000000) return false;
+    const rule=quantityRule(product,variant);
+    return !rule || (rule.quantities ? rule.quantities.includes(quantity) : quantity>=rule.step && quantity%rule.step===0);
+  }
+  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, packFields, quantityRule, validQuantity});
 })();
