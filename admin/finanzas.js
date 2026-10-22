@@ -1,6 +1,6 @@
 (function(){
  'use strict';const $=id=>document.getElementById(id),calc=window.KP_FINANCE_CALC;
- const numeric=['base','printing','prints','labor','extras','waste','fee','fixed','quantity','sale','discount','target','floor','purchase_total','purchase_units'];
+ const numeric=['base','printing','prints','labor','extras','waste','fee','fixed','preparation','packaging','quantity','sale','discount','target','floor','purchase_total','purchase_units'];
  const currency=n=>n===null||n===undefined?'—':'$'+new Intl.NumberFormat('es-CL',{maximumFractionDigits:2}).format(n);
  const percent=n=>n===null||n===undefined?'—':new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(n)+'%';
  let client=null,products=[],rows=[],selected=null,dirty=false,busy=false,ready=false,revision=0,importRows=null;
@@ -42,9 +42,10 @@
   $('fin-results').replaceChildren();
   try{const data=read(),result=calc.calculate(data),sale=calc.catalogSale(product(data.product_id),data.variant);$('fin-catalog-price').textContent='Catálogo: '+(sale===null?'precio unitario no identificado; revisa pack o medida.':currency(sale)+' netos/u. El análisis usa el precio que ingreses abajo.');
    resultRow('Base + impresión/u',currency(result.baseSubtotal));
-   if(!result.complete){status('fin-result-status','Pendiente: completa compra, mano de obra, otros costos, merma, comisión y gastos por pedido; después confirma la revisión.','warning');return;}
+   resultRow('Preparación por pedido',currency(data.preparation));resultRow('Embalaje por pedido',currency(data.packaging));
+   if(!result.complete){status('fin-result-status','Pendiente: completa compra, mano de obra, otros costos, merma, comisión, preparación, embalaje y otros gastos por pedido; después confirma la revisión.','warning');return;}
    status('fin-result-status',result.status,result.profit<0?'error':result.margin>=data.target?'success':'warning');
-   for(const [label,value,emphasis]of [['Fabricación con merma/u',currency(result.production)],['Costo completo/u',currency(result.cost)],['Venta con descuento/u',currency(result.sale)],['Ganancia sobre costos/u',currency(result.profit)],['Margen sobre venta',percent(result.margin),true],['Venta para '+data.target+'%',currency(result.targetPrice)],['Venta mínima '+data.floor+'%',currency(result.floorPrice)],['Punto de equilibrio/u',currency(result.breakEven)],['Descuento máx. a '+data.target+'%',percent(result.maxDiscount)],['Ganancia del pedido',currency(result.totalProfit)],['Subtotal neto del pedido',currency(result.revenue)],['IVA 19% del pedido',currency(result.iva)],['Total a facturar',currency(result.total)]])resultRow(label,value,emphasis);
+   for(const [label,value,emphasis]of [['Fabricación con merma/u',currency(result.production)],['Gastos por pedido / unidad',currency(result.orderCosts/data.quantity)],['Costo completo/u',currency(result.cost)],['Venta con descuento/u',currency(result.sale)],['Ganancia sobre costos/u',currency(result.profit)],['Margen sobre venta',percent(result.margin),true],['Venta para '+data.target+'%',currency(result.targetPrice)],['Venta mínima '+data.floor+'%',currency(result.floorPrice)],['Punto de equilibrio/u',currency(result.breakEven)],['Descuento máx. a '+data.target+'%',percent(result.maxDiscount)],['Ganancia del pedido',currency(result.totalProfit)],['Subtotal neto del pedido',currency(result.revenue)],['IVA 19% del pedido',currency(result.iva)],['Total a facturar',currency(result.total)]])resultRow(label,value,emphasis);
   }catch(error){status('fin-result-status',error.message,'error');}
  }
  $('fin-search').addEventListener('input',render);

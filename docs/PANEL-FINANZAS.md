@@ -113,3 +113,33 @@ sesión y con un usuario no administrador, importación inicial y repetida, guar
 y conflicto entre dos sesiones, cierre de sesión, y uso móvil. Revisar una ficha
 con costos completos y otra pendiente; confirmar que ni guardar costos ni simular
 descuentos cambia la tienda. Mantener estos pasos en desarrollo antes de publicar.
+
+## Preparación y embalaje por pedido · 22-10-2026
+
+Finanzas incluye dos campos privados separados: preparación neta por pedido y
+embalaje neto por pedido. Ambos se dividen por las unidades vendibles del pedido,
+junto con «Otros gastos netos por pedido» (antes «Preparación y gastos por pedido»).
+La preparación incluye puesta a punto y revisión del archivo; el embalaje incluye
+caja de despacho, protección, bolsa y cinta. Son importes del pedido completo.
+
+Los valores nuevos comienzan vacíos. Las fichas o respaldos anteriores se conservan,
+pero su margen queda pendiente hasta completar preparación y embalaje. Cero solo
+se usa para un costo conocido que no existe. Si los importes ya estaban incluidos
+en mano de obra, otros costos/u o gastos por pedido, redistribuirlos para evitar
+contarlos nuevamente. Los viajes a Starken siguen en su registro independiente;
+no se incorporan automáticamente a las fichas.
+
+La merma permanece editable y pendiente si aún no fue medida. Se indica que puede
+ser muy baja en impresión digital, sin convertir «casi cero» en una pérdida nula
+confirmada. El cálculo conserva la merma de fabricación sobre los costos unitarios;
+preparación y embalaje se agregan después, como gastos por pedido.
+
+Ejecutar `supabase/19-finanzas-embalaje-preparacion.sql` después del archivo 09 para
+ampliar la validación privada. No cambia importes guardados ni precios públicos;
+acepta fichas antiguas y campos nuevos pendientes. Si se vuelve a ejecutar 09,
+ejecutar 19 después para conservar la validación ampliada. El guardado, exportación
+e importación de fichas incluyen los nuevos campos. El margen se completa solo
+cuando los demás costos y la revisión también están completos.
+
+Verificación: `tests/test-finanzas.cjs` y `tests/test-panel.cjs`, con reparto por
+cantidad, costos pendientes, persistencia, compatibilidad y permisos privados.
