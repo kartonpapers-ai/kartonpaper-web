@@ -22,7 +22,8 @@
   <script defer src="produccion.js?v=1"></script>
   <script defer src="redes-modelo.js?v=1"></script>
   <script defer src="redes.js?v=1"></script>
-  <script defer src="dashboard.js?v=starken-20261022"></script>
+  <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
+  <script defer src="dashboard.js?v=posavasos-20261022"></script>
   <script defer src="admin.js?v=redes-20261018"></script>
 </head>
 <body>
@@ -42,7 +43,7 @@
         <p id="login-status" role="status" aria-live="polite"></p>
       </div>
     </section>
-    <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button></nav></div><section id="workspace" hidden>
+    <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button><button type="button" data-panel="artwork" aria-pressed="false">Archivos de clientes</button></nav></div><section id="workspace" hidden>
       <div class="workspace-heading"><div><h2>Productos</h2><p id="product-count">Cargando catálogo…</p></div><div class="header-actions"><button id="new-product" class="primary" type="button">Agregar producto</button><button id="reload" class="secondary">Actualizar lista</button></div></div>
       <div class="workspace-layout">
         <section class="catalog-list" aria-label="Buscar productos">
@@ -140,6 +141,12 @@
  <div class="save-bar"><button id="soc-save" class="primary" type="submit">Guardar redes y semana</button><button id="soc-export" class="secondary" type="button">Descargar respaldo guardado</button></div>
  </form>
 </section>
+
+<section id="artwork-panel" hidden aria-labelledby="artwork-heading"><div class="workspace-heading"><div><h2 id="artwork-heading">Archivos de clientes</h2><p>Logos y gráficas recibidos para posavasos personalizados. Acceso privado del administrador.</p></div><button id="art-reload" type="button" class="secondary">Actualizar archivos</button></div>
+<p id="art-status" role="status" aria-live="polite"></p><div id="art-setup" class="setup-note" hidden><p>Activa la carga privada ejecutando el archivo 23 en SQL Editor de Supabase.</p><a href="../supabase/23-posavasos-modelo-y-logos.sql" download>Descargar 23-posavasos-modelo-y-logos.sql</a></div>
+<form id="art-find-form"><label for="art-reference">Referencia del archivo recibida con el pedido</label><input id="art-reference" maxlength="140" required placeholder="posavasos/…--logo.pdf"><button id="art-find" type="submit" class="secondary">Descargar por referencia</button></form>
+<div class="table-scroll"><table class="data-table"><caption class="sr-only">Hasta 100 archivos recientes de clientes</caption><thead><tr><th scope="col">Archivo</th><th scope="col">Recibido</th><th scope="col">Referencia</th><th scope="col">Acción</th></tr></thead><tbody id="art-rows"></tbody></table></div>
+<p class="field-help">Los archivos recibidos no confirman una compra. Revisa el pedido enviado por el cliente antes de producir. Las descargas usan enlaces temporales de un minuto.</p></section>
 
 </main>
 </body>

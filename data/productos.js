@@ -517,29 +517,51 @@
 
       // 6. Posavasos de Pulpa Mecánica Absorbente (NUEVO)
       {
-        id: "posavasos-souvenir-chile",
-        category: "posavasos",
-        name: "Caja Souvenir: 20 Posavasos de Chile",
-        subtitle: "Ilustraciones turísticas de Chile · Pulpa absorbente 90 mm",
-        type: "stock",
-        image: "images/posavasos-antartica.webp",
-        price: "$12.900 (Caja 20 u.)",
-        priceNum: 12900,
-        specs: ["Cartulina absorbente importada", "Diámetro 90 mm", "Caja kraft de regalo"],
-        variants: [
+        "id": "posavasos-souvenir-chile",
+        "category": "posavasos",
+        "name": "Caja Souvenir: 20 Posavasos de Chile",
+        "subtitle": "Ilustraciones turísticas de Chile · Pulpa absorbente 90 mm",
+        "type": "stock",
+        "image": "images/posavasos-antartica.webp",
+        "price": "$12.900 (Caja 20 u.)",
+        "priceNum": 12900,
+        "specs": [
+          "20 posavasos por caja",
+          "Diámetro 90 mm",
+          "Temática a elección"
+        ],
+        "variants": [
           "Colección Completa: Antártica, Torres del Paine, Valparaíso, Atacama (Caja 20 u.)",
           "Colección Antártica Chilena (Caja 20 u.)"
-        ]
+        ],
+        "stockUnits": 20
       },
       {
-        id: "posavasos-personalizados",
-        category: "posavasos",
-        name: "Posavasos circulares 90 mm personalizados",
-        subtitle: "Para cervecerías, bares, cafeterías y eventos especiales",
-        type: "custom",
-        image: "images/posavasos-chile-souvenir.webp",
-        price: "Cotización con logo",
-        specs: ["Pulpa mecánica absorbente", "Impresión full color", "Desde 100 u."],
-        variants: ["100 unidades", "250 unidades", "500 unidades", "1.000 unidades"]
+        "id": "posavasos-personalizados",
+        "category": "posavasos",
+        "name": "Posavasos circulares 90 mm personalizados",
+        "subtitle": "Para cervecerías, bares, cafeterías y eventos especiales",
+        "type": "custom",
+        "image": "images/posavasos-chile-souvenir.webp",
+        "price": "Cotización con logo",
+        "specs": [
+          "Pulpa mecánica absorbente",
+          "Impresión con tu logo",
+          "100, 200 o 500 unidades"
+        ],
+        "variants": [
+          "100 unidades",
+          "200 unidades",
+          "500 unidades"
+        ],
+        "configurations": [
+          "Tu logo o gráfica"
+        ],
+        "customQuantities": [
+          100,
+          200,
+          500
+        ],
+        "requiresArtwork": true
       }
     ];

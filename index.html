@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=bolsas-20261022">
+  <link rel="stylesheet" href="css/styles.css?v=posavasos-20261022">
   <link rel="stylesheet" href="css/hero-editorial.css?v=movil-superpuesto-20261021">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -191,7 +191,7 @@
 
         <!-- Logo Upload Box -->
         <div class="form-group">
-          <label class="form-label">Tu logo o gráfica (opcional)</label>
+          <label class="form-label" id="logo-file-label" for="logo-file-input">Tu logo o gráfica (opcional)</label>
           <div class="file-upload-box" id="file-drop-zone">
             <span class="file-upload-icon">📁</span>
             <p class="file-upload-text">Haz clic o arrastra aquí tu logo</p>
@@ -202,7 +202,8 @@
             <span id="attached-filename">archivo_logo.pdf</span>
             <button type="button" id="remove-file-btn" style="background:none;border:none;cursor:pointer;color:var(--accent);">Quitar</button>
           </div>
-          <p style="font-size: 11px; color: var(--muted); margin-top: 6px;">* Si aún no tienes el archivo a mano, puedes continuar y compartirlo luego por WhatsApp.</p>
+          <p id="logo-file-help" style="font-size: 11px; color: var(--muted); margin-top: 6px;">Si aún no tienes el archivo a mano, puedes continuar y compartirlo luego por WhatsApp.</p>
+          <p id="artwork-status" role="status" aria-live="polite"></p>
         </div>
 
         <div class="modal-actions">
@@ -291,7 +292,8 @@
   <!-- ========================================================================
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
-  <script src="js/catalogo-remoto.js"></script>
+  <script src="js/catalogo-remoto.js?v=posavasos-20261022"></script>
+  <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
   <script src="js/heroes.js?v=biblioteca-20261020"></script>
   <script src="data/productos.js"></script>
@@ -303,6 +305,7 @@
     let cart = [];
     let currentCustomProduct = null;
     let selectedLogoFileName = "";
+    let artworkBusy = false, uploadedArtwork = null;
 
     // Cargar carrito de localStorage
     try {
@@ -475,6 +478,7 @@
               image: p.image,
               variant: selectedVariant,
               ...KP_CATALOG.packFields(p, selectedVariant),
+              ...(p.stockUnits ? {stockUnits:p.stockUnits,stockUnitPrice:p.priceNum} : {}),
               isCustom: false,
               qty: 1
             });
@@ -548,7 +552,7 @@
         i.id === item.id &&
         i.isCustom === item.isCustom &&
         i.variant === item.variant && 
-        i.logoFile === item.logoFile
+        i.logoFile === item.logoFile && i.artworkRef === item.artworkRef
       );
 
       if (existing) {
@@ -586,7 +590,7 @@
 
         const customBadge = item.isCustom 
           ? `<div class="cart-item-custom-badge">🎨 Con logo: ${safe.logoFile || 'A coordinar'}</div>`
-          : `<div style="font-size:11px;color:var(--stock-green);font-weight:600;">${item.withoutPrint || !item.sku ? '✓ Pack sin impresión' : '✓ Pack seleccionado'}${item.sku ? ' · ' + safe.sku : ''}</div>`;
+          : `<div style="font-size:11px;color:var(--stock-green);font-weight:600;">${item.stockUnits ? '✓ Diseño souvenir · Caja de '+safe.stockUnits+' posavasos' : item.withoutPrint || !item.sku ? '✓ Pack sin impresión' : '✓ Pack seleccionado'}${item.sku ? ' · ' + safe.sku : ''}</div>`;
 
         itemEl.innerHTML = `
           <img class="cart-item-thumb" src="${safe.image}" alt="${safe.name}">
@@ -601,7 +605,7 @@
             </div>
           </div>
           <div class="cart-item-right">
-            <span class="cart-item-price">${Number.isSafeInteger(item.totalNet) && !item.isCustom ? KP_CATALOG.escape(KP_CATALOG.money(item.totalNet * item.qty) + " + IVA") : safe.price}</span>
+            <span class="cart-item-price">${item.stockUnits ? KP_CATALOG.escape(KP_CATALOG.money(item.stockUnitPrice * item.qty)) : Number.isSafeInteger(item.totalNet) && !item.isCustom ? KP_CATALOG.escape(KP_CATALOG.money(item.totalNet * item.qty) + " + IVA") : safe.price}</span>
             <button class="cart-item-remove" type="button" data-index="${index}" aria-label="Eliminar item">🗑️</button>
           </div>
         `;
@@ -676,8 +680,10 @@
       cart.forEach((item, i) => {
         text += `${i + 1}. *${item.name}*\n`;
         text += `   • Opción/Medida: ${item.variant}\n`;
-        text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : 'pack(s)'}\n`;
+        text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : item.stockUnits ? 'caja(s)' : 'pack(s)'}\n`;
         text += `   • Referencia: ${item.price}\n`;
+        if (item.stockUnits) text += `   • Posavasos totales: ${item.stockUnits * item.qty}\n   • Total de cajas: ${KP_CATALOG.money(item.stockUnitPrice * item.qty)}\n`;
+        if (item.artworkRef) text += `   • Archivo recibido · referencia privada: ${item.artworkRef}\n`;
         if (item.unitsPerBox) text += `   • Embalajes completos: ${item.qty / item.unitsPerBox} de ${item.unitsPerBox} unidades${item.printingArea==='tapa'?' · Impresión solo en la tapa':''}\n`;
         if (item.sku && !item.isCustom) {
           text += `   • SKU: ${item.sku}\n`;
@@ -720,12 +726,17 @@
     // Modal de Personalización con Logo
     // ------------------------------------------------------------------------
     function openCustomizer(product, pack = null, selectedVariant = null) {
+      if (artworkBusy) return;
       currentCustomProduct = product;
       modalProductTitle.textContent = `Personalizar ${product.name}`;
       modalProductName.textContent = product.name;
       modalProductImg.src = product.image;
       modalProductNote.textContent = product.subtitle;
-      selectedLogoFileName = "";
+      selectedLogoFileName = "";uploadedArtwork=null;
+      logoFileInput.required=Boolean(product.requiresArtwork);
+      document.getElementById("logo-file-label").textContent=product.requiresArtwork?"Adjunta tu logo o gráfica":"Tu logo o gráfica (opcional)";
+      document.getElementById("logo-file-help").textContent=product.requiresArtwork?"Archivo obligatorio, hasta 10 MB. Se guardará de forma privada al agregar el pedido.":"El archivo se coordinará por WhatsApp; puedes continuar sin adjuntarlo.";
+      document.getElementById("artwork-status").textContent="";
       fileAttachedInfo.hidden = true;
       logoFileInput.value = "";
 
@@ -775,12 +786,17 @@
         bulk.value=String(product.orderStep?(Number.parseInt(selectedVariant,10)||step):step);
         help.textContent="Venta de "+step+" en "+step+" unidades, por embalajes completos."+(product.printingArea==='tapa'?" Impresión solo en la tapa.":" Personalización con logo.");
       } else if(rule?.quantities) help.textContent="Cantidades disponibles para esta medida: "+rule.quantities.join(", ")+" unidades personalizadas.";
-      if(product.orderStep) document.getElementById("modal-variant-group").hidden=true;
+      if(product.customQuantities){
+        const requested=Number.parseInt(selectedVariant,10);
+        if(product.customQuantities.includes(requested))modalQuantityInput.value=String(requested);
+      }
+      if(product.orderStep||product.customQuantities) document.getElementById("modal-variant-group").hidden=true;
     }
     modalVariantSelect.addEventListener("change",()=>{if(currentCustomProduct)configureCustomQuantity(currentCustomProduct);});
     modalQuantityInput.addEventListener("change",()=>modalQuantityInput.setCustomValidity(""));
 
     function closeCustomizer() {
+      if (artworkBusy) return;
       customModal.classList.remove("open");
       customModal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -794,24 +810,33 @@
 
     // Carga de archivo de logo
     logoFileInput.addEventListener("change", (e) => {
+      uploadedArtwork=null;document.getElementById("artwork-status").textContent="";
       if (e.target.files && e.target.files[0]) {
+        if(currentCustomProduct?.requiresArtwork){try{KP_CUSTOMER_FILES.check(e.target.files[0]);}catch(error){logoFileInput.value="";selectedLogoFileName="";fileAttachedInfo.hidden=true;document.getElementById("artwork-status").textContent=error.message;return;}}
         selectedLogoFileName = e.target.files[0].name;
         attachedFilename.textContent = `Archivo: ${selectedLogoFileName}`;
         fileAttachedInfo.hidden = false;
       }
     });
 
+    fileDropZone.addEventListener("dragover",event=>event.preventDefault());
+    fileDropZone.addEventListener("drop",event=>{event.preventDefault();if(artworkBusy||!event.dataTransfer?.files?.length)return;logoFileInput.files=event.dataTransfer.files;logoFileInput.dispatchEvent(new Event("change",{bubbles:true}));});
     removeFileBtn.addEventListener("click", () => {
-      selectedLogoFileName = "";
+      uploadedArtwork=null;document.getElementById("artwork-status").textContent="";
+      selectedLogoFileName = "";uploadedArtwork=null;
+      logoFileInput.required=Boolean(product.requiresArtwork);
+      document.getElementById("logo-file-label").textContent=product.requiresArtwork?"Adjunta tu logo o gráfica":"Tu logo o gráfica (opcional)";
+      document.getElementById("logo-file-help").textContent=product.requiresArtwork?"Archivo obligatorio, hasta 10 MB. Se guardará de forma privada al agregar el pedido.":"El archivo se coordinará por WhatsApp; puedes continuar sin adjuntarlo.";
+      document.getElementById("artwork-status").textContent="";
       fileAttachedInfo.hidden = true;
       logoFileInput.value = "";
     });
 
     document.getElementById("modal-bulk-quantity").addEventListener("input", event => event.target.setCustomValidity(""));
     // Submit del Customizer
-    customProductForm.addEventListener("submit", (e) => {
+    customProductForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!currentCustomProduct) return;
+      if (!currentCustomProduct || artworkBusy) return;
 
       const rule = KP_CATALOG.quantityRule(currentCustomProduct, modalVariantSelect.value);
       const step = rule?.step;
@@ -824,6 +849,20 @@
       const variant = currentCustomProduct.orderStep ? "Embalaje completo de " + step + " u. · Impresión en tapa"
         : (modalVariantSelect.value || currentCustomProduct.variants?.[0] || "Formato estándar");
 
+      let artwork=null;
+      if(currentCustomProduct.requiresArtwork){
+        const file=logoFileInput.files?.[0],status=document.getElementById("artwork-status");
+        if(!file){status.textContent="Adjunta tu logo para solicitar estos posavasos personalizados.";return;}
+        const product=currentCustomProduct;
+        if(uploadedArtwork?.file===file) artwork=uploadedArtwork;
+        else {
+          const disabled=Array.from(customProductForm.elements,element=>[element,element.disabled]);
+          artworkBusy=true;disabled.forEach(([element])=>element.disabled=true);closeModalBtn.disabled=true;status.textContent="Guardando tu archivo de forma privada…";
+          try{const saved=await KP_CUSTOMER_FILES.upload(file);if(currentCustomProduct!==product)return;uploadedArtwork={...saved,file};artwork=uploadedArtwork;status.textContent="Archivo guardado de forma privada.";}
+          catch(error){status.textContent=error.message;return;}
+          finally{artworkBusy=false;disabled.forEach(([element,value])=>element.disabled=value);closeModalBtn.disabled=false;}
+        }
+      }
       const added = addToCart({
         id: currentCustomProduct.id,
         name: currentCustomProduct.name,
@@ -832,6 +871,7 @@
         price: "Cotización con logo",
         isCustom: true,
         logoFile: selectedLogoFileName || "A enviar por WhatsApp",
+        ...(artwork ? {artworkRef:artwork.path} : {}),
         ...(step ? {unitsPerBox:step, printingArea:currentCustomProduct.printingArea||""} : {}),
         ...(rule?.quantities ? {quantityOptions:rule.quantities} : {}),
         qty: quantity
@@ -916,14 +956,15 @@
         cart = cart.filter(item => {
           const product = productsDB.find(p => p.id === item.id);
           if (!product || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
-          const variants = item.isCustom && product.packs
-            ? (product.configurations || ["Personalización con logo · Cotización"]) : product.variants;
+          const variants = item.isCustom
+            ? (product.configurations || (product.packs?["Personalización con logo · Cotización"]:product.variants)) : product.variants;
           const validVariant = product.orderStep
             ? item.isCustom && item.qty % product.orderStep === 0 && item.qty >= product.orderStep && item.qty <= 1000000
               && item.variant === "Embalaje completo de " + product.orderStep + " u. · Impresión en tapa"
             : variants.includes(item.variant);
           return validVariant && (!item.isCustom || KP_CATALOG.validQuantity(product,item.variant,item.qty)) && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
-            && !(!item.isCustom && KP_CATALOG.packFor(product, item.variant)?.requiresLogo);
+            && !(!item.isCustom && KP_CATALOG.packFor(product, item.variant)?.requiresLogo)
+            && (!product.requiresArtwork || item.isCustom && /^posavasos\/[a-f0-9-]{36}--[a-zA-Z0-9_-]{1,60}\.(pdf|png|jpg|jpeg|svg|ai|eps)$/.test(item.artworkRef||""));
         }).map(item => {
           const product = productsDB.find(p => p.id === item.id);
           const rule=KP_CATALOG.quantityRule(product,item.variant);
@@ -931,6 +972,7 @@
           return {...savedItem, name:product.name, image:product.image,
             ...(item.isCustom&&rule?.step?{unitsPerBox:rule.step,printingArea:product.printingArea||""}:{}),
             ...(item.isCustom&&rule?.quantities?{quantityOptions:rule.quantities}:{}),
+            ...(!item.isCustom&&product.stockUnits?{stockUnits:product.stockUnits,stockUnitPrice:product.priceNum}:{}),
             ...(item.isCustom ? {price:"Cotización con logo", ...(product.orderStep ? {unitsPerBox:product.orderStep,printingArea:product.printingArea||""} : {})} : KP_CATALOG.packFields(product, item.variant))};
         });
         saveCart();
