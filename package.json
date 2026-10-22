@@ -2,7 +2,7 @@
   "name": "kartonpaper-web",
   "private": true,
   "scripts": {
-    "test": "node tests/test-db.cjs && node tests/test-precios.cjs && node tests/test-tarifas.cjs && node tests/test-imagenes.cjs && node tests/test-ui.cjs && node tests/test-heroes.cjs && node tests/test-hero-rotation.cjs && node tests/test-hero-transitions.cjs && node tests/test-finanzas.cjs && node tests/test-panel.cjs && node tests/test-ventas.cjs && node tests/test-ventas-ui.cjs && node tests/test-produccion.cjs && node tests/test-produccion-ui.cjs && node tests/test-redes.cjs && node tests/test-redes-ui.cjs && node tests/test-traslados.cjs"
+    "test": "node tests/test-db.cjs && node tests/test-precios.cjs && node tests/test-tarifas.cjs && node tests/test-imagenes.cjs && node tests/test-ui.cjs && node tests/test-heroes.cjs && node tests/test-hero-rotation.cjs && node tests/test-hero-transitions.cjs && node tests/test-finanzas.cjs && node tests/test-panel.cjs && node tests/test-ventas.cjs && node tests/test-ventas-ui.cjs && node tests/test-produccion.cjs && node tests/test-produccion-ui.cjs && node tests/test-redes.cjs && node tests/test-redes-ui.cjs && node tests/test-traslados.cjs && node tests/test-alfajores-packs.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",

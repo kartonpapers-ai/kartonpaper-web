@@ -120,13 +120,16 @@
         id: "reposteria-caja-3-alfajores",
         category: "reposteria",
         name: "Caja con ventana para 3 alfajores",
-        subtitle: "Cartulina blanca 320 g/m² · Mica transparente",
-        type: "custom",
+        subtitle: "Cartulina blanca 320 g/m² · Mica transparente · Con logo desde 100 u.: $391 + IVA c/u",
+        type: "dual",
         image: "images/reposteria-caja-3-alfajores.webp",
-        price: "$391 + IVA c/u",
-        priceNum: 391,
-        specs: ["Capacidad 3 alfajores", "Personalizable", "Mínimo 100 u."],
-        variants: ["100 unidades","250 unidades","500 unidades"]
+        price: "$400 + IVA c/u · Pack 25 u. sin impresión",
+        priceNum: 400,
+        specs: ["Capacidad 3 alfajores", "Blancas desde 25 u.", "Con logo desde 100 u."],
+        variants: ["Pack 25 u. · Sin impresión ($10.000 + IVA)", "Pack 50 u. · Sin impresión ($17.500 + IVA)"],
+        sku: "KP-REP-A3",
+        packs: [{"quantity": 25, "unitPrice": 400, "totalNet": 10000, "sku": "KP-REP-A3-P025-SI", "withoutPrint": true, "label": "Pack 25 u. · Sin impresión ($10.000 + IVA)"}, {"quantity": 50, "unitPrice": 350, "totalNet": 17500, "sku": "KP-REP-A3-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($17.500 + IVA)"}],
+        configurations: ["100 unidades", "250 unidades", "500 unidades"]
       },
       {
         id: "reposteria-caja-4-alfajores",
