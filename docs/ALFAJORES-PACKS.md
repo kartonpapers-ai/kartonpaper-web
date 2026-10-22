@@ -28,3 +28,23 @@ con 100 unidades seleccionadas. El total de referencia con IVA es $46.529. No se
 agrega como pack blanco al carrito. Para activarla en el catálogo conectado, ejecutar
 `supabase/17-caja-3-alfajores-logo.sql` después del archivo 16. No volver a ejecutar
 el archivo 16 después del 17: el 16 corresponde al modelo anterior de dos packs.
+
+## Cajas de 4 y 6 alfajores
+
+Mismo modelo aprobado: 25 blancas a $400/u y 50 blancas a $350/u, netos. Ambas
+muestran también 100 unidades con logo; se mantienen las referencias personalizadas
+existentes de $391/u para 4 alfajores y $397/u para 6 alfajores.
+
+| Caja | Pack 25 blanco neto | Pack 50 blanco neto | Pack 100 con logo neto | 100 con logo, IVA incluido |
+| --- | ---: | ---: | ---: | ---: |
+| 4 alfajores | $10.000 | $17.500 | $39.100 | $46.529 |
+| 6 alfajores | $10.000 | $17.500 | $39.700 | $47.243 |
+
+Los packs blancos cuestan $11.900 y $20.825 con IVA, respectivamente. Los SKU base
+son `KP-REP-A4` y `KP-REP-A6`, con sufijos `P025-SI`, `P050-SI` y `P100-LOGO`.
+Seleccionar el pack con logo abre la personalización de 100 unidades; las opciones
+de cotización de 250 y 500 unidades siguen disponibles en ese formulario.
+
+Ejecutar `supabase/18-cajas-4-6-alfajores-packs.sql` en el proyecto conectado; devuelve
+dos filas y conserva nombre, imagen, orden y publicación. No modifica la caja de 3.
+Verificación: `node tests/test-alfajores-46.cjs`.
