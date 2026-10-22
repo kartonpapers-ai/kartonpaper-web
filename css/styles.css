@@ -1703,3 +1703,5 @@ html { scroll-padding-top: 196px; }
   .hero-controls { bottom: 16px; padding-top: 12px; }
   .hero-media-badge { bottom: 104px; }
 }
+
+.btn-card-action[hidden]{display:none!important}

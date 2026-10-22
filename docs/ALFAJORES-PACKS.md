@@ -21,3 +21,10 @@ sin cambiar filas que ya coinciden. No ejecutar después de aprobar nuevos preci
 sin revisar sus valores. La copia estática aplica el mismo modelo.
 
 Verificación: `node tests/test-alfajores-packs.cjs`.
+
+La opción «Pack 100 u. · Con logo ($39.100 + IVA)» aparece junto a los packs blancos.
+Seleccionarla muestra $391/u y ofrece personalizar el pack; abre la carga del archivo
+con 100 unidades seleccionadas. El total de referencia con IVA es $46.529. No se
+agrega como pack blanco al carrito. Para activarla en el catálogo conectado, ejecutar
+`supabase/17-caja-3-alfajores-logo.sql` después del archivo 16. No volver a ejecutar
+el archivo 16 después del 17: el 16 corresponde al modelo anterior de dos packs.

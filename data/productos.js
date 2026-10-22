@@ -126,9 +126,9 @@
         price: "$400 + IVA c/u · Pack 25 u. sin impresión",
         priceNum: 400,
         specs: ["Capacidad 3 alfajores", "Blancas desde 25 u.", "Con logo desde 100 u."],
-        variants: ["Pack 25 u. · Sin impresión ($10.000 + IVA)", "Pack 50 u. · Sin impresión ($17.500 + IVA)"],
+        variants: ["Pack 25 u. · Sin impresión ($10.000 + IVA)", "Pack 50 u. · Sin impresión ($17.500 + IVA)", "Pack 100 u. · Con logo ($39.100 + IVA)"],
         sku: "KP-REP-A3",
-        packs: [{"quantity": 25, "unitPrice": 400, "totalNet": 10000, "sku": "KP-REP-A3-P025-SI", "withoutPrint": true, "label": "Pack 25 u. · Sin impresión ($10.000 + IVA)"}, {"quantity": 50, "unitPrice": 350, "totalNet": 17500, "sku": "KP-REP-A3-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($17.500 + IVA)"}],
+        packs: [{"quantity": 25, "unitPrice": 400, "totalNet": 10000, "sku": "KP-REP-A3-P025-SI", "withoutPrint": true, "label": "Pack 25 u. · Sin impresión ($10.000 + IVA)"}, {"quantity": 50, "unitPrice": 350, "totalNet": 17500, "sku": "KP-REP-A3-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($17.500 + IVA)"}, {"quantity": 100, "unitPrice": 391, "totalNet": 39100, "sku": "KP-REP-A3-P100-LOGO", "withoutPrint": false, "label": "Pack 100 u. · Con logo ($39.100 + IVA)", "requiresLogo": true, "configuration": "100 unidades"}],
         configurations: ["100 unidades", "250 unidades", "500 unidades"]
       },
       {

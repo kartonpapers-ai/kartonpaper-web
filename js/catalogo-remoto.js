@@ -33,6 +33,9 @@
           || typeof pack.withoutPrint !== "boolean" || !p.variants.includes(pack.label)) {
           throw new Error("Revisa cantidades, SKU y precios estructurados de los packs.");
         }
+        if (pack.requiresLogo !== undefined && (typeof pack.requiresLogo !== "boolean"
+          || (pack.requiresLogo && (pack.withoutPrint || p.type === "stock" || typeof pack.configuration !== "string"
+            || !p.configurations?.includes(pack.configuration))))) throw new Error("Revisa la configuración del pack con logo.");
         skus.add(pack.sku);
       }
     }

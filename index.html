@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=hero-editorial-20261017">
+  <link rel="stylesheet" href="css/styles.css?v=alfajores-logo-20261022">
   <link rel="stylesheet" href="css/hero-editorial.css?v=movil-superpuesto-20261021">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -451,6 +451,10 @@
           const selected = card.querySelector(".variant-btn.selected")?.dataset.val;
           const pack = KP_CATALOG.packFor(p, selected);
           if (!pack) return;
+          const buyButton = card.querySelector("[data-action='add-stock']");
+          if (buyButton) buyButton.hidden = Boolean(pack.requiresLogo);
+          const logoButton = card.querySelector("[data-action='customize']");
+          if (logoButton) logoButton.textContent = pack.requiresLogo ? "Personalizar pack de " + pack.quantity + " →" : "Con mi logo →";
           card.querySelector(".product-price-value").textContent = KP_CATALOG.money(pack.unitPrice) + " + IVA c/u";
           card.querySelector(".product-price-note").textContent =
             KP_CATALOG.money(pack.totalNet) + " + IVA / pack · " + pack.sku;
@@ -461,6 +465,8 @@
         card.querySelectorAll("[data-action='add-stock']").forEach(btn => {
           btn.addEventListener("click", () => {
             const selectedVariant = card.querySelector(".variant-btn.selected")?.dataset.val || p.variants?.[0] || "Estándar";
+            const pack = KP_CATALOG.packFor(p, selectedVariant);
+            if (pack?.requiresLogo) { openCustomizer(p, pack); return; }
             addToCart({
               id: p.id,
               name: p.name,
@@ -477,7 +483,9 @@
         // Customize click
         card.querySelectorAll("[data-action='customize']").forEach(btn => {
           btn.addEventListener("click", () => {
-            openCustomizer(p);
+            const selected = card.querySelector(".variant-btn.selected")?.dataset.val;
+            const pack = KP_CATALOG.packFor(p, selected);
+            openCustomizer(p, pack?.requiresLogo ? pack : null);
           });
         });
 
@@ -699,7 +707,7 @@
     // ------------------------------------------------------------------------
     // Modal de Personalización con Logo
     // ------------------------------------------------------------------------
-    function openCustomizer(product) {
+    function openCustomizer(product, pack = null) {
       currentCustomProduct = product;
       modalProductTitle.textContent = `Personalizar ${product.name}`;
       modalProductName.textContent = product.name;
@@ -725,6 +733,10 @@
         document.getElementById("modal-variant-group").hidden = true;
       }
 
+      if (pack?.requiresLogo) {
+        modalVariantSelect.value = pack.configuration;
+        modalQuantityInput.value = String(pack.quantity);
+      }
       customModal.classList.add("open");
       customModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -853,7 +865,8 @@
           if (!product || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
           const variants = item.isCustom && product.packs
             ? (product.configurations || ["Personalización con logo · Cotización"]) : product.variants;
-          return variants.includes(item.variant) && (item.isCustom ? product.type !== "stock" : product.type !== "custom");
+          return variants.includes(item.variant) && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
+            && !(!item.isCustom && KP_CATALOG.packFor(product, item.variant)?.requiresLogo);
         }).map(item => {
           const product = productsDB.find(p => p.id === item.id);
           return {...item, name:product.name, image:product.image,
