@@ -8,7 +8,7 @@
  function product(id){return products.find(row=>row.id===id)?.data;}
  function name(data){return product(data.product_id)?.name||data.product_id;}
  function mayLeave(){return (!window.KP_TRIPS||window.KP_TRIPS.mayLeave())&&!busy&&(!dirty||window.confirm('Tienes cambios de costos sin guardar. ¿Quieres descartarlos?'));}
- function rowResult(row){try{return calc.calculate(row.data);}catch(error){return {complete:false,invalid:true};}}
+ function rowResult(row){try{return calc.calculate(row.data,product(row.data.product_id));}catch(error){return {complete:false,invalid:true};}}
  function stats(){
   $('summary-costs').textContent=ready?rows.length:'—';$('summary-reviewed').textContent=ready?rows.filter(row=>rowResult(row).complete).length:'—';
  }
@@ -29,18 +29,23 @@
   finally{if(current===revision){$('fin-reload').disabled=false;for(const id of ['fin-new','fin-export'])$(id).disabled=!ready;}}
  }
  function variants(id){$('fin-variants').replaceChildren();for(const value of product(id)?.variants||[]){const option=document.createElement('option');option.value=value.split(' · $')[0];$('fin-variants').append(option);}}
- function printingState(){const beer=product($('fin-product_id').value)?.category==='cerveza';for(const key of ['printing','prints']){$('fin-'+key).readOnly=beer;if(beer)$('fin-'+key).value='0';}}
+ function printingState(){const currentProduct=product($('fin-product_id').value),beer=currentProduct?.category==='cerveza',food=currentProduct?.category==='gastronomia';
+  document.querySelector("label[for='fin-floor']").textContent=food?'Margen mínimo obligatorio (%)':'Margen excepcional (%)';
+  $('fin-floor').min=food?'45':'0';$('fin-target').min=food?'45':'0';$('fin-quantity').min=String(currentProduct?.orderStep||1);$('fin-quantity').step=String(currentProduct?.orderStep||1);
+  const adjusted=food&&(Number($('fin-floor').value)<45||Number($('fin-target').value)<45);
+  if(food){if(Number($('fin-floor').value)<45)$('fin-floor').value='45';if(Number($('fin-target').value)<45)$('fin-target').value='45';}
+for(const key of ['printing','prints']){$('fin-'+key).readOnly=beer;if(beer)$('fin-'+key).value='0';}return adjusted;}
  function populateProducts(id){$('fin-product_id').replaceChildren();for(const row of products){const option=new Option(row.data.name,row.id);$('fin-product_id').add(option);}if(id&&!product(id))$('fin-product_id').add(new Option(id+' · sin producto activo',id));$('fin-product_id').value=id;variants(id);}
  function select(row){
   selected=structuredClone(row);dirty=false;$('fin-editor').hidden=false;populateProducts(row.data.product_id);$('fin-product_id').disabled=!row.isNew;
   for(const key of [...numeric,'variant','supplier','note'])$('fin-'+key).value=row.data[key]??'';$('fin-reviewed').checked=row.data.reviewed;
-  printingState();$('fin-title').textContent=name(row.data)+' · '+row.data.variant;status('fin-save-status','');preview();
+  const adjusted=printingState();dirty=adjusted;$('fin-title').textContent=name(row.data)+' · '+row.data.variant;status('fin-save-status',adjusted?'Gastronomía: mínimo ajustado a 45%. Revisa los costos y guarda la ficha.':'');preview();
  }
- function read(){const data={};data.product_id=$('fin-product_id').value;for(const key of ['variant','supplier','note'])data[key]=$('fin-'+key).value.trim();for(const key of numeric){const raw=$('fin-'+key).value.trim();data[key]=raw===''?null:Number(raw);}data.reviewed=$('fin-reviewed').checked;calc.validate(data);calc.calculate(data);return data;}
+ function read(){const data={};data.product_id=$('fin-product_id').value;for(const key of ['variant','supplier','note'])data[key]=$('fin-'+key).value.trim();for(const key of numeric){const raw=$('fin-'+key).value.trim();data[key]=raw===''?null:Number(raw);}data.reviewed=$('fin-reviewed').checked;calc.validate(data);const currentProduct=product(data.product_id);if(currentProduct?.category==='gastronomia'&&data.floor<45)throw new Error('Gastronomía requiere al menos 45% de margen.');if(currentProduct?.orderStep&&(data.quantity<currentProduct.orderStep||data.quantity%currentProduct.orderStep!==0))throw new Error('Ingresa un múltiplo de '+currentProduct.orderStep+' unidades por embalaje.');calc.calculate(data,currentProduct);return data;}
  function resultRow(label,value,emphasis=false){const div=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;if(emphasis)div.className='emphasis';div.append(dt,dd);$('fin-results').append(div);}
  function preview(){
   $('fin-results').replaceChildren();
-  try{const data=read(),result=calc.calculate(data),sale=calc.catalogSale(product(data.product_id),data.variant);$('fin-catalog-price').textContent='Catálogo: '+(sale===null?'precio unitario no identificado; revisa pack o medida.':currency(sale)+' netos/u. El análisis usa el precio que ingreses abajo.');
+  try{const data=read(),result=calc.calculate(data,product(data.product_id)),sale=calc.catalogSale(product(data.product_id),data.variant);$('fin-catalog-price').textContent='Catálogo: '+(sale===null?'precio unitario no identificado; revisa pack o medida.':currency(sale)+' netos/u. El análisis usa el precio que ingreses abajo.');
    resultRow('Base + impresión/u',currency(result.baseSubtotal));
    resultRow('Preparación por pedido',currency(data.preparation));resultRow('Embalaje por pedido',currency(data.packaging));
    if(!result.complete){status('fin-result-status','Pendiente: completa compra, mano de obra, otros costos, merma, comisión, preparación, embalaje y otros gastos por pedido; después confirma la revisión.','warning');return;}
@@ -65,7 +70,7 @@
  });
  $('fin-file').addEventListener('change',async()=>{
   importRows=null;$('fin-import').disabled=true;const file=$('fin-file').files[0];if(!file)return;const current=revision;
-  try{if(file.size>2e6)throw new Error('El archivo supera 2 MB.');const payload=JSON.parse(await file.text());if(current!==revision)return;if(!payload||payload.format!=='kartonpaper-finance-v1'||!Array.isArray(payload.rows)||payload.rows.length>1000)throw new Error('Formato de respaldo inválido.');const ids=new Set();for(const row of payload.rows){if(!/^[a-z0-9-]{1,120}$/.test(row.id)||ids.has(row.id))throw new Error('Hay fichas repetidas o inválidas.');ids.add(row.id);calc.validate(row.data);calc.calculate(row.data);}importRows=payload.rows.map(({id,data})=>({id,data}));const missing=importRows.filter(row=>!rows.some(existing=>existing.id===row.id)).length;status('fin-import-status',missing+' fichas nuevas; '+(importRows.length-missing)+' existentes se conservarán. Pulsa Agregar para guardarlas.');$('fin-import').disabled=!ready||!missing;}
+  try{if(file.size>2e6)throw new Error('El archivo supera 2 MB.');const payload=JSON.parse(await file.text());if(current!==revision)return;if(!payload||payload.format!=='kartonpaper-finance-v1'||!Array.isArray(payload.rows)||payload.rows.length>1000)throw new Error('Formato de respaldo inválido.');const ids=new Set();for(const row of payload.rows){if(!/^[a-z0-9-]{1,120}$/.test(row.id)||ids.has(row.id))throw new Error('Hay fichas repetidas o inválidas.');ids.add(row.id);calc.validate(row.data);calc.calculate(row.data,product(row.data.product_id));}importRows=payload.rows.map(({id,data})=>({id,data}));const missing=importRows.filter(row=>!rows.some(existing=>existing.id===row.id)).length;status('fin-import-status',missing+' fichas nuevas; '+(importRows.length-missing)+' existentes se conservarán. Pulsa Agregar para guardarlas.');$('fin-import').disabled=!ready||!missing;}
   catch(error){if(current===revision)status('fin-import-status',error.message,'error');}
  });
  $('fin-import').addEventListener('click',async()=>{

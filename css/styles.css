@@ -1705,3 +1705,5 @@ html { scroll-padding-top: 196px; }
 }
 
 .btn-card-action[hidden]{display:none!important}
+
+#modal-bulk-quantity[hidden],#modal-quantity-input[hidden],#modal-bulk-help[hidden]{display:none!important}

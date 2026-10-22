@@ -242,52 +242,104 @@
 
       // 3. Gastronomía Compostable (Bagasse con impresión en tapa)
       {
-        id: "bagasse-pollo-1",
-        category: "gastronomia",
-        name: "Caja para pollo (Bagasse)",
-        subtitle: "Fibra de caña compostable · Personalización en tapa",
-        type: "custom",
-        image: "images/bagasse-caja-pollo-1.webp",
-        price: "$522 + IVA c/u",
-        priceNum: 522,
-        specs: ["100% compostable", "Impresión en tapa", "Cierre seguro"],
-        variants: ["Modelo Pollo 1 Bagasse"]
+        "id": "bagasse-pollo-1",
+        "category": "gastronomia",
+        "name": "Caja para pollo (Bagasse)",
+        "subtitle": "Fibra de caña compostable · Personalización en tapa",
+        "type": "custom",
+        "image": "images/bagasse-caja-pollo-1.webp",
+        "price": "$522 + IVA c/u",
+        "priceNum": 522,
+        "specs": [
+          "100% compostable",
+          "Embalaje completo de 200 u.",
+          "Impresión solo en la tapa"
+        ],
+        "variants": [
+          "200 unidades · 1 embalaje",
+          "400 unidades · 2 embalajes",
+          "600 unidades · 3 embalajes",
+          "800 unidades · 4 embalajes",
+          "1000 unidades · 5 embalajes"
+        ],
+        "orderStep": 200,
+        "minimumMargin": 45,
+        "printingArea": "tapa"
       },
       {
-        id: "bagasse-sandwich-6x6",
-        category: "gastronomia",
-        name: "Envase para sándwich o burger (6×6)",
-        subtitle: "Clamshell compostable para hamburgueserías y cafeterías",
-        type: "custom",
-        image: "images/bagasse-sandwich-6x6.webp",
-        price: "$303 + IVA c/u",
-        priceNum: 303,
-        specs: ["Formato 6 × 6 pulgadas", "Resistente a grasa", "Impresión en tapa"],
-        variants: ["Modelo 6 × 6 Bagasse"]
+        "id": "bagasse-sandwich-6x6",
+        "category": "gastronomia",
+        "name": "Envase para sándwich o burger (6×6)",
+        "subtitle": "Clamshell compostable para hamburgueserías y cafeterías",
+        "type": "custom",
+        "image": "images/bagasse-sandwich-6x6.webp",
+        "price": "$303 + IVA c/u",
+        "priceNum": 303,
+        "specs": [
+          "Formato 6 × 6 pulgadas",
+          "Embalaje completo de 500 u.",
+          "Impresión solo en la tapa"
+        ],
+        "variants": [
+          "500 unidades · 1 embalaje",
+          "1000 unidades · 2 embalajes",
+          "1500 unidades · 3 embalajes",
+          "2000 unidades · 4 embalajes",
+          "2500 unidades · 5 embalajes"
+        ],
+        "orderStep": 500,
+        "minimumMargin": 45,
+        "printingArea": "tapa"
       },
       {
-        id: "bagasse-bowl-850",
-        category: "gastronomia",
-        name: "Bowl de bagazo de caña (850 ml)",
-        subtitle: "Incluye tapa · Para ensaladas, poke, sopas y pastas",
-        type: "custom",
-        image: "images/bagasse-bowl-850-con-tapa.webp",
-        price: "$352 + IVA c/u",
-        priceNum: 352,
-        specs: ["Capacidad 850 ml", "Tapa hermética", "Compostable"],
-        variants: ["Marmita Bowl 850 ml con tapa"]
+        "id": "bagasse-bowl-850",
+        "category": "gastronomia",
+        "name": "Bowl de bagazo de caña (850 ml)",
+        "subtitle": "Incluye tapa · Para ensaladas, poke, sopas y pastas",
+        "type": "custom",
+        "image": "images/bagasse-bowl-850-con-tapa.webp",
+        "price": "$352 + IVA c/u",
+        "priceNum": 352,
+        "specs": [
+          "Capacidad 850 ml",
+          "Embalaje completo de 300 u.",
+          "Impresión solo en la tapa"
+        ],
+        "variants": [
+          "300 unidades · 1 embalaje",
+          "600 unidades · 2 embalajes",
+          "900 unidades · 3 embalajes",
+          "1200 unidades · 4 embalajes",
+          "1500 unidades · 5 embalajes"
+        ],
+        "orderStep": 300,
+        "minimumMargin": 45,
+        "printingArea": "tapa"
       },
       {
-        id: "bagasse-colacion-c205",
-        category: "gastronomia",
-        name: "Porta colación C205 (900 ml)",
-        subtitle: "Envase compostable para menús ejecutivos y viandas",
-        type: "custom",
-        image: "images/bagasse-colacion-c205-900.webp",
-        price: "$394 + IVA c/u",
-        priceNum: 394,
-        specs: ["Capacidad 900 ml", "Caña de azúcar", "Impresión en tapa"],
-        variants: ["Modelo Porta Colación C205 900ml"]
+        "id": "bagasse-colacion-c205",
+        "category": "gastronomia",
+        "name": "Porta colación C205 (900 ml)",
+        "subtitle": "Envase compostable para menús ejecutivos y viandas",
+        "type": "custom",
+        "image": "images/bagasse-colacion-c205-900.webp",
+        "price": "$394 + IVA c/u",
+        "priceNum": 394,
+        "specs": [
+          "Capacidad 900 ml",
+          "Embalaje completo de 250 u.",
+          "Impresión solo en la tapa"
+        ],
+        "variants": [
+          "250 unidades · 1 embalaje",
+          "500 unidades · 2 embalajes",
+          "750 unidades · 3 embalajes",
+          "1000 unidades · 4 embalajes",
+          "1250 unidades · 5 embalajes"
+        ],
+        "orderStep": 250,
+        "minimumMargin": 45,
+        "printingArea": "tapa"
       },
 
       // 4. Bolsas de Papel con Asas Planas

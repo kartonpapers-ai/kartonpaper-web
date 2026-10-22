@@ -22,6 +22,7 @@
       }
     }
     if ("priceNum" in p && (!Number.isFinite(p.priceNum) || p.priceNum < 0)) throw new Error("Precio numérico inválido.");
+    if (p.orderStep !== undefined && (!Number.isSafeInteger(p.orderStep) || p.orderStep < 1 || p.orderStep > 1000000 || p.type !== 'custom')) throw new Error('Revisa las unidades del embalaje.');
     if (p.packs !== undefined) {
       if (!Array.isArray(p.packs) || !p.packs.length || p.packs.length > 30) throw new Error("Packs inválidos.");
       const skus = new Set();

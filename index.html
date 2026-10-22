@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=alfajores-logo-20261022">
+  <link rel="stylesheet" href="css/styles.css?v=gastronomia-20261022">
   <link rel="stylesheet" href="css/hero-editorial.css?v=movil-superpuesto-20261021">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -185,6 +185,8 @@
             <option value="1000">1.000 unidades</option>
             <option value="2000">2.000 unidades o más</option>
           </select>
+          <input id="modal-bulk-quantity" class="form-select" type="number" min="1" max="1000000" step="1" hidden>
+          <p id="modal-bulk-help" class="field-help" hidden></p>
         </div>
 
         <!-- Logo Upload Box -->
@@ -485,7 +487,7 @@
           btn.addEventListener("click", () => {
             const selected = card.querySelector(".variant-btn.selected")?.dataset.val;
             const pack = KP_CATALOG.packFor(p, selected);
-            openCustomizer(p, pack?.requiresLogo ? pack : null);
+            openCustomizer(p, pack?.requiresLogo ? pack : null, selected);
           });
         });
 
@@ -603,8 +605,9 @@
 
         // Eventos de cantidad
         itemEl.querySelector("[data-action='minus']").addEventListener("click", () => {
-          if (item.qty > 1) {
-            item.qty -= 1;
+          const decrement = item.unitsPerBox || 1;
+          if (item.qty > decrement) {
+            item.qty -= decrement;
           } else {
             cart.splice(index, 1);
           }
@@ -612,7 +615,7 @@
         });
 
         itemEl.querySelector("[data-action='plus']").addEventListener("click", () => {
-          item.qty += 1;
+          item.qty += item.unitsPerBox || 1;
           saveCart();
         });
 
@@ -667,6 +670,7 @@
         text += `   • Opción/Medida: ${item.variant}\n`;
         text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : 'pack(s)'}\n`;
         text += `   • Referencia: ${item.price}\n`;
+        if (item.unitsPerBox) text += `   • Embalajes completos: ${item.qty / item.unitsPerBox} de ${item.unitsPerBox} unidades · Impresión solo en la tapa\n`;
         if (item.sku && !item.isCustom) {
           text += `   • SKU: ${item.sku}\n`;
           text += `   • Unidades totales: ${item.unitsPerPack * item.qty}\n`;
@@ -707,7 +711,7 @@
     // ------------------------------------------------------------------------
     // Modal de Personalización con Logo
     // ------------------------------------------------------------------------
-    function openCustomizer(product, pack = null) {
+    function openCustomizer(product, pack = null, selectedVariant = null) {
       currentCustomProduct = product;
       modalProductTitle.textContent = `Personalizar ${product.name}`;
       modalProductName.textContent = product.name;
@@ -733,6 +737,20 @@
         document.getElementById("modal-variant-group").hidden = true;
       }
 
+      const step = product.orderStep;
+      const bulk = document.getElementById("modal-bulk-quantity");
+      const bulkHelp = document.getElementById("modal-bulk-help");
+      bulk.setCustomValidity("");
+      bulk.hidden = !step; bulk.required = Boolean(step); bulk.disabled = !step;
+      modalQuantityInput.hidden = Boolean(step); modalQuantityInput.disabled = Boolean(step);
+      document.querySelector("label[for='modal-quantity-input'],label[for='modal-bulk-quantity']").htmlFor = step ? "modal-bulk-quantity" : "modal-quantity-input";
+      bulkHelp.hidden = !step;
+      if (step) {
+        bulk.min = String(step); bulk.step = String(step);
+        bulk.value = String(Number.parseInt(selectedVariant, 10) || step);
+        bulkHelp.textContent = "Venta de " + step + " en " + step + " unidades, por embalajes completos. Impresión solo en la tapa.";
+        document.getElementById("modal-variant-group").hidden = true;
+      }
       if (pack?.requiresLogo) {
         modalVariantSelect.value = pack.configuration;
         modalQuantityInput.value = String(pack.quantity);
@@ -769,13 +787,20 @@
       logoFileInput.value = "";
     });
 
+    document.getElementById("modal-bulk-quantity").addEventListener("input", event => event.target.setCustomValidity(""));
     // Submit del Customizer
     customProductForm.addEventListener("submit", (e) => {
       e.preventDefault();
       if (!currentCustomProduct) return;
 
-      const variant = modalVariantSelect.value || currentCustomProduct.variants?.[0] || "Formato estándar";
-      const quantity = parseInt(modalQuantityInput.value, 10) || 100;
+      const step = currentCustomProduct.orderStep;
+      const bulk = document.getElementById("modal-bulk-quantity");
+      const quantity = step ? Number(bulk.value) : (parseInt(modalQuantityInput.value, 10) || 100);
+      if (step && (!Number.isSafeInteger(quantity) || quantity < step || quantity > 1000000 || quantity % step !== 0)) {
+        bulk.setCustomValidity("Ingresa un múltiplo de " + step + " unidades."); bulk.reportValidity(); return;
+      }
+      const variant = step ? "Embalaje completo de " + step + " u. · Impresión en tapa"
+        : (modalVariantSelect.value || currentCustomProduct.variants?.[0] || "Formato estándar");
 
       addToCart({
         id: currentCustomProduct.id,
@@ -785,6 +810,7 @@
         price: "Cotización con logo",
         isCustom: true,
         logoFile: selectedLogoFileName || "A enviar por WhatsApp",
+        ...(step ? {unitsPerBox:step} : {}),
         qty: quantity
       });
 
@@ -865,12 +891,16 @@
           if (!product || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
           const variants = item.isCustom && product.packs
             ? (product.configurations || ["Personalización con logo · Cotización"]) : product.variants;
-          return variants.includes(item.variant) && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
+          const validVariant = product.orderStep
+            ? item.isCustom && item.qty % product.orderStep === 0 && item.qty >= product.orderStep && item.qty <= 1000000
+              && item.variant === "Embalaje completo de " + product.orderStep + " u. · Impresión en tapa"
+            : variants.includes(item.variant);
+          return validVariant && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
             && !(!item.isCustom && KP_CATALOG.packFor(product, item.variant)?.requiresLogo);
         }).map(item => {
           const product = productsDB.find(p => p.id === item.id);
           return {...item, name:product.name, image:product.image,
-            ...(item.isCustom ? {price:"Cotización con logo"} : KP_CATALOG.packFields(product, item.variant))};
+            ...(item.isCustom ? {price:"Cotización con logo", ...(product.orderStep ? {unitsPerBox:product.orderStep} : {})} : KP_CATALOG.packFields(product, item.variant))};
         });
         saveCart();
         status.hidden = productsDB.length > 0;
