@@ -22,6 +22,20 @@
       }
     }
     if ("priceNum" in p && (!Number.isFinite(p.priceNum) || p.priceNum < 0)) throw new Error("Precio numérico inválido.");
+    if (p.packs !== undefined) {
+      if (!Array.isArray(p.packs) || !p.packs.length || p.packs.length > 30) throw new Error("Packs inválidos.");
+      const skus = new Set();
+      for (const pack of p.packs) {
+        if (!pack || !Number.isSafeInteger(pack.quantity) || pack.quantity < 1
+          || !Number.isSafeInteger(pack.unitPrice) || pack.unitPrice < 0
+          || !Number.isSafeInteger(pack.totalNet) || pack.totalNet !== pack.quantity * pack.unitPrice
+          || typeof pack.sku !== "string" || !/^[A-Z0-9-]{1,80}$/.test(pack.sku) || skus.has(pack.sku)
+          || typeof pack.withoutPrint !== "boolean" || !p.variants.includes(pack.label)) {
+          throw new Error("Revisa cantidades, SKU y precios estructurados de los packs.");
+        }
+        skus.add(pack.sku);
+      }
+    }
     return p;
   }
   function configuration() {
@@ -53,5 +67,15 @@
     } finally { clearTimeout(timer); }
   }
   const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
-  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape});
+  const money = value => "$" + Number(value).toLocaleString("es-CL");
+  function packFor(product, label) {
+    return product.packs?.find(pack => pack.label === label);
+  }
+  function packFields(product, label) {
+    const pack = packFor(product, label);
+    return pack ? {sku:pack.sku, unitsPerPack:pack.quantity, unitPrice:pack.unitPrice,
+      totalNet:pack.totalNet, withoutPrint:pack.withoutPrint,
+      price:money(pack.totalNet) + " + IVA / pack"} : {price:product.price};
+  }
+  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, packFields});
 })();

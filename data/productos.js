@@ -12,10 +12,12 @@
         subtitle: "Capacidad 330 cc · Formato Maleta",
         type: "dual",
         image: "images/beer-maleta-3x330-approved.webp",
-        price: "$670 + IVA c/u",
-        priceNum: 670,
+        price: "$700 + IVA c/u · Pack 100 u.",
+        priceNum: 700,
         specs: ["Cartulina kraft 400g", "Asa reforzada", "Desde 50 u."],
-        variants: ["Pack 50 u. ($33.500)", "Pack 100 u. ($67.000)", "Pack 200 u. ($134.000)"]
+        variants: ["Pack 50 u. ($45.000 + IVA)", "Pack 100 u. ($70.000 + IVA)", "Pack 200 u. ($134.000 + IVA)"],
+        sku: "KP-CER-M3-330",
+        packs: [{"quantity": 50, "unitPrice": 900, "totalNet": 45000, "sku": "KP-CER-M3-330-P050", "withoutPrint": false, "label": "Pack 50 u. ($45.000 + IVA)"}, {"quantity": 100, "unitPrice": 700, "totalNet": 70000, "sku": "KP-CER-M3-330-P100", "withoutPrint": false, "label": "Pack 100 u. ($70.000 + IVA)"}, {"quantity": 200, "unitPrice": 670, "totalNet": 134000, "sku": "KP-CER-M3-330-P200", "withoutPrint": false, "label": "Pack 200 u. ($134.000 + IVA)"}]
       },
       {
         id: "beer-wrap-4x330",
@@ -24,10 +26,12 @@
         subtitle: "Capacidad 330 cc · Formato Wrap autoarmable",
         type: "dual",
         image: "images/beer-wrap-4x330-approved.webp",
-        price: "$310 + IVA c/u",
+        price: "$310 + IVA c/u · Pack 100 u.",
         priceNum: 310,
         specs: ["Cartulina kraft 400g", "Fácil armado", "Desde 50 u."],
-        variants: ["Pack 50 u. ($15.500)", "Pack 100 u. ($31.000)", "Pack 200 u. ($62.000)"]
+        variants: ["Pack 50 u. · Sin impresión ($18.000 + IVA)", "Pack 100 u. ($31.000 + IVA)", "Pack 200 u. ($62.000 + IVA)", "Pack 300 u. ($88.500 + IVA)", "Pack 400 u. ($114.000 + IVA)"],
+        sku: "KP-CER-W4-330",
+        packs: [{"quantity": 50, "unitPrice": 360, "totalNet": 18000, "sku": "KP-CER-W4-330-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($18.000 + IVA)"}, {"quantity": 100, "unitPrice": 310, "totalNet": 31000, "sku": "KP-CER-W4-330-P100", "withoutPrint": false, "label": "Pack 100 u. ($31.000 + IVA)"}, {"quantity": 200, "unitPrice": 310, "totalNet": 62000, "sku": "KP-CER-W4-330-P200", "withoutPrint": false, "label": "Pack 200 u. ($62.000 + IVA)"}, {"quantity": 300, "unitPrice": 295, "totalNet": 88500, "sku": "KP-CER-W4-330-P300", "withoutPrint": false, "label": "Pack 300 u. ($88.500 + IVA)"}, {"quantity": 400, "unitPrice": 285, "totalNet": 114000, "sku": "KP-CER-W4-330-P400", "withoutPrint": false, "label": "Pack 400 u. ($114.000 + IVA)"}]
       },
       {
         id: "beer-wrap-6x330",
@@ -36,10 +40,12 @@
         subtitle: "Capacidad 330 cc (Six-pack) · Formato Wrap",
         type: "dual",
         image: "images/beer-wrap-6x330-approved.webp",
-        price: "$450 + IVA c/u",
+        price: "$450 + IVA c/u · Pack 100 u.",
         priceNum: 450,
         specs: ["Cartulina kraft 400g", "Pack clásico 6u", "Desde 50 u."],
-        variants: ["Pack 50 u. ($22.500)", "Pack 100 u. ($45.000)", "Pack 200 u. ($90.000)"]
+        variants: ["Pack 50 u. · Sin impresión ($25.000 + IVA)", "Pack 100 u. ($45.000 + IVA)", "Pack 200 u. ($90.000 + IVA)", "Pack 300 u. ($129.000 + IVA)", "Pack 400 u. ($166.000 + IVA)"],
+        sku: "KP-CER-W6-330",
+        packs: [{"quantity": 50, "unitPrice": 500, "totalNet": 25000, "sku": "KP-CER-W6-330-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($25.000 + IVA)"}, {"quantity": 100, "unitPrice": 450, "totalNet": 45000, "sku": "KP-CER-W6-330-P100", "withoutPrint": false, "label": "Pack 100 u. ($45.000 + IVA)"}, {"quantity": 200, "unitPrice": 450, "totalNet": 90000, "sku": "KP-CER-W6-330-P200", "withoutPrint": false, "label": "Pack 200 u. ($90.000 + IVA)"}, {"quantity": 300, "unitPrice": 430, "totalNet": 129000, "sku": "KP-CER-W6-330-P300", "withoutPrint": false, "label": "Pack 300 u. ($129.000 + IVA)"}, {"quantity": 400, "unitPrice": 415, "totalNet": 166000, "sku": "KP-CER-W6-330-P400", "withoutPrint": false, "label": "Pack 400 u. ($166.000 + IVA)"}]
       },
       {
         id: "beer-wrap-4x500",
@@ -48,10 +54,12 @@
         subtitle: "Botellas grandes de 500 cc · Cartulina kraft 400g",
         type: "dual",
         image: "images/cerveza-wrap-4x500.webp",
-        price: "$460 + IVA c/u",
+        price: "$460 + IVA c/u · Pack 100 u.",
         priceNum: 460,
         specs: ["Para botellas 500 cc", "Kraft extra resistente", "Desde 50 u."],
-        variants: ["Pack 50 u. ($23.000)", "Pack 100 u. ($46.000)"]
+        variants: ["Pack 50 u. · Sin impresión ($25.500 + IVA)", "Pack 100 u. ($46.000 + IVA)", "Pack 200 u. ($92.000 + IVA)", "Pack 300 u. ($132.000 + IVA)", "Pack 400 u. ($170.000 + IVA)"],
+        sku: "KP-CER-W4-500",
+        packs: [{"quantity": 50, "unitPrice": 510, "totalNet": 25500, "sku": "KP-CER-W4-500-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($25.500 + IVA)"}, {"quantity": 100, "unitPrice": 460, "totalNet": 46000, "sku": "KP-CER-W4-500-P100", "withoutPrint": false, "label": "Pack 100 u. ($46.000 + IVA)"}, {"quantity": 200, "unitPrice": 460, "totalNet": 92000, "sku": "KP-CER-W4-500-P200", "withoutPrint": false, "label": "Pack 200 u. ($92.000 + IVA)"}, {"quantity": 300, "unitPrice": 440, "totalNet": 132000, "sku": "KP-CER-W4-500-P300", "withoutPrint": false, "label": "Pack 300 u. ($132.000 + IVA)"}, {"quantity": 400, "unitPrice": 425, "totalNet": 170000, "sku": "KP-CER-W4-500-P400", "withoutPrint": false, "label": "Pack 400 u. ($170.000 + IVA)"}]
       },
       {
         id: "beer-wrap-2x500",
@@ -60,10 +68,12 @@
         subtitle: "Presentación doble para botellas de 500 cc",
         type: "dual",
         image: "images/cerveza-wrap-2x500.webp",
-        price: "$350 + IVA c/u",
+        price: "$350 + IVA c/u · Pack 100 u.",
         priceNum: 350,
         specs: ["Para botellas 500 cc", "Doble compacto", "Desde 50 u."],
-        variants: ["Pack 50 u. ($17.500)", "Pack 100 u. ($35.000)"]
+        variants: ["Pack 50 u. · Sin impresión ($20.000 + IVA)", "Pack 100 u. ($35.000 + IVA)", "Pack 200 u. ($70.000 + IVA)", "Pack 300 u. ($100.500 + IVA)", "Pack 400 u. ($130.000 + IVA)"],
+        sku: "KP-CER-W2-500",
+        packs: [{"quantity": 50, "unitPrice": 400, "totalNet": 20000, "sku": "KP-CER-W2-500-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($20.000 + IVA)"}, {"quantity": 100, "unitPrice": 350, "totalNet": 35000, "sku": "KP-CER-W2-500-P100", "withoutPrint": false, "label": "Pack 100 u. ($35.000 + IVA)"}, {"quantity": 200, "unitPrice": 350, "totalNet": 70000, "sku": "KP-CER-W2-500-P200", "withoutPrint": false, "label": "Pack 200 u. ($70.000 + IVA)"}, {"quantity": 300, "unitPrice": 335, "totalNet": 100500, "sku": "KP-CER-W2-500-P300", "withoutPrint": false, "label": "Pack 300 u. ($100.500 + IVA)"}, {"quantity": 400, "unitPrice": 325, "totalNet": 130000, "sku": "KP-CER-W2-500-P400", "withoutPrint": false, "label": "Pack 400 u. ($130.000 + IVA)"}]
       },
       {
         id: "beer-maleta-vaso",
@@ -72,10 +82,13 @@
         subtitle: "Pack degustación con espacio para vaso o 3 botellas",
         type: "dual",
         image: "images/cerveza-maleta-2-botellas-vaso.webp",
-        price: "$670 + IVA c/u",
-        priceNum: 670,
+        price: "$700 + IVA c/u · Pack 100 u.",
+        priceNum: 700,
         specs: ["Formato regalo", "Botellas 330cc o 500cc", "Desde 50 u."],
-        variants: ["Configuración 2 botellas + vaso", "Configuración 3 botellas 330cc"]
+        variants: ["Pack 50 u. · Sin impresión ($37.500 + IVA)", "Pack 100 u. ($70.000 + IVA)", "Pack 200 u. ($140.000 + IVA)", "Pack 300 u. ($201.000 + IVA)", "Pack 400 u. ($260.000 + IVA)"],
+        sku: "KP-CER-M2V",
+        packs: [{"quantity": 50, "unitPrice": 750, "totalNet": 37500, "sku": "KP-CER-M2V-P050-SI", "withoutPrint": true, "label": "Pack 50 u. · Sin impresión ($37.500 + IVA)"}, {"quantity": 100, "unitPrice": 700, "totalNet": 70000, "sku": "KP-CER-M2V-P100", "withoutPrint": false, "label": "Pack 100 u. ($70.000 + IVA)"}, {"quantity": 200, "unitPrice": 700, "totalNet": 140000, "sku": "KP-CER-M2V-P200", "withoutPrint": false, "label": "Pack 200 u. ($140.000 + IVA)"}, {"quantity": 300, "unitPrice": 670, "totalNet": 201000, "sku": "KP-CER-M2V-P300", "withoutPrint": false, "label": "Pack 300 u. ($201.000 + IVA)"}, {"quantity": 400, "unitPrice": 650, "totalNet": 260000, "sku": "KP-CER-M2V-P400", "withoutPrint": false, "label": "Pack 400 u. ($260.000 + IVA)"}],
+        configurations: ["2 botellas + vaso", "3 botellas 330cc"]
       },
 
       // 2. Repostería & Alfajores (Nuevos productos + Cajas de alfajor)

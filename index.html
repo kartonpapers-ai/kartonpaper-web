@@ -443,8 +443,19 @@
           vBtn.addEventListener("click", () => {
             card.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("selected"));
             vBtn.classList.add("selected");
+            updatePackPrice();
           });
         });
+
+        function updatePackPrice() {
+          const selected = card.querySelector(".variant-btn.selected")?.dataset.val;
+          const pack = KP_CATALOG.packFor(p, selected);
+          if (!pack) return;
+          card.querySelector(".product-price-value").textContent = KP_CATALOG.money(pack.unitPrice) + " + IVA c/u";
+          card.querySelector(".product-price-note").textContent =
+            KP_CATALOG.money(pack.totalNet) + " + IVA / pack · " + pack.sku;
+        }
+        updatePackPrice();
 
         // Add to cart click
         card.querySelectorAll("[data-action='add-stock']").forEach(btn => {
@@ -455,7 +466,7 @@
               name: p.name,
               image: p.image,
               variant: selectedVariant,
-              price: p.price,
+              ...KP_CATALOG.packFields(p, selectedVariant),
               isCustom: false,
               qty: 1
             });
@@ -524,7 +535,8 @@
     function addToCart(item) {
       // Si ya existe el item con la misma variante y personalización, aumentar cantidad
       const existing = cart.find(i => 
-        i.id === item.id && 
+        i.id === item.id &&
+        i.isCustom === item.isCustom &&
         i.variant === item.variant && 
         i.logoFile === item.logoFile
       );
@@ -561,7 +573,7 @@
 
         const customBadge = item.isCustom 
           ? `<div class="cart-item-custom-badge">🎨 Con logo: ${safe.logoFile || 'A coordinar'}</div>`
-          : `<div style="font-size:11px;color:var(--stock-green);font-weight:600;">✓ Pack genérico sin impresión</div>`;
+          : `<div style="font-size:11px;color:var(--stock-green);font-weight:600;">${item.withoutPrint || !item.sku ? '✓ Pack sin impresión' : '✓ Pack seleccionado'}${item.sku ? ' · ' + safe.sku : ''}</div>`;
 
         itemEl.innerHTML = `
           <img class="cart-item-thumb" src="${safe.image}" alt="${safe.name}">
@@ -576,7 +588,7 @@
             </div>
           </div>
           <div class="cart-item-right">
-            <span class="cart-item-price">${safe.price}</span>
+            <span class="cart-item-price">${Number.isSafeInteger(item.totalNet) && !item.isCustom ? KP_CATALOG.escape(KP_CATALOG.money(item.totalNet * item.qty) + " + IVA") : safe.price}</span>
             <button class="cart-item-remove" type="button" data-index="${index}" aria-label="Eliminar item">🗑️</button>
           </div>
         `;
@@ -647,6 +659,13 @@
         text += `   • Opción/Medida: ${item.variant}\n`;
         text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : 'pack(s)'}\n`;
         text += `   • Referencia: ${item.price}\n`;
+        if (item.sku && !item.isCustom) {
+          text += `   • SKU: ${item.sku}\n`;
+          text += `   • Unidades totales: ${item.unitsPerPack * item.qty}\n`;
+          text += `   • Neto: ${KP_CATALOG.money(item.totalNet * item.qty)}\n`;
+          text += `   • IVA (19%): ${KP_CATALOG.money(Math.round(item.totalNet * item.qty * 0.19))}\n`;
+          text += `   • Total con IVA: ${KP_CATALOG.money(Math.round(item.totalNet * item.qty * 1.19))}\n`;
+        }
         if (item.isCustom) {
           text += `   • 🎨 Personalización con logo: ${item.logoFile ? item.logoFile : 'Adjuntaré archivo por este chat'}\n`;
         }
@@ -692,8 +711,10 @@
 
       // Variants
       modalVariantSelect.innerHTML = "";
-      if (product.variants && product.variants.length > 0) {
-        product.variants.forEach(v => {
+      const customVariants = product.configurations || (product.packs
+        ? ["Personalización con logo · Cotización"] : product.variants);
+      if (customVariants && customVariants.length > 0) {
+        customVariants.forEach(v => {
           const opt = document.createElement("option");
           opt.value = v;
           opt.textContent = v;
@@ -749,7 +770,7 @@
         name: currentCustomProduct.name,
         image: currentCustomProduct.image,
         variant: variant,
-        price: currentCustomProduct.price,
+        price: "Cotización con logo",
         isCustom: true,
         logoFile: selectedLogoFileName || "A enviar por WhatsApp",
         qty: quantity
@@ -826,15 +847,19 @@
         const remote = await KP_CATALOG.load();
         if (remote !== null) {
           productsDB.splice(0, productsDB.length, ...remote);
-          // Revalidar pedidos guardados al volver a entrar a la tienda.
-          cart = cart.filter(item => productsDB.some(p => p.id === item.id && p.variants.includes(item.variant)
-            && (item.isCustom ? p.type !== "stock" : p.type !== "custom")));
-          cart = cart.map(item => {
-            const product = productsDB.find(p => p.id === item.id);
-            return {...item, name:product.name, image:product.image, price:item.isCustom ? "Cotización con logo" : product.price};
-          });
-          saveCart();
         }
+        cart = cart.filter(item => {
+          const product = productsDB.find(p => p.id === item.id);
+          if (!product || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
+          const variants = item.isCustom && product.packs
+            ? (product.configurations || ["Personalización con logo · Cotización"]) : product.variants;
+          return variants.includes(item.variant) && (item.isCustom ? product.type !== "stock" : product.type !== "custom");
+        }).map(item => {
+          const product = productsDB.find(p => p.id === item.id);
+          return {...item, name:product.name, image:product.image,
+            ...(item.isCustom ? {price:"Cotización con logo"} : KP_CATALOG.packFields(product, item.variant))};
+        });
+        saveCart();
         status.hidden = productsDB.length > 0;
         status.textContent = productsDB.length ? "" : "Estamos actualizando el catálogo. Puedes consultarnos por WhatsApp.";
         checkoutWaBtn.disabled = false;
