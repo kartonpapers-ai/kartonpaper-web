@@ -442,16 +442,77 @@
 
       // 5. Doypack Kraft con Ventana
       {
-        id: "doypack-kraft-ventana",
-        category: "doypack",
-        name: "Doypack kraft con ventana y Ziplock",
-        subtitle: "Barrera contra grasa y humedad · Para café, té y frutos secos",
-        type: "custom",
-        image: "images/doypack-kraft-ventana.webp",
-        price: "Desde $174 + IVA c/u",
-        priceNum: 174,
-        specs: ["Cierre Ziplock", "Interior laminado", "Impresión 1 o 2 caras"],
-        variants: ["10 × 15 + 3 cm · $174 + IVA c/u","12 × 20 + 4 cm · $219 + IVA c/u","14 × 20 + 4 cm · $255 + IVA c/u","16 × 24 + 4 cm · $343 + IVA c/u","20 × 29 + 5 cm · $558 + IVA c/u","25 × 35 + 5 cm · $570 + IVA c/u"]
+        "id": "doypack-kraft-ventana",
+        "category": "doypack",
+        "name": "Doypack kraft con ventana y Ziplock",
+        "subtitle": "Barrera contra grasa y humedad · Para café, té y frutos secos",
+        "type": "custom",
+        "image": "images/doypack-kraft-ventana.webp",
+        "price": "Desde $174 + IVA c/u",
+        "priceNum": 174,
+        "specs": [
+          "Cierre Ziplock",
+          "Interior laminado",
+          "Impresión 1 o 2 caras"
+        ],
+        "variants": [
+          "10 × 15 + 3 cm · $174 + IVA c/u",
+          "12 × 20 + 4 cm · $219 + IVA c/u",
+          "14 × 20 + 4 cm · $255 + IVA c/u",
+          "16 × 24 + 4 cm · $343 + IVA c/u",
+          "20 × 29 + 5 cm · $558 + IVA c/u",
+          "25 × 35 + 5 cm · $570 + IVA c/u"
+        ],
+        "quantityRules": [
+          {
+            "variant": "10 × 15 + 3 cm",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "12 × 20 + 4 cm",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "14 × 20 + 4 cm",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "16 × 24 + 4 cm",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "20 × 29 + 5 cm",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          },
+          {
+            "variant": "25 × 35 + 5 cm",
+            "quantities": [
+              100,
+              200,
+              500
+            ]
+          }
+        ]
       },
 
       // 6. Posavasos de Pulpa Mecánica Absorbente (NUEVO)
