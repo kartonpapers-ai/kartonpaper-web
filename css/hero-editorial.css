@@ -44,16 +44,11 @@
 }
 
 
-/* Bolsas conserva el fondo menta y la proporción 2:1 común a los heroes de campaña. */
+/* El fondo menta de Bolsas y Doypack llega a ambos bordes sin ampliar la imagen. */
 @media(min-width:901px){
- .eh-campaign.eh-bolsas .eh-hero{background:#dcefe4}
- .eh-campaign.eh-bolsas .eh-stage img{object-fit:contain}
-}
-
-/* Doypack mantiene la altura 2:1 compartida por los heroes de campaña. */
-@media(min-width:901px){
- .eh-campaign.eh-doypack .eh-hero{background:#dcefe4}
- .eh-campaign.eh-doypack .eh-stage img{object-fit:contain}
+ .eh-campaign:is(.eh-bolsas,.eh-doypack) .eh-hero{background:#dcefe4}
+ .eh-campaign:is(.eh-bolsas,.eh-doypack) .eh-hero::before{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;background:#dcefe4;box-shadow:0 0 0 100vmax #dcefe4;clip-path:inset(0 -100vmax)}
+ .eh-campaign:is(.eh-bolsas,.eh-doypack) .eh-stage img{object-fit:contain}
 }
 
 /* La primera caja necesita aire adicional para no cruzarse con el titular. */
