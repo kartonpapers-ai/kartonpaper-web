@@ -1714,3 +1714,40 @@ html { scroll-padding-top: 196px; }
 .coaster-card .btn-card-action{white-space:normal;text-align:center}
 .coaster-wholesale{flex-basis:100%;color:var(--ink);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:4px}
 .coaster-wholesale:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+/* Catálogo compacto: conserva el precio inicial y abre las opciones en el detalle. */
+.product-card-compact{cursor:pointer}
+.product-card-compact:not(.product-detail-card) .product-specs-list,
+.product-card-compact:not(.product-detail-card) .card-variant-selector,
+.product-card-compact:not(.product-detail-card) .product-card-footer{display:none}
+.product-card-compact:not(.product-detail-card) .product-card-desc{flex-grow:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:16px}
+.product-card-summary{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:auto;padding-top:8px}
+.product-starting-price{font-size:16px;font-weight:800;color:var(--ink);line-height:1.35}
+.btn-view-product{background:var(--ink);color:#fff;border-color:var(--ink);min-height:44px}
+.btn-view-product:hover{background:var(--accent)}
+.btn-view-product:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.product-detail-modal{color:var(--ink);background:#fff;border:1px solid var(--border);border-radius:16px;width:min(1000px,calc(100% - 40px));max-width:none;max-height:calc(100dvh - 40px);padding:0;margin:auto;box-shadow:0 18px 60px rgba(0,0,0,.22);overscroll-behavior:contain}
+.product-detail-modal::backdrop{background:rgba(20,28,24,.5)}
+.product-detail-toolbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;font-size:14px;font-weight:600}
+.product-detail-toolbar .btn-modal-close{position:static;width:44px;height:44px;flex-shrink:0}
+.product-detail-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:0;border-radius:0;box-shadow:none;cursor:default;overflow:visible}
+.product-detail-card:hover{transform:none;box-shadow:none}
+.product-detail-card .product-card-media{aspect-ratio:1;position:sticky;top:70px;border:0;align-self:start;overflow:hidden}
+.product-detail-card .product-card-media img{padding:20px;object-fit:contain}
+.product-detail-card:hover .product-card-media img{transform:none}
+.product-detail-card .product-card-body{padding:28px;min-width:0}
+.product-detail-card .product-card-title{font-size:26px;line-height:1.2}
+.product-detail-card .product-card-desc{flex-grow:0;font-size:15px;line-height:1.5;margin-bottom:24px}
+.product-detail-card .product-card-summary{display:none}
+.product-detail-card .product-card-footer{flex-wrap:wrap;margin-top:8px;gap:16px}
+.product-detail-card .variant-btn{min-height:44px}
+.product-detail-card .btn-card-action{min-height:44px;white-space:normal;text-align:center}
+.product-detail-card .product-price-note{font-size:13px;line-height:1.5}
+@media(max-width:700px){
+ .product-detail-modal{width:calc(100% - 16px);max-height:calc(100dvh - 16px);border-radius:12px}
+ .product-detail-toolbar{padding:8px 16px}
+ .product-detail-card{grid-template-columns:minmax(0,1fr)}
+ .product-detail-card .product-card-media{position:relative;top:auto;max-height:300px;aspect-ratio:4/3}
+ .product-detail-card .product-card-body{padding:20px}
+ .product-detail-card .product-card-title{font-size:24px}
+}

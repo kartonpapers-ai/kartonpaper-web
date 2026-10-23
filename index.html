@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=colecciones-20261023">
+  <link rel="stylesheet" href="css/styles.css?v=catalogo-corto-20261023">
   <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -146,6 +146,11 @@
       </div>
     </section>
   </main>
+
+  <dialog id="product-detail-modal" class="product-detail-modal" aria-labelledby="product-detail-title">
+    <div class="product-detail-toolbar"><span>Detalle del producto</span><button type="button" id="close-product-detail" class="btn-modal-close" aria-label="Cerrar detalle del producto">✕</button></div>
+    <div id="product-detail-content"></div>
+  </dialog>
 
   <!-- ========================================================================
        Customizer Modal (Personalización con logo)
@@ -292,6 +297,7 @@
   <!-- ========================================================================
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
+  <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
   <script src="js/catalogo-remoto.js?v=colecciones-20261023"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
@@ -348,11 +354,13 @@
     const fileAttachedInfo = document.getElementById("file-attached-info");
     const attachedFilename = document.getElementById("attached-filename");
     const removeFileBtn = document.getElementById("remove-file-btn");
+    let cartReturnFocus=null,customReturnFocus=null;
 
     // ------------------------------------------------------------------------
     // Renderizado del Catálogo
     // ------------------------------------------------------------------------
     function renderProducts(category = "all") {
+      KP_PRODUCT_DETAIL.close(false);
       productsGrid.innerHTML = "";
       const filtered = category === "all" 
         ? productsDB 
@@ -362,7 +370,8 @@
         const q = {...p};
         for (const field of ["id", "name", "subtitle", "image", "price"]) q[field] = KP_CATALOG.escape(p[field]);
         const card = document.createElement("article");
-        card.className = "product-card";
+        card.className = "product-card product-card-compact";
+        card.dataset.productId=p.id;
         if(p.category==="posavasos")card.classList.add("coaster-card");
 
         // Badges
@@ -435,6 +444,7 @@
             <span class="product-category-tag">${getCategoryName(p.category)}</span>
             <h3 class="product-card-title">${q.name}</h3>
             <p class="product-card-desc">${q.subtitle}</p>
+            <div class="product-card-summary"><span class="product-starting-price"></span><button class="btn-card-action btn-view-product" type="button" aria-haspopup="dialog" aria-label="Ver opciones de ${q.name}">Ver opciones →</button></div>
             <div class="product-specs-list">${specsHtml}</div>
             ${variantHtml}
             <div class="product-card-footer">
@@ -469,6 +479,13 @@
             KP_CATALOG.money(pack.totalNet) + " + IVA / pack · " + pack.sku;
         }
         updatePackPrice();
+        // El precio de la tarjeta siempre corresponde a la opción inicial.
+        card.querySelector('.product-starting-price').textContent=card.querySelector('.product-price-value').textContent;
+        const detailButton=card.querySelector('.btn-view-product');
+        detailButton.addEventListener('click',()=>KP_PRODUCT_DETAIL.open(card,detailButton));
+        card.addEventListener('click',event=>{
+          if(!card.classList.contains('product-detail-card')&&!event.target.closest('a,button,input,select'))KP_PRODUCT_DETAIL.open(card,detailButton);
+        });
 
         // Add to cart click
         card.querySelectorAll("[data-action='add-stock']").forEach(btn => {
@@ -646,11 +663,13 @@
     }
 
     function openCart() {
+      cartReturnFocus=KP_PRODUCT_DETAIL.close(false)||document.activeElement;
       cartDrawer.classList.add("open");
       cartBackdrop.classList.add("open");
       cartDrawer.setAttribute("aria-hidden", "false");
       cartBackdrop.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      closeCartBtn.focus();
     }
 
     function closeCart() {
@@ -659,6 +678,7 @@
       cartDrawer.setAttribute("aria-hidden", "true");
       cartBackdrop.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      if(cartReturnFocus?.isConnected)cartReturnFocus.focus({preventScroll:true});
     }
 
     openCartBtn.addEventListener("click", openCart);
@@ -732,6 +752,7 @@
     // ------------------------------------------------------------------------
     function openCustomizer(product, pack = null, selectedVariant = null) {
       if (artworkBusy) return;
+      customReturnFocus=KP_PRODUCT_DETAIL.close(false)||document.activeElement;
       currentCustomProduct = product;
       modalProductTitle.textContent = `Personalizar ${product.name}`;
       modalProductName.textContent = product.name;
@@ -770,6 +791,7 @@
       customModal.classList.add("open");
       customModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      closeModalBtn.focus();
     }
 
     const defaultCustomQuantities = Array.from(modalQuantityInput.options, option=>({value:option.value,text:option.textContent}));
@@ -808,8 +830,17 @@
       customModal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       currentCustomProduct = null;
+      if(customReturnFocus?.isConnected)customReturnFocus.focus({preventScroll:true});
     }
 
+    customModal.addEventListener("keydown",event=>{
+      if(event.key==="Escape"){event.preventDefault();closeCustomizer();return;}
+      if(event.key!=="Tab")return;
+      const controls=Array.from(customModal.querySelectorAll('button,input,select,a[href]')).filter(el=>!el.disabled&&!el.hidden&&el.getClientRects().length);
+      const first=controls[0],last=controls.at(-1);
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+    });
     closeModalBtn.addEventListener("click", closeCustomizer);
     customModal.addEventListener("click", (e) => {
       if (e.target === customModal) closeCustomizer();

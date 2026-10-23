@@ -37,3 +37,7 @@ ajenos intactos. Comprueba pack prueba de 20, cantidades hasta 5.000, consulta
 mayorista, bloqueo de compra con precios pendientes y limpieza del carrito antiguo.
 Para activar la venta por caja en administración: fija precio numérico por caja,
 texto visible con su IVA correspondiente y desmarca «Precio pendiente».
+
+`test-producto-detalle.cjs` comprueba tarjetas compactas con precio inicial,
+detalle con selección persistente, cierre con Escape/fondo/botón, devolución del
+foco y transición al carrito o a personalización sin ventanas superpuestas.
