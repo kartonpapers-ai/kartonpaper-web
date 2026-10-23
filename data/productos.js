@@ -98,23 +98,11 @@
         name: "Papel aluminio metalizado para alfajores",
         subtitle: "Cuadrados de 15 × 15 cm para envolver alfajores artesanales",
         type: "stock",
-        image: "images/papel-aluminio-alfajores.webp",
+        image: "images/papel-metalizado-pliegos-15x15.webp",
         price: "$12.300 + IVA (Pack 100 u.)",
         priceNum: 12300,
         specs: ["Medida 15 × 15 cm", "Acabado brillante", "Apto alimentos"],
         variants: ["Dorado metalizado (Pack 100 u. $12.300 + IVA)","Rosado metalizado (Pack 100 u. $12.300 + IVA)","Dorado metalizado (Pack 500 u. $61.500 + IVA)","Rosado metalizado (Pack 500 u. $61.500 + IVA)"]
-      },
-      {
-        id: "reposteria-cajas-decoradas",
-        category: "reposteria",
-        name: "Cajas decoradas para alfajores (Temporada)",
-        subtitle: "Caja con visor de mica · Diseños Enamorados y Navidad",
-        type: "stock",
-        image: "images/reposteria-cajas-decoradas.webp",
-        price: "$14.900 (Pack 10 u.)",
-        priceNum: 14900,
-        specs: ["Ventana transparente", "Cartulina blanca 320g", "Edición lista"],
-        variants: ["Día de los Enamorados (Pack 10 u.)", "Navidad & Felices Fiestas (Pack 10 u.)"]
       },
       {
         id: "reposteria-caja-3-alfajores",
