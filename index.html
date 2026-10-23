@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=posavasos-20261022">
+  <link rel="stylesheet" href="css/styles.css?v=colecciones-20261023">
   <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -292,11 +292,11 @@
   <!-- ========================================================================
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
-  <script src="js/catalogo-remoto.js?v=posavasos-20261022"></script>
+  <script src="js/catalogo-remoto.js?v=colecciones-20261023"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
   <script src="js/heroes.js?v=biblioteca-20261020"></script>
-  <script src="data/productos.js"></script>
+  <script src="data/productos.js?v=colecciones-20261023"></script>
   <script>
 
     // ------------------------------------------------------------------------
@@ -363,11 +363,12 @@
         for (const field of ["id", "name", "subtitle", "image", "price"]) q[field] = KP_CATALOG.escape(p[field]);
         const card = document.createElement("article");
         card.className = "product-card";
+        if(p.category==="posavasos")card.classList.add("coaster-card");
 
         // Badges
         let badgeHtml = "";
         if (p.type === "stock") {
-          badgeHtml = `<span class="card-badge badge-stock">⚡ En stock · Compra directa</span>`;
+          badgeHtml = `<span class="card-badge badge-stock">${p.stockUnits ? "Colección · Caja de 20" : "⚡ En stock · Compra directa"}</span>`;
         } else if (p.type === "custom") {
           badgeHtml = `<span class="card-badge badge-custom">🎨 Personalizado con tu logo</span>`;
         } else {
@@ -396,7 +397,9 @@
 
         // Action Buttons
         let actionBtnHtml = "";
-        if (p.type === "stock") {
+        if (p.type === "stock" && p.pricePending) {
+          actionBtnHtml = `<a class="btn-card-action btn-custom-action" href="https://wa.me/56930332416?text=${encodeURIComponent('Hola, quiero consultar el precio de '+p.name+' · 1 caja kraft con 20 posavasos.')}" target="_blank" rel="noopener noreferrer">Consultar precio →</a>`;
+        } else if (p.type === "stock") {
           actionBtnHtml = `
             <button class="btn-card-action btn-add-cart" type="button" data-action="add-stock" data-id="${q.id}">
               + Agregar al carrito
@@ -405,7 +408,7 @@
         } else if (p.type === "custom") {
           actionBtnHtml = `
             <button class="btn-card-action btn-custom-action" type="button" data-action="customize" data-id="${q.id}">
-              🎨 Personalizar con logo →
+              ${p.id==='posavasos-personalizados'?'Cargar mi logo / Seleccionar cantidad':'🎨 Personalizar con logo →'}
             </button>
           `;
         } else {
@@ -422,6 +425,7 @@
           `;
         }
 
+        if(p.wholesaleInquiry) actionBtnHtml += `<a class="coaster-wholesale" href="https://wa.me/56930332416?text=${encodeURIComponent('Hola, quiero cotizar precio mayorista para tiendas de '+p.name+' en cajas de 20 posavasos.')}" target="_blank" rel="noopener noreferrer">Precio mayorista para tiendas →</a>`;
         card.innerHTML = `
           <div class="product-card-media">
             ${badgeHtml}
@@ -435,8 +439,8 @@
             ${variantHtml}
             <div class="product-card-footer">
               <div class="product-price-box">
-                <span class="product-price-value">${q.price}</span>
-                <span class="product-price-note">${p.type === 'custom' ? 'Revisión de arte incluida' : 'Despacho rápido'}</span>
+                <span class="product-price-value">${p.pricePending ? 'Consultar precio · Caja de 20' : q.price}</span>
+                <span class="product-price-note">${p.type === 'custom' ? 'Revisión de arte incluida' : p.pricePending ? 'Precio por confirmar antes de comprar' : 'Despacho rápido'}</span>
               </div>
               ${actionBtnHtml}
             </div>
@@ -469,6 +473,7 @@
         // Add to cart click
         card.querySelectorAll("[data-action='add-stock']").forEach(btn => {
           btn.addEventListener("click", () => {
+            if(p.pricePending)return;
             const selectedVariant = card.querySelector(".variant-btn.selected")?.dataset.val || p.variants?.[0] || "Estándar";
             const pack = KP_CATALOG.packFor(p, selectedVariant);
             if (pack?.requiresLogo) { openCustomizer(p, pack); return; }
@@ -786,8 +791,10 @@
         bulk.value=String(product.orderStep?(Number.parseInt(selectedVariant,10)||step):step);
         help.textContent="Venta de "+step+" en "+step+" unidades, por embalajes completos."+(product.printingArea==='tapa'?" Impresión solo en la tapa.":" Personalización con logo.");
       } else if(rule?.quantities) help.textContent="Cantidades disponibles para esta medida: "+rule.quantities.join(", ")+" unidades personalizadas.";
+      if(product.id==='posavasos-personalizados') help.textContent="Pack prueba de 20; pedidos de 100, 200, 500, 1.000, 2.000 o 5.000 unidades. Precio a cotizar según cantidad y gráfica.";
       if(product.customQuantities){
-        const requested=Number.parseInt(selectedVariant,10);
+        modalQuantityInput.value=String(product.customQuantities.includes(100)?100:product.customQuantities[0]);
+        const requested=Number.parseInt(String(selectedVariant||" ").replaceAll(".",""),10);
         if(product.customQuantities.includes(requested))modalQuantityInput.value=String(requested);
       }
       if(product.orderStep||product.customQuantities) document.getElementById("modal-variant-group").hidden=true;
@@ -955,7 +962,7 @@
         }
         cart = cart.filter(item => {
           const product = productsDB.find(p => p.id === item.id);
-          if (!product || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
+          if (!product || product.pricePending || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
           const variants = item.isCustom
             ? (product.configurations || (product.packs?["Personalización con logo · Cotización"]:product.variants)) : product.variants;
           const validVariant = product.orderStep

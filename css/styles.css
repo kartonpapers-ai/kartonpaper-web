@@ -1707,3 +1707,10 @@ html { scroll-padding-top: 196px; }
 .btn-card-action[hidden]{display:none!important}
 
 #modal-bulk-quantity[hidden],#modal-quantity-input[hidden],#modal-bulk-help[hidden]{display:none!important}
+
+/* Fotografías de las colecciones de posavasos: caja y contenido completos. */
+.coaster-card .product-card-media img{padding:0}
+.coaster-card .product-card-footer{flex-wrap:wrap}
+.coaster-card .btn-card-action{white-space:normal;text-align:center}
+.coaster-wholesale{flex-basis:100%;color:var(--ink);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:4px}
+.coaster-wholesale:focus-visible{outline:2px solid var(--accent);outline-offset:4px}

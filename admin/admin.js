@@ -45,6 +45,8 @@
     $("edit-category").value = row.data.category; $("edit-type").value = row.data.type; imageOptions(row.data.image);
     for (const field of ["name", "subtitle", "price"]) $("edit-" + field).value = row.data[field];
     $("edit-number").value = row.data.priceNum ?? "";
+    $("edit-price-pending-group").hidden=!row.data.stockUnits;
+    $("edit-price-pending").checked=Boolean(row.data.pricePending);
     $("edit-variants").value = row.data.variants.join("\n"); $("edit-specs").value = row.data.specs.join("\n");
     $("edit-published").checked = row.published;
     const eligible = window.KP_PRICES.unitFromText(row.data.price) !== null && window.KP_PRICES.packs(row.data.variants) !== null;
@@ -165,6 +167,7 @@
         const calculated = window.KP_PRICES.calculate(numeric, window.KP_PRICES.packs(data.variants));
         Object.assign(data, calculated, {pricingMode:"unit"});
       } else data.pricingMode = "manual";
+      if(data.stockUnits)data.pricePending=$("edit-price-pending").checked;
       window.KP_CATALOG.validate(data);
     } catch (error) { status("save-status", error.message, "error"); return; }
     saving = true;

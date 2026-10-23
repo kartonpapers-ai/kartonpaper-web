@@ -515,53 +515,99 @@
         ]
       },
 
-      // 6. Posavasos de Pulpa Mecánica Absorbente (NUEVO)
-      {
-        "id": "posavasos-souvenir-chile",
-        "category": "posavasos",
-        "name": "Caja Souvenir: 20 Posavasos de Chile",
-        "subtitle": "Ilustraciones turísticas de Chile · Pulpa absorbente 90 mm",
-        "type": "stock",
-        "image": "images/posavasos-antartica.webp",
-        "price": "$12.900 (Caja 20 u.)",
-        "priceNum": 12900,
-        "specs": [
-          "20 posavasos por caja",
-          "Diámetro 90 mm",
-          "Temática a elección"
-        ],
-        "variants": [
-          "Colección Completa: Antártica, Torres del Paine, Valparaíso, Atacama (Caja 20 u.)",
-          "Colección Antártica Chilena (Caja 20 u.)"
-        ],
-        "stockUnits": 20
-      },
+      // 6. Posavasos: personalizados y tres colecciones por caja de 20.
       {
         "id": "posavasos-personalizados",
         "category": "posavasos",
-        "name": "Posavasos circulares 90 mm personalizados",
-        "subtitle": "Para cervecerías, bares, cafeterías y eventos especiales",
+        "name": "Posavasos Personalizados con Tu Logo",
+        "subtitle": "Para empresas, bares, cafeterías y eventos · Pack prueba desde 20 unidades",
         "type": "custom",
-        "image": "images/posavasos-chile-souvenir.webp",
+        "image": "images/posavasos-personalizados-b2b.webp",
         "price": "Cotización con logo",
         "specs": [
-          "Pulpa mecánica absorbente",
-          "Impresión con tu logo",
-          "100, 200 o 500 unidades"
+          "Pulpa absorbente",
+          "Tu logo o gráfica",
+          "Pack prueba de 20 · Volumen desde 100"
         ],
         "variants": [
+          "20 unidades · Pack prueba",
           "100 unidades",
           "200 unidades",
-          "500 unidades"
+          "500 unidades",
+          "1.000 unidades",
+          "2.000 unidades",
+          "5.000 unidades"
         ],
         "configurations": [
           "Tu logo o gráfica"
         ],
         "customQuantities": [
+          20,
           100,
           200,
-          500
+          500,
+          1000,
+          2000,
+          5000
         ],
         "requiresArtwork": true
+      },
+      {
+        "id": "posavasos-souvenir-chile",
+        "category": "posavasos",
+        "name": "Caja Souvenir Patagonia",
+        "subtitle": "Ilustraciones turísticas de la Patagonia · Para turismo, hoteles y tiendas",
+        "type": "stock",
+        "image": "images/posavasos-patagonia.webp",
+        "price": "Consultar precio · Caja de 20",
+        "pricePending": true,
+        "specs": [
+          "20 posavasos por caja",
+          "Caja kraft con ventana",
+          "Pulpa absorbente"
+        ],
+        "variants": [
+          "1 caja kraft con 20 posavasos"
+        ],
+        "stockUnits": 20,
+        "wholesaleInquiry": true
+      },
+      {
+        "id": "posavasos-heroes-rock",
+        "category": "posavasos",
+        "name": "Caja Colección Héroes del Rock",
+        "subtitle": "Ilustraciones vintage de leyendas de la música · Para regalos y quinchos",
+        "type": "stock",
+        "image": "images/posavasos-heroes-rock.webp",
+        "price": "Consultar precio · Caja de 20",
+        "pricePending": true,
+        "specs": [
+          "20 posavasos por caja",
+          "Caja kraft con ventana",
+          "Pulpa absorbente"
+        ],
+        "variants": [
+          "1 caja kraft con 20 posavasos"
+        ],
+        "stockUnits": 20
+      },
+      {
+        "id": "posavasos-leyendas-futbol",
+        "category": "posavasos",
+        "name": "Caja Colección Leyendas del Fútbol",
+        "subtitle": "Ilustraciones de figuras icónicas del fútbol · Para deportes y quinchos",
+        "type": "stock",
+        "image": "images/posavasos-leyendas-futbol.webp",
+        "price": "Consultar precio · Caja de 20",
+        "pricePending": true,
+        "specs": [
+          "20 posavasos por caja",
+          "Caja kraft con ventana",
+          "Pulpa absorbente"
+        ],
+        "variants": [
+          "1 caja kraft con 20 posavasos"
+        ],
+        "stockUnits": 20
       }
     ];

@@ -25,7 +25,9 @@
     if (p.orderStep !== undefined && (!Number.isSafeInteger(p.orderStep) || p.orderStep < 1 || p.orderStep > 1000000 || p.type !== 'custom')) throw new Error('Revisa las unidades del embalaje.');
     if (p.customQuantities !== undefined && (p.type!=='custom'||!Array.isArray(p.customQuantities)||!p.customQuantities.length||p.customQuantities.length>30||p.customQuantities.some((q,i)=>!Number.isSafeInteger(q)||q<1||q>1000000||(i>0&&q<=p.customQuantities[i-1])))) throw new Error('Revisa las cantidades personalizadas.');
     if (p.requiresArtwork !== undefined && (typeof p.requiresArtwork!=='boolean'||p.type!=='custom')) throw new Error('Revisa el requisito de archivo.');
-    if (p.stockUnits !== undefined && (p.type!=='stock'||!Number.isSafeInteger(p.stockUnits)||p.stockUnits<1||p.stockUnits>1000000||!Number.isFinite(p.priceNum)||p.priceNum<0)) throw new Error('Revisa las unidades y precio de la caja.');
+    if (p.pricePending !== undefined && (typeof p.pricePending!=='boolean'||p.type!=='stock')) throw new Error('Revisa el estado del precio.');
+    if (p.wholesaleInquiry !== undefined && (typeof p.wholesaleInquiry!=='boolean'||p.type!=='stock')) throw new Error('Revisa la consulta mayorista.');
+    if (p.stockUnits !== undefined && (p.type!=='stock'||!Number.isSafeInteger(p.stockUnits)||p.stockUnits<1||p.stockUnits>1000000||(!p.pricePending&&(!Number.isFinite(p.priceNum)||p.priceNum<=0)))) throw new Error('Fija un precio mayor que cero para activar la venta por caja.');
     if (p.quantityRules !== undefined) {
       if (!Array.isArray(p.quantityRules) || p.quantityRules.length !== p.variants.length || p.type !== 'custom') throw new Error('Revisa las cantidades por medida.');
       const seen = new Set();

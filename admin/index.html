@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../css/admin.css?v=starken-20261022">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
-  <script defer src="../js/catalogo-remoto.js"></script>
+  <script defer src="../js/catalogo-remoto.js?v=colecciones-20261023"></script>
   <script defer src="imagenes.js"></script>
   <script defer src="precios.js"></script>
   <script defer src="finanzas-calculo.js?v=gastronomia-20261022"></script>
@@ -24,7 +24,7 @@
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
   <script defer src="dashboard.js?v=posavasos-20261022"></script>
-  <script defer src="admin.js?v=redes-20261018"></script>
+  <script defer src="admin.js?v=colecciones-20261023"></script>
 </head>
 <body>
   <header class="topbar">
@@ -69,6 +69,7 @@
             <p id="pricing-help" class="field-help"></p>
             <label id="number-label" for="edit-number">Precio por unidad, neto (CLP)</label><input id="edit-number" type="number" min="0" step="1" aria-describedby="number-help"><p id="number-help" class="field-help"></p>
             <label for="edit-price">Precio o texto visible</label><input id="edit-price" required maxlength="150">
+            <div id="edit-price-pending-group" hidden><label class="checkbox"><input id="edit-price-pending" type="checkbox"> Precio pendiente: mostrar consulta y desactivar compra</label><p class="field-help">Para vender cajas, desmarca esta opción e ingresa el precio por caja y su texto visible.</p></div>
             <label for="edit-variants">Opciones de venta · una por línea</label><textarea id="edit-variants" rows="4" required></textarea><p id="variants-help" class="field-help"></p>
             <p id="pricing-status" role="status" aria-live="polite"></p>
 </details>

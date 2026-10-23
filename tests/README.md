@@ -30,3 +30,10 @@ rechazo anon y no-admin, direcciones, tamaño máximo, duplicados y ausencia de
 borrado/edición), reutilización de fotos de productos y validación de colores.
 La prueba de heroes simula búsqueda, filtros, elección de imagen sin subirla,
 colores en preview y guardado, y reintento de registro sin duplicar la subida.
+
+`test-posavasos-colecciones.cjs` cubre la migración 24: cuatro modelos visibles,
+archivo de temáticas anteriores sin borrado, repetición segura del SQL y datos
+ajenos intactos. Comprueba pack prueba de 20, cantidades hasta 5.000, consulta
+mayorista, bloqueo de compra con precios pendientes y limpieza del carrito antiguo.
+Para activar la venta por caja en administración: fija precio numérico por caja,
+texto visible con su IVA correspondiente y desmarca «Precio pendiente».
