@@ -1791,3 +1791,5 @@ html { scroll-padding-top: 196px; }
 .box-full-front{transform:rotate(180deg)}
 .box-full-panel .box-print-zone{border:0}
 .box-full-panel .box-print-empty{display:none}
+
+.file-attached-info[hidden]{display:none}
