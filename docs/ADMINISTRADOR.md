@@ -263,3 +263,11 @@ Se aceptan JPG de producto con fondo blanco y PNG/WebP transparentes. Comprobar
 el tono del fondo real y la resolución antes de publicar. Las campañas nuevas no añaden sombra artificial, para evitar un rectángulo
 sombreado en fotos blancas. El control «Añadir sombra suave» puede activarse en
 recortes; campañas anteriores conservan su sombra mientras no se desactive.
+
+## Editar precios por pack
+
+En **Precios → Editar precio**, los productos con packs estructurados muestran una fila por pack. Edita unidades, modalidad de impresión, precio unitario neto y SKU; el total neto se calcula automáticamente. El SKU debe ser único dentro del producto y usar mayúsculas, números y guiones. Conserva el identificador de un pack existente salvo que necesites corregirlo.
+
+Marca **Mostrar este precio en el catálogo** en el pack de referencia. Al guardar se actualizan juntos los packs, sus etiquetas, el precio inicial y las configuraciones con logo. Los packs con logo requieren una forma de venta que admita personalización. Agregar o quitar packs modifica las opciones del catálogo al guardar.
+
+Los cambios se publican al guardar el producto y recargar la tienda. Las ventas y fichas de costos guardadas conservan sus importes; elegir un pack en una venta nueva o cambiar de variante consulta el catálogo actualizado. Los productos sin packs estructurados mantienen su editor anterior.

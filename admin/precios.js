@@ -15,5 +15,44 @@
     if (!quantities || quantities.some(q => !Number.isSafeInteger(q) || q < 1 || !Number.isSafeInteger(q*n))) throw new Error("Revisa las cantidades de los packs: el total no es válido.");
     return {priceNum:n, price:`$${format(n)} + IVA c/u`, variants:quantities.map(q => `Pack ${q} u. ($${format(q*n)})`)};
   }
-  window.KP_PRICES = Object.freeze({packs, unitFromText, calculate});
+  function structured(product, entries, initial) {
+    if (!Array.isArray(entries) || !entries.length || entries.length > 30) throw new Error("Conserva entre 1 y 30 packs.");
+    if (!Number.isInteger(initial) || !entries[initial]) throw new Error("Selecciona el pack cuyo precio aparecerá primero en el catálogo.");
+    const skus = new Set();
+    const updated = entries.map((entry, index) => {
+      const {quantity, unitPrice, sku, withoutPrint} = entry;
+      const prefix = "Pack " + (index + 1) + ": ";
+      if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > 1000000) throw new Error(prefix + "ingresa entre 1 y 1.000.000 unidades enteras.");
+      if (!Number.isSafeInteger(unitPrice) || unitPrice < 0 || unitPrice > 1e9 || !Number.isSafeInteger(quantity * unitPrice)) throw new Error(prefix + "ingresa un precio unitario neto válido en pesos enteros (0 a 1.000.000.000).");
+      if (typeof sku !== "string" || !/^[A-Z0-9-]{1,80}$/.test(sku) || skus.has(sku)) throw new Error(prefix + "usa un SKU único, con mayúsculas, números y guiones (máximo 80 caracteres).");
+      if (typeof withoutPrint !== "boolean" || typeof entry.requiresLogo !== "boolean" || (withoutPrint && entry.requiresLogo) || (entry.requiresLogo && product.type === "stock")) throw new Error(prefix + "revisa la modalidad de impresión y la forma de venta.");
+      skus.add(sku);
+      const pack = {...entry, totalNet:quantity * unitPrice};
+      const mode = withoutPrint ? " · Sin impresión" : entry.requiresLogo ? " · Con logo" : "";
+      pack.label = `Pack ${quantity} u.${mode} ($${format(pack.totalNet)} + IVA)`;
+      if (entry.requiresLogo) pack.configuration = `${quantity} unidades`;
+      else {delete pack.configuration; delete pack.requiresLogo;}
+      return pack;
+    });
+    const labels = new Set(updated.map(pack => pack.label));
+    if (labels.size !== updated.length) throw new Error("Hay packs repetidos: revisa cantidad, impresión y precio.");
+    const previousLabels = new Set((product.packs || []).map(pack => pack.label));
+    const variants = [...updated.map(pack => pack.label), ...(product.variants || []).filter(label => !previousLabels.has(label))];
+    const initialPack = updated[initial];
+    const price = `$${format(initialPack.unitPrice)} + IVA c/u · Pack ${initialPack.quantity} u.${initialPack.withoutPrint ? " sin impresión" : initialPack.requiresLogo ? " con logo" : ""}`;
+    const result = {packs:updated, variants, price, priceNum:initialPack.unitPrice, pricingMode:"packs"};
+    const previousConfigurations = new Set((product.packs || []).filter(pack => pack.requiresLogo).map(pack => pack.configuration));
+    const configurations = [...updated.filter(pack => pack.requiresLogo).map(pack => pack.configuration), ...(product.configurations || []).filter(value => !previousConfigurations.has(value))];
+    if (product.configurations || configurations.length) result.configurations = [...new Set(configurations)];
+    return result;
+  }
+  function initialPack(product) {
+    const quantity = /Pack ([1-9][0-9]*) u\./.exec(product.price)?.[1];
+    const index = product.packs?.findIndex(pack => pack.quantity === Number(quantity) && pack.unitPrice === product.priceNum);
+    if (index >= 0) return index;
+    const match = /^\$([0-9.]+) \+ IVA c\/u/.exec(product.price);
+    const byPrice = product.packs?.findIndex(pack => pack.unitPrice === Number(match?.[1].replaceAll(".", "")));
+    return byPrice >= 0 ? byPrice : 0;
+  }
+  window.KP_PRICES = Object.freeze({packs, unitFromText, calculate, structured, initialPack});
 })();

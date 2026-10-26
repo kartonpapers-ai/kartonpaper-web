@@ -7,12 +7,13 @@
   <title>Administración · KartonPaper</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css?v=starken-20261022">
+  <link rel="stylesheet" href="../css/admin.css?v=packs-h2-20261026">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
   <script defer src="../js/catalogo-remoto.js?v=packs-h1-20261026"></script>
   <script defer src="imagenes.js"></script>
-  <script defer src="precios.js"></script>
+  <script defer src="precios.js?v=packs-h2-20261026"></script>
+  <script defer src="packs-editor.js?v=packs-h2-20261026"></script>
   <script defer src="finanzas-calculo.js?v=packs-h1-20261026"></script>
   <script defer src="finanzas.js?v=packs-h1-20261026"></script>
   <script defer src="traslados.js?v=starken-20261022"></script>
@@ -23,8 +24,8 @@
   <script defer src="redes-modelo.js?v=1"></script>
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
-  <script defer src="dashboard.js?v=posavasos-20261022"></script>
-  <script defer src="admin.js?v=colecciones-20261023"></script>
+  <script defer src="dashboard.js?v=packs-h2-20261026"></script>
+  <script defer src="admin.js?v=packs-h2-20261026"></script>
 </head>
 <body>
   <header class="topbar">
@@ -65,13 +66,22 @@
             <p id="image-help" class="field-help">JPG, PNG o WebP, hasta 10 MB. Se reduce a un máximo de 1600 px y se convierte a WebP antes de subirla. Foto de producto; fondo blanco recomendado.</p>
             <p id="image-status" role="status" aria-live="polite"></p>
             <label for="edit-subtitle">Descripción breve</label><input id="edit-subtitle" required maxlength="500">
-<details id="price-fields"><summary>Precio y opciones de venta</summary>            <label class="checkbox"><input id="edit-auto-price" type="checkbox" aria-describedby="pricing-help"> Calcular packs desde el precio por unidad</label>
+<details id="price-fields"><summary>Precio y opciones de venta</summary>
+            <section id="edit-packs" hidden aria-labelledby="edit-packs-title">
+              <h3 id="edit-packs-title">Precios por pack</h3>
+              <p class="field-help">Valores netos en CLP. Cada pack tiene su propio precio por unidad. El total se calcula automáticamente; el IVA se agrega al pedido.</p>
+              <div id="edit-pack-rows"></div>
+              <button id="edit-pack-add" type="button" class="secondary">Agregar pack</button>
+              <p id="edit-packs-status" role="status" aria-live="polite"></p>
+            </section>
+            <div id="edit-manual-pricing">            <label class="checkbox"><input id="edit-auto-price" type="checkbox" aria-describedby="pricing-help"> Calcular packs desde el precio por unidad</label>
             <p id="pricing-help" class="field-help"></p>
             <label id="number-label" for="edit-number">Precio por unidad, neto (CLP)</label><input id="edit-number" type="number" min="0" step="1" aria-describedby="number-help"><p id="number-help" class="field-help"></p>
             <label for="edit-price">Precio o texto visible</label><input id="edit-price" required maxlength="150">
             <div id="edit-price-pending-group" hidden><label class="checkbox"><input id="edit-price-pending" type="checkbox"> Precio pendiente: mostrar consulta y desactivar compra</label><p class="field-help">Para vender cajas, desmarca esta opción e ingresa el precio por caja y su texto visible.</p></div>
             <label for="edit-variants">Opciones de venta · una por línea</label><textarea id="edit-variants" rows="4" required></textarea><p id="variants-help" class="field-help"></p>
             <p id="pricing-status" role="status" aria-live="polite"></p>
+            </div>
 </details>
             <label for="edit-specs">Características · una por línea</label><textarea id="edit-specs" rows="3" required></textarea>
             <label class="checkbox"><input id="edit-published" type="checkbox"> Mostrar en el catálogo</label>

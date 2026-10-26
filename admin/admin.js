@@ -8,7 +8,7 @@
     $("campaign-nav").hidden = true; $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
     window.KP_PANEL?.clear();
     rows = []; selected = null; dirty = false; activeUser = null; resetImage();
-    $("product-list").replaceChildren(); $("edit-form").reset(); $("edit-form").hidden = true;
+    $("product-list").replaceChildren(); $("edit-form").reset(); window.KP_PACK_EDITOR.select(null); $("edit-form").hidden = true;
   }
   const imageSource = value => value.startsWith("https://") ? value : "../" + value;
   function resetImage() { imageRevision++; pendingImage = null; imageBusy = false; $("edit-file").value = ""; status("image-status", ""); }
@@ -54,9 +54,15 @@
     $("edit-auto-price").checked = eligible && row.data.pricingMode !== "manual";
     if ($("edit-auto-price").checked) $("edit-number").value = window.KP_PRICES.unitFromText(row.data.price);
     $("pricing-help").textContent = eligible ? "Revisa los totales antes de guardar. El cálculo usa el mismo precio por unidad para todos los packs." : "Este producto usa cotización, medidas o precios especiales. Conserva la edición manual.";
-    syncPrices(); status("save-status", ""); renderList();
+    window.KP_PACK_EDITOR.select(row.data); syncPrices(); status("save-status", ""); renderList();
   }
   function syncPrices() {
+    if (selected?.data.packs) {
+      $("edit-auto-price").checked = false; $("edit-auto-price").disabled = true;
+      for (const id of ["edit-price", "edit-number", "edit-variants"]) {$(id).readOnly = true; $(id).required = false;}
+      return;
+    }
+    $("edit-number").readOnly = false; $("edit-price").required = true; $("edit-variants").required = true;
     const automatic = $("edit-auto-price").checked;
     $("edit-price").readOnly = automatic; $("edit-variants").readOnly = automatic;
     $("number-label").textContent = automatic ? "Precio por unidad, neto (CLP)" : "Precio numérico de referencia (CLP)";
@@ -134,6 +140,7 @@
   $("edit-form").addEventListener("input", () => { dirty = true; status("save-status", "Cambios pendientes de guardar."); });
   function refreshPricingEligibility() {
     if (saving) return;
+    if (selected?.data.packs) {$("edit-auto-price").disabled = true; return;}
     const packs = window.KP_PRICES.packs($("edit-variants").value.split("\n").map(v=>v.trim()).filter(Boolean));
     $("edit-auto-price").disabled = !packs || (!selected?.isNew && window.KP_PRICES.unitFromText($("edit-price").value) === null);
   }
@@ -163,7 +170,9 @@
       for (const field of ["variants", "specs"]) data[field] = $("edit-" + field).value.split("\n").map(s => s.trim()).filter(Boolean);
       const numeric = $("edit-number").value.trim();
       if (numeric) data.priceNum = Number(numeric); else delete data.priceNum;
-      if ($("edit-auto-price").checked) {
+      if (row.data.packs) {
+        Object.assign(data, window.KP_PACK_EDITOR.read());
+      } else if ($("edit-auto-price").checked) {
         const calculated = window.KP_PRICES.calculate(numeric, window.KP_PRICES.packs(data.variants));
         Object.assign(data, calculated, {pricingMode:"unit"});
       } else data.pricingMode = "manual";
