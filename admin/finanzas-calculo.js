@@ -3,7 +3,7 @@
  const nullable=['base','labor','extras','waste','fee','fixed','sale','purchase_total','purchase_units'];
  const orderFields=['preparation','packaging'];
  const required=['printing','prints','quantity','discount','target','floor'];
- function blank(product){return {product_id:product?.id||'',variant:'Unidad de producto',supplier:'',note:'',base:null,printing:product?.category==='cerveza'?0:40,prints:product?.category==='cerveza'?0:1,labor:null,extras:null,waste:null,fee:null,fixed:null,preparation:null,packaging:null,quantity:product?.orderStep||100,sale:null,discount:0,target:45,floor:product?.category==='gastronomia'?45:40,reviewed:false,purchase_total:null,purchase_units:null};}
+ function blank(product){return {product_id:product?.id||'',variant:product?.packs?.[0]?.label||'Unidad de producto',supplier:'',note:'',base:null,printing:product?.category==='cerveza'?0:40,prints:product?.category==='cerveza'?0:1,labor:null,extras:null,waste:null,fee:null,fixed:null,preparation:null,packaging:null,quantity:product?.packs?.[0]?.quantity||product?.orderStep||100,sale:null,discount:0,target:45,floor:product?.category==='gastronomia'?45:40,reviewed:false,purchase_total:null,purchase_units:null};}
  function validate(p){
   if(!p||typeof p!=='object'||Array.isArray(p))throw new Error('Ficha de costos inválida.');
   if(typeof p.product_id!=='string'||!/^[a-z0-9-]{1,100}$/.test(p.product_id))throw new Error('Selecciona un producto.');
@@ -32,13 +32,6 @@
   if([production,cost,targetPrice,floorPrice,breakEven,revenue,iva,revenue===null?null:revenue*1.19,profit===null?null:profit*p.quantity].some(value=>value!==null&&(!Number.isFinite(value)||Math.abs(value)>Number.MAX_SAFE_INTEGER)))throw new Error('Los importes calculados son demasiado grandes. Revisa merma, comisión y cantidad.');
   return {complete:true,missing:[],baseSubtotal,production,orderCosts,cost,targetPrice,floorPrice,breakEven,sale,commission,profit,margin,revenue,iva,total:revenue===null?null:revenue+iva,totalProfit:profit===null?null:profit*p.quantity,maxDiscount:p.sale>0?Math.floor(Math.max(0,(1-targetPrice/p.sale)*100)*10+1e-9)/10:null,status:margin===null?'Sin venta':margin>=target?'Cumple objetivo':margin>=floor?'Solo excepcional':profit>=0?'Bajo mínimo':'Pérdida'};
  }
- function catalogSale(product,variant){
-  if(!product)return null;const clean=s=>s.split(' · $')[0].trim();
-  const option=product.variants?.find(v=>clean(v)===clean(variant));
-  const match=option&&/\$([0-9.]+) \+ IVA c\/u/.exec(option);
-  if(match)return Number(match[1].replaceAll('.',''));
-  const unit=/^\$([0-9.]+) \+ IVA c\/u$/.exec(product.price);
-  return unit?Number(unit[1].replaceAll('.','')):null;
- }
+ function catalogSale(product,variant){return window.KP_CATALOG.catalogSale(product,variant);}
  window.KP_FINANCE_CALC=Object.freeze({blank,validate,calculate,catalogSale});
 })();

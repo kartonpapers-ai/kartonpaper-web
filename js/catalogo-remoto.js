@@ -89,7 +89,30 @@
   const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
   const money = value => "$" + Number(value).toLocaleString("es-CL");
   function packFor(product, label) {
-    return product.packs?.find(pack => pack.label === label);
+    if (typeof label !== "string" || !label.trim()) return undefined;
+    const packs = product?.packs || [];
+    const exact = packs.find(pack => pack.sku === label || pack.label === label);
+    if (exact) return exact;
+    // Admin fields omit the displayed price. Match only a unique identity,
+    // retaining quantity and print mode; never guess a pack from its quantity.
+    const identity = value => String(value ?? "").split(" · $")[0]
+      .replace(/\s*\(\$[^)]*\)$/, "").trim();
+    const matches = packs.filter(pack => pack.configuration === label
+      || identity(pack.label) === identity(label));
+    return matches.length === 1 ? matches[0] : undefined;
+  }
+  function catalogSale(product, variant) {
+    if (!product) return null;
+    const pack = packFor(product, variant);
+    if (pack) return pack.unitPrice;
+    // A product with structured packs must resolve the selected pack. Its
+    // starting price is not a substitute for an unknown option or quote.
+    if (product.packs) return null;
+    const clean = value => String(value ?? "").split(" · $")[0].trim();
+    const option = product.variants?.find(value => clean(value) === clean(variant));
+    const unit = /\$([0-9.]+) \+ IVA c\/u(?:$| · )/;
+    const match = option && unit.exec(option) || /^\$([0-9.]+) \+ IVA c\/u(?:$| · )/.exec(product.price);
+    return match ? Number(match[1].replaceAll(".", "")) : null;
   }
   function packFields(product, label) {
     const pack = packFor(product, label);
@@ -107,5 +130,5 @@
     const rule=quantityRule(product,variant);
     return !rule || (rule.quantities ? rule.quantities.includes(quantity) : quantity>=rule.step && quantity%rule.step===0);
   }
-  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, packFields, quantityRule, validQuantity});
+  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity});
 })();

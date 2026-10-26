@@ -1,6 +1,6 @@
 // Importes sintéticos de prueba; no son costos de adquisición del negocio.
 const {PGlite}=require('@electric-sql/pglite'),fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert/strict');
-const root=path.resolve(__dirname,'..'),scope={window:{}};vm.createContext(scope);vm.runInContext(fs.readFileSync(path.join(root,'admin/finanzas-calculo.js'),'utf8'),scope);const model=scope.window.KP_FINANCE_CALC;
+const root=path.resolve(__dirname,'..'),scope={window:{}};vm.createContext(scope);vm.runInContext(fs.readFileSync(path.join(root,'js/catalogo-remoto.js'),'utf8'),scope);vm.runInContext(fs.readFileSync(path.join(root,'admin/finanzas-calculo.js'),'utf8'),scope);const model=scope.window.KP_FINANCE_CALC;
 (async()=>{
  const p={...model.blank({id:'test-envase'}),base:100,labor:0,extras:0,waste:0,fee:0,fixed:0,preparation:0,packaging:0,sale:300,reviewed:true};let r=model.calculate(p);assert.equal(r.cost,140);assert.equal(r.targetPrice,255);assert.ok(r.margin>=45);assert.equal(model.calculate({...p,reviewed:false}).complete,false);assert.equal(model.calculate({...p,base:null}).complete,false);
  r=model.calculate({...p,labor:10,extras:5,waste:10,fixed:1000,fee:2,sale:500,discount:10});assert.ok(Math.abs(r.cost-(155/.9+10))<1e-8);assert.equal(r.sale,450);assert.equal(r.revenue,45000);assert.equal(r.iva,8550);assert.equal(r.total,53550);assert.equal(r.targetPrice,344);assert.equal(r.status,'Cumple objetivo');

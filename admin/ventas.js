@@ -13,6 +13,12 @@
  function input(label,type,value,key,parent,attributes={}){const wrap=document.createElement('div'),tag=document.createElement('label'),control=document.createElement(type==='select'?'select':'input');control.id='sale-field-'+crypto.randomUUID();tag.htmlFor=control.id;tag.textContent=label;if(type!=='select')control.type=type;control.dataset[key]='true';Object.assign(control,attributes);if(type!=='select')control.value=value??'';wrap.append(tag,control);parent.append(wrap);return control;}
  function removeButton(label,parent,callback){const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=label;button.addEventListener('click',callback);parent.append(button);return button;}
  function refreshVariants(row){const select=row.querySelector('[data-line-product]'),list=row.querySelector('datalist');list.replaceChildren();for(const variant of getProduct(select.value)?.variants||[]){const option=document.createElement('option');option.value=variant.split(' · $')[0];list.append(option);}}
+ function applyCatalog(row,p,variant){
+  const pack=window.KP_CATALOG.packFor(p,variant),quantity=row.querySelector('[data-line-quantity]');
+  row.querySelector('[data-line-price]').value=window.KP_CATALOG.catalogSale(p,variant)??'';
+  if(pack)quantity.value=pack.quantity;
+  else if(!p.packs){const count=/Pack ([1-9][0-9]*) u\./.exec(variant)||/^([1-9][0-9]*) unidades/.exec(variant);if(count)quantity.value=count[1];}
+ }
  function edit(){dirty=true;status('sale-save-status','Cambios de venta pendientes de guardar.');preview();}
  function addLine(line={product_id:null,name:'',variant:'',quantity:1,unit_price:null}){
   if($('sale-lines').children.length>=50){status('sale-save-status','El pedido admite hasta 50 productos.','error');return;}
@@ -22,8 +28,8 @@
   const quantity=input('Unidades','number',line.quantity,'lineQuantity',grid,{min:'1',max:'1000000',step:'1',required:true});const price=input('Neto por unidad','number',line.unit_price,'linePrice',grid,{min:'0',max:'1000000000',step:'0.01',required:true});
   const subtotal=document.createElement('p');subtotal.className='sale-line-total';subtotal.textContent='Neto de línea: —';row.append(grid,subtotal);
   removeButton('Quitar producto',grid,()=>{row.remove();edit();}).classList.add('sale-line-remove');$('sale-lines').append(row);refreshVariants(row);
-  select.addEventListener('change',()=>{const p=getProduct(select.value);if(p){name.value=p.name;variant.value=(p.variants[0]||'').split(' · $')[0];const pack=/Pack ([1-9][0-9]*) u\./.exec(variant.value)||/^([1-9][0-9]*) unidades/.exec(variant.value);if(pack)quantity.value=pack[1];price.value=window.KP_FINANCE_CALC.catalogSale(p,variant.value)??'';}refreshVariants(row);edit();});
-  variant.addEventListener('change',()=>{const p=getProduct(select.value);if(p){price.value=window.KP_FINANCE_CALC.catalogSale(p,variant.value)??'';const pack=/Pack ([1-9][0-9]*) u\./.exec(variant.value)||/^([1-9][0-9]*) unidades/.exec(variant.value);if(pack)quantity.value=pack[1];}edit();});
+  select.addEventListener('change',()=>{const p=getProduct(select.value);if(p){name.value=p.name;variant.value=(p.variants[0]||'').split(' · $')[0];applyCatalog(row,p,variant.value);}refreshVariants(row);edit();});
+  variant.addEventListener('change',()=>{const p=getProduct(select.value);if(p){applyCatalog(row,p,variant.value);}edit();});
  }
  function addPayment(payment={kind:'abono',date:model.today(),amount:null,method:'Transferencia',note:''}){
   if($('sale-payments').children.length>=100){status('sale-save-status','El pedido admite hasta 100 movimientos.','error');return;}
