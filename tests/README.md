@@ -41,3 +41,8 @@ texto visible con su IVA correspondiente y desmarca «Precio pendiente».
 `test-producto-detalle.cjs` comprueba tarjetas compactas con precio inicial,
 detalle con selección persistente, cierre con Escape/fondo/botón, devolución del
 foco y transición al carrito o a personalización sin ventanas superpuestas.
+
+`test-previsualizacion-cajas.cjs` verifica el recorte proporcional del dieline,
+los ajustes y caras, carga JPG/PNG simulada, errores, quitar/reemplazar, URLs
+temporales y los ajustes guardados en el pedido. En móvil el panel se coloca
+antes de agregar al pedido. Las líneas SVG se conservan sin scripts ni imágenes externas.

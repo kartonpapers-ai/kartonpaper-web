@@ -1751,3 +1751,43 @@ html { scroll-padding-top: 196px; }
  .product-detail-card .product-card-body{padding:20px}
  .product-detail-card .product-card-title{font-size:24px}
 }
+
+/* Previsualización del Wrap 4×330: proporciones y líneas del SVG de Jorge. */
+.customizer-fields{min-width:0}
+.modal-dialog.has-box-preview{width:min(1120px,100%)}
+.has-box-preview .customizer-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
+.box-preview-panel{padding-left:28px;border-left:1px solid var(--border);min-width:0}
+.box-preview-panel[hidden]{display:none}
+.box-preview-panel h4{font-size:22px;line-height:1.25;margin:0 0 8px;color:var(--ink)}
+.box-preview-intro,.box-preview-note{font-size:14px;line-height:1.5;color:var(--ink-secondary);margin:0 0 16px}
+.box-preview-status{font-size:14px;line-height:1.5;overflow-wrap:anywhere;margin:0 0 16px;color:var(--ink);min-height:42px}
+.box-preview-views{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.box-preview-views figure{margin:0;min-width:0}
+.box-preview-views figcaption{font-size:14px;font-weight:700;margin-bottom:8px}
+.box-preview-face{aspect-ratio:360.37/306.14;position:relative;overflow:hidden;background:#c8a575;border:1px solid var(--border)}
+.box-dieline-face{position:absolute;width:100%;height:100%;inset:0}
+.box-print-zone{position:absolute;left:5%;right:5%;top:6%;bottom:14%;overflow:hidden;border:1px dashed #876843}
+.box-print-empty{position:absolute;inset:0;display:grid;place-items:center;padding:8px;text-align:center;color:#3d3023;font-size:14px}
+.box-print-empty[hidden],.box-print-image[hidden]{display:none}
+.box-print-image{position:absolute;object-fit:contain;mix-blend-mode:multiply;max-width:none}
+.box-preview-controls{display:grid;gap:8px;margin-bottom:16px}
+.box-preview-controls label{display:flex;justify-content:space-between;gap:12px;font-size:14px;font-weight:600;color:var(--ink)}
+.box-preview-controls output{font-variant-numeric:tabular-nums}
+.box-preview-controls input[type=range]{width:100%;min-height:36px;accent-color:var(--ink);margin:0 0 8px}
+.box-preview-controls select{margin-bottom:12px}
+.box-preview-reset{justify-self:start;padding:8px 0;min-height:44px;border:0;background:none;color:var(--ink);font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.box-preview-reset:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.box-dieline-reference{font-size:14px;line-height:1.5}
+.box-dieline-reference summary{cursor:pointer;min-height:44px;padding-block:10px;color:var(--ink);font-weight:600}
+.box-dieline-reference img{display:block;max-height:650px;width:100%;object-fit:contain;margin-top:12px;background:white}
+@media(max-width:850px){
+ .has-box-preview .customizer-layout{grid-template-columns:minmax(0,1fr);gap:24px}
+ .box-preview-panel{padding-left:0;padding-top:24px;border-left:0;border-top:1px solid var(--border);margin-bottom:20px}
+}
+
+.box-full-dieline{position:relative;width:min(100%,210px);aspect-ratio:516.37/1655.6;margin:12px auto 0}
+.box-full-dieline>img{position:absolute;inset:0;display:block;width:100%;height:100%;max-height:none;object-fit:fill;margin:0}
+.box-full-panel{position:absolute}
+.box-full-front{transform:rotate(180deg)}
+.box-full-panel .box-print-zone{border:0}
+.box-full-panel .box-print-empty{display:none}
