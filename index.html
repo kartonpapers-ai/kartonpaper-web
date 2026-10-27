@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=dieline-preview-20261026b">
+  <link rel="stylesheet" href="css/styles.css?v=carrito-modal-20261027">
   <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -242,10 +242,9 @@
   <!-- ========================================================================
        Slide-Over Cart Drawer
        ======================================================================== -->
-  <div class="cart-backdrop" id="cart-backdrop" aria-hidden="true"></div>
-  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras" aria-hidden="true">
+  <dialog class="cart-drawer" id="cart-drawer" aria-labelledby="cart-title" aria-modal="true" aria-hidden="true">
     <div class="cart-header">
-      <h3>Tu Pedido <span style="font-weight: 500; font-size: 15px; color: var(--muted);" id="cart-header-count">(0)</span></h3>
+      <h3 id="cart-title">Tu Pedido <span style="font-weight: 500; font-size: 15px; color: var(--muted);" id="cart-header-count">(0)</span></h3>
       <button class="btn-modal-close" id="close-cart-btn" type="button" aria-label="Cerrar carrito">✕</button>
     </div>
 
@@ -277,7 +276,7 @@
         ✉️ Enviar cotización por Email
       </button>
     </div>
-  </aside>
+  </dialog>
 
   <!-- ========================================================================
        Floating WhatsApp Button
@@ -319,6 +318,7 @@
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
   <script src="js/previsualizacion-cajas.js?v=dieline-20261026"></script>
+  <script src="js/carrito-modal.js?v=carrito-modal-20261027"></script>
   <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
   <script src="js/catalogo-remoto.js?v=colecciones-20261023"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
@@ -351,7 +351,6 @@
     const openCartBtn = document.getElementById("open-cart-btn");
     const closeCartBtn = document.getElementById("close-cart-btn");
     const cartDrawer = document.getElementById("cart-drawer");
-    const cartBackdrop = document.getElementById("cart-backdrop");
     const cartBadgeCount = document.getElementById("cart-badge-count");
     const cartHeaderCount = document.getElementById("cart-header-count");
     const cartItemsContainer = document.getElementById("cart-items-container");
@@ -376,7 +375,7 @@
     const fileAttachedInfo = document.getElementById("file-attached-info");
     const attachedFilename = document.getElementById("attached-filename");
     const removeFileBtn = document.getElementById("remove-file-btn");
-    let cartReturnFocus=null,customReturnFocus=null;
+    let customReturnFocus=null;
 
     // ------------------------------------------------------------------------
     // Renderizado del Catálogo
@@ -587,7 +586,15 @@
       try {
         localStorage.setItem("kp_cart", JSON.stringify(cart));
       } catch (e) {}
+      const focused=document.activeElement;
+      const index=Number(focused?.dataset.index),action=focused?.dataset.action;
+      const fromList=cartItemsContainer.contains(focused);
       updateCartUI();
+      if(cartDrawer.open&&fromList&&!focused.isConnected){
+        const nextIndex=Math.min(index,cart.length-1);
+        const replacement=cartItemsContainer.querySelector(`[data-index="${nextIndex}"][data-action="${action}"]:not(:disabled)`);
+        (replacement||(cart.length?closeCartBtn:emptyCatalogBtn)).focus();
+      }
     }
 
     function addToCart(item) {
@@ -651,7 +658,7 @@
           </div>
           <div class="cart-item-right">
             <span class="cart-item-price">${item.stockUnits ? KP_CATALOG.escape(KP_CATALOG.money(item.stockUnitPrice * item.qty)) : Number.isSafeInteger(item.totalNet) && !item.isCustom ? KP_CATALOG.escape(KP_CATALOG.money(item.totalNet * item.qty) + " + IVA") : safe.price}</span>
-            <button class="cart-item-remove" type="button" data-index="${index}" aria-label="Eliminar item">🗑️</button>
+            <button class="cart-item-remove" type="button" data-action="remove" data-index="${index}" aria-label="Eliminar item">🗑️</button>
           </div>
         `;
 
@@ -686,27 +693,13 @@
     }
 
     function openCart() {
-      cartReturnFocus=KP_PRODUCT_DETAIL.close(false)||document.activeElement;
-      cartDrawer.classList.add("open");
-      cartBackdrop.classList.add("open");
-      cartDrawer.setAttribute("aria-hidden", "false");
-      cartBackdrop.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-      closeCartBtn.focus();
+      if(cartDrawer.open)return;
+      KP_CART_MODAL.open(KP_PRODUCT_DETAIL.close(false)||document.activeElement);
     }
 
-    function closeCart() {
-      cartDrawer.classList.remove("open");
-      cartBackdrop.classList.remove("open");
-      cartDrawer.setAttribute("aria-hidden", "true");
-      cartBackdrop.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-      if(cartReturnFocus?.isConnected)cartReturnFocus.focus({preventScroll:true});
-    }
+    function closeCart() { KP_CART_MODAL.close(); }
 
     openCartBtn.addEventListener("click", openCart);
-    closeCartBtn.addEventListener("click", closeCart);
-    cartBackdrop.addEventListener("click", closeCart);
     emptyCatalogBtn.addEventListener("click", () => {
       closeCart();
       document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });

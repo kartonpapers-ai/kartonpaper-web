@@ -991,23 +991,21 @@ button, input, select, textarea {
    Slide-Over Cart Drawer
    ========================================================================== */
 
-.cart-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 110;
+.cart-drawer::backdrop {
   background: rgba(27, 25, 23, 0.5);
   backdrop-filter: blur(4px);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.cart-backdrop.open {
-  opacity: 1;
-  visibility: visible;
-}
+.cart-drawer:not([open]) { display: none; }
 
 .cart-drawer {
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  max-width: none;
+  max-height: none;
+  height: 100dvh;
+  color: inherit;
   position: fixed;
   top: 0;
   right: 0;
@@ -1024,7 +1022,10 @@ button, input, select, textarea {
 
 .cart-drawer.open {
   transform: translateX(0);
+  animation: cart-slide-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
+@keyframes cart-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { .cart-drawer.open { animation: none; transition: none; } }
 
 .cart-header {
   padding: 22px 24px;
