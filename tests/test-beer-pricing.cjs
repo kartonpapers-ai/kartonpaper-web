@@ -73,7 +73,7 @@ async function page(remote) {
   }
   const last=doc.querySelector('.cart-item:last-child');last.querySelector('[data-action="plus"]').click();
   assert.match(doc.querySelector('.cart-item:last-child .cart-item-price').textContent,/520.000/);
-  assert.match(w.buildOrderMessage(),/618.800/);
+  assert.match(w.buildOrderMessage(),/Subtotal neto: \$2\.807\.000/);assert.match(w.buildOrderMessage(),/Total con IVA: \$3\.340\.330/);
   // Custom quote must not inherit a stock pack price or offer a 50-unit blank pack as its format.
   doc.getElementById('close-cart-btn').click();
   doc.querySelector('[data-action="customize"][data-id="beer-wrap-4x330"]').click();

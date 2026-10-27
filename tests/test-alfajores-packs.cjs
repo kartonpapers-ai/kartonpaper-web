@@ -22,7 +22,7 @@ class Loader extends ResourceLoader{constructor(remote){super();this.remote=remo
    variants[i].click();assert.match(card.querySelector('.product-price-value').textContent,i===0?/400/:/350/);
    card.querySelector('[data-action="add-stock"]').click();const item=JSON.parse(w.localStorage.getItem('kp_cart')).at(-1);
    assert.equal(item.totalNet,total);assert.equal(item.unitsPerPack,i===0?25:50);assert.equal(item.withoutPrint,true);
-   assert(w.buildOrderMessage().includes(i===0?'11.900':'20.825'));d.getElementById('close-cart-btn').click();
+   assert(w.buildOrderMessage().includes(i===0?'11.900':'32.725'));assert.match(w.buildOrderMessage(),i===0?/Subtotal neto: \$10\.000/:/Subtotal neto: \$27\.500/);d.getElementById('close-cart-btn').click();
   }
   variants[2].click();assert.equal(card.querySelector('[data-action="add-stock"]').hidden,true);
   assert.match(card.querySelector('.product-price-value').textContent,/391/);assert.match(card.querySelector('.product-price-note').textContent,/39.100/);

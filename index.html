@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=carrito-modal-20261027">
+  <link rel="stylesheet" href="css/styles.css?v=carrito-resumen-20261027">
   <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -248,6 +248,7 @@
       <button class="btn-modal-close" id="close-cart-btn" type="button" aria-label="Cerrar carrito">✕</button>
     </div>
 
+    <div class="cart-content">
     <!-- Items List or Empty State -->
     <div class="cart-items-list" id="cart-items-container">
       <div class="cart-empty" id="cart-empty-view">
@@ -256,6 +257,25 @@
         <p>Explora el catálogo y agrega envases listos o personalizados con tu logo.</p>
         <button class="btn-secondary" id="empty-catalog-btn" type="button">Ver productos</button>
       </div>
+    </div>
+
+    <section class="cart-summary" id="cart-summary" aria-labelledby="cart-summary-title" hidden>
+      <h4 id="cart-summary-title">Resumen del pedido</h4>
+      <div id="cart-priced-summary">
+        <dl class="cart-totals" aria-live="polite" aria-atomic="true">
+          <div><dt>Subtotal neto</dt><dd id="cart-net"></dd></div>
+          <div><dt>IVA 19%</dt><dd id="cart-iva"></dd></div>
+          <div class="cart-total"><dt>Total con IVA</dt><dd id="cart-total"></dd></div>
+        </dl>
+        <p id="cart-summary-note"></p>
+      </div>
+      <div id="cart-pending-summary" hidden>
+        <h5>Por cotizar (<span id="cart-pending-count">0</span>)</h5>
+        <ul id="cart-pending-items"></ul>
+        <p id="cart-pending-note"></p>
+      </div>
+      <p class="cart-shipping">Despacho Starken por pagar. Se cobra aparte y no está incluido.</p>
+    </section>
     </div>
 
     <!-- Cart Footer & Actions -->
@@ -318,6 +338,7 @@
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
   <script src="js/previsualizacion-cajas.js?v=dieline-20261026"></script>
+  <script src="js/carrito-resumen.js?v=carrito-resumen-20261027"></script>
   <script src="js/carrito-modal.js?v=carrito-modal-20261027"></script>
   <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
   <script src="js/catalogo-remoto.js?v=colecciones-20261023"></script>
@@ -618,6 +639,7 @@
     }
 
     function updateCartUI() {
+      KP_CART_SUMMARY.render(cart);
       const totalCount = cart.reduce((acc, item) => acc + item.qty, 0);
       cartBadgeCount.textContent = totalCount;
       cartHeaderCount.textContent = `(${totalCount})`;
@@ -657,7 +679,7 @@
             </div>
           </div>
           <div class="cart-item-right">
-            <span class="cart-item-price">${item.stockUnits ? KP_CATALOG.escape(KP_CATALOG.money(item.stockUnitPrice * item.qty)) : Number.isSafeInteger(item.totalNet) && !item.isCustom ? KP_CATALOG.escape(KP_CATALOG.money(item.totalNet * item.qty) + " + IVA") : safe.price}</span>
+            <span class="cart-item-price">${KP_CART_SUMMARY.lineNet(item)===null?'Por cotizar':KP_CATALOG.escape(KP_CATALOG.money(KP_CART_SUMMARY.lineNet(item))+" + IVA")}</span>
             <button class="cart-item-remove" type="button" data-action="remove" data-index="${index}" aria-label="Eliminar item">🗑️</button>
           </div>
         `;
@@ -716,30 +738,33 @@
       let text = `📦 *HOLA KARTONPAPER! Deseo cotizar/comprar el siguiente pedido:*\n\n`;
       text += `👤 *Nombre / Negocio:* ${name}\n`;
       text += `📍 *Comuna / Ciudad:* ${city}\n\n`;
-      text += `🛒 *DETALLE DEL PEDIDO:*\n`;
-
-      cart.forEach((item, i) => {
-        text += `${i + 1}. *${item.name}*\n`;
+      const summary=KP_CART_SUMMARY.calculate(cart);
+      let lineNumber=0;
+      function describeItem(item,net){
+        text += `${++lineNumber}. *${item.name}*\n`;
         text += `   • Opción/Medida: ${item.variant}\n`;
         text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : item.stockUnits ? 'caja(s)' : 'pack(s)'}\n`;
-        text += `   • Referencia: ${item.price}\n`;
-        if (item.stockUnits) text += `   • Posavasos totales: ${item.stockUnits * item.qty}\n   • Total de cajas: ${KP_CATALOG.money(item.stockUnitPrice * item.qty)}\n`;
+        text += net===null ? `   • Precio: por cotizar\n` : `   • Neto de línea: ${KP_CATALOG.money(net)}\n`;
+        if (item.stockUnits) text += `   • Posavasos totales: ${item.stockUnits * item.qty}\n`;
         const previewDescription=KP_BOX_PREVIEW.describe(item.artworkPreview);
         if(previewDescription)text += `   • Vista plana solicitada: ${previewDescription}\n`;
         if (item.artworkRef) text += `   • Archivo recibido · referencia privada: ${item.artworkRef}\n`;
         if (item.unitsPerBox) text += `   • Embalajes completos: ${item.qty / item.unitsPerBox} de ${item.unitsPerBox} unidades${item.printingArea==='tapa'?' · Impresión solo en la tapa':''}\n`;
-        if (item.sku && !item.isCustom) {
-          text += `   • SKU: ${item.sku}\n`;
-          text += `   • Unidades totales: ${item.unitsPerPack * item.qty}\n`;
-          text += `   • Neto: ${KP_CATALOG.money(item.totalNet * item.qty)}\n`;
-          text += `   • IVA (19%): ${KP_CATALOG.money(Math.round(item.totalNet * item.qty * 0.19))}\n`;
-          text += `   • Total con IVA: ${KP_CATALOG.money(Math.round(item.totalNet * item.qty * 1.19))}\n`;
-        }
-        if (item.isCustom) {
-          text += `   • 🎨 Personalización con logo: ${item.logoFile ? item.logoFile : 'Adjuntaré archivo por este chat'}\n`;
-        }
-        text += `\n`;
-      });
+        if (item.sku && !item.isCustom) text += `   • SKU: ${item.sku}\n   • Unidades totales: ${item.unitsPerPack * item.qty}\n`;
+        if (item.isCustom) text += `   • Personalización con logo: ${item.logoFile || 'Adjuntaré archivo por este chat'}\n`;
+        text += '\n';
+      }
+      if(summary.priced.length){
+        text += '🛒 *PRODUCTOS CON PRECIO:*\n';
+        summary.priced.forEach(({item,net})=>describeItem(item,net));
+        if(summary.overflow)text += '*Total por confirmar: los importes exceden el máximo calculable.*\n\n';
+        else text += `*RESUMEN DE PRODUCTOS CON PRECIO:*\nSubtotal neto: ${KP_CATALOG.money(summary.net)}\nIVA (19%): ${KP_CATALOG.money(summary.iva)}\nTotal con IVA: ${KP_CATALOG.money(summary.total)}\n\n`;
+      }
+      if(summary.pending.length){
+        text += summary.priced.length?'*SOLICITUDES POR COTIZAR (no incluidas en el total):*\n':'*SOLICITUDES POR COTIZAR (total por confirmar):*\n';
+        summary.pending.forEach(item=>describeItem(item,null));
+      }
+      text += 'Despacho Starken por pagar. Se cobra aparte y no está incluido.\n\n';
 
       if (notes) {
         text += `📝 *Nota adicional:* ${notes}\n\n`;
