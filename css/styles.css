@@ -1202,18 +1202,28 @@ button, input, select, textarea {
   gap: 10px;
 }
 
-.cart-customer-fields input {
+.cart-contact-heading { margin: 0; font-size: 15px; font-weight: 700; }
+.cart-contact-help { margin: -6px 0 0; font-size: 14px; color: var(--muted); }
+.cart-customer-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cart-customer-field label { font-size: 14px; font-weight: 600; }
+.cart-customer-field input {
+  width: 100%;
+  min-width: 0;
   padding: 9px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  font-size: 13px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
   background: #FFFFFF;
 }
 
-.cart-customer-fields input:focus {
-  outline: none;
-  border-color: var(--ink);
+.cart-customer-field input:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
 }
+.cart-customer-field input[aria-invalid="true"] { border-color: #A32626; }
+.cart-field-error { margin: 0; color: #A32626; font-size: 14px; line-height: 1.4; }
 
 .btn-checkout-wa {
   display: flex;
