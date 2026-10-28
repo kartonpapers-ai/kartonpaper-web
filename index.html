@@ -73,14 +73,14 @@
 
         <!-- Filter Tabs Bar (Sticky) -->
         <div class="filter-tabs-wrapper">
-          <div class="filter-tabs" role="tablist" aria-label="Filtrar catálogo por categoría">
-            <button class="filter-tab active" type="button" role="tab" data-category="all" aria-selected="true">✨ Todos los productos</button>
-            <button class="filter-tab" type="button" role="tab" data-category="cerveza" aria-selected="false">🍺 Cerveza artesanal</button>
-            <button class="filter-tab" type="button" role="tab" data-category="reposteria" aria-selected="false">🧁 Repostería & Alfajores</button>
-            <button class="filter-tab" type="button" role="tab" data-category="gastronomia" aria-selected="false">🥡 Gastronomía Compostable</button>
-            <button class="filter-tab" type="button" role="tab" data-category="bolsas" aria-selected="false">🛍️ Bolsas de papel</button>
-            <button class="filter-tab" type="button" role="tab" data-category="doypack" aria-selected="false">☕ Doypack kraft</button>
-            <button class="filter-tab" type="button" role="tab" data-category="posavasos" aria-selected="false">🇨🇱 Posavasos de pulpa</button>
+          <div class="filter-tabs" role="group" aria-label="Filtrar catálogo por categoría">
+            <button class="filter-tab active" type="button" aria-controls="products-grid" data-category="all" aria-pressed="true">✨ Todos los productos</button>
+            <button class="filter-tab" type="button" aria-controls="products-grid" data-category="cerveza" aria-pressed="false">🍺 Cerveza artesanal</button>
+            <button class="filter-tab" type="button" aria-controls="products-grid" data-category="reposteria" aria-pressed="false">🧁 Repostería & Alfajores</button>
+            <button class="filter-tab" type="button" aria-controls="products-grid" data-category="gastronomia" aria-pressed="false">🥡 Gastronomía Compostable</button>
+            <button class="filter-tab" type="button" aria-controls="products-grid" data-category="bolsas" aria-pressed="false">🛍️ Bolsas de papel</button>
+            <button class="filter-tab" type="button" aria-controls="products-grid" data-category="doypack" aria-pressed="false">☕ Doypack kraft</button>
+            <button class="filter-tab" type="button" aria-controls="products-grid" data-category="posavasos" aria-pressed="false">🇨🇱 Posavasos de pulpa</button>
           </div>
         </div>
 
@@ -448,7 +448,7 @@
           const initialQuantity=p.initialPriceQuantity||Number(/ · ([0-9]+) unidades$/.exec(p.price)?.[1]);
           const initialVariant=KP_CATALOG.embalajeFor(p,initialQuantity)?.label||p.variants[0];
           const optionsHtml = p.variants.map((v, idx) => `
-            <button type="button" class="variant-btn ${v === initialVariant ? 'selected' : ''}" data-val="${KP_CATALOG.escape(v)}">
+            <button type="button" class="variant-btn ${v === initialVariant ? 'selected' : ''}" data-val="${KP_CATALOG.escape(v)}" aria-pressed="${v === initialVariant}">
               ${KP_CATALOG.escape(v)}
             </button>
           `).join("");
@@ -456,7 +456,7 @@
           variantHtml = `
             <div class="card-variant-selector">
               <span class="variant-label">Formato / Opción:</span>
-              <div class="variant-pills">${optionsHtml}</div>
+              <div class="variant-pills" role="group" aria-label="Formato u opción de ${KP_CATALOG.escape(p.name)}">${optionsHtml}</div>
             </div>
           `;
         }
@@ -517,8 +517,11 @@
         // Variant button clicks
         card.querySelectorAll(".variant-btn").forEach(vBtn => {
           vBtn.addEventListener("click", () => {
-            card.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("selected"));
-            vBtn.classList.add("selected");
+            card.querySelectorAll(".variant-btn").forEach(b => {
+              const selected = b === vBtn;
+              b.classList.toggle("selected", selected);
+              b.setAttribute("aria-pressed", String(selected));
+            });
             updatePackPrice();
           });
         });
@@ -603,10 +606,10 @@
       tab.addEventListener("click", () => {
         filterTabs.forEach(t => {
           t.classList.remove("active");
-          t.setAttribute("aria-selected", "false");
+          t.setAttribute("aria-pressed", "false");
         });
         tab.classList.add("active");
-        tab.setAttribute("aria-selected", "true");
+        tab.setAttribute("aria-pressed", "true");
         renderProducts(tab.dataset.category);
       });
     });
