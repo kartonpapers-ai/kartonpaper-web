@@ -271,3 +271,13 @@ En **Precios → Editar precio**, los productos con packs estructurados muestran
 Marca **Mostrar este precio en el catálogo** en el pack de referencia. Al guardar se actualizan juntos los packs, sus etiquetas, el precio inicial y las configuraciones con logo. Los packs con logo requieren una forma de venta que admita personalización. Agregar o quitar packs modifica las opciones del catálogo al guardar.
 
 Los cambios se publican al guardar el producto y recargar la tienda. Las ventas y fichas de costos guardadas conservan sus importes; elegir un pack en una venta nueva o cambiar de variante consulta el catálogo actualizado. Los productos sin packs estructurados mantienen su editor anterior.
+
+## Compostables: precios por embalaje
+
+En **Precios → Editar precio**, los compostables personalizados con venta por embalaje muestran tramos de cantidad. Conservan la impresión solo en la tapa y los múltiplos del embalaje propio del producto. Puedes editar precio unitario neto y SKU por tramo, agregar o quitar cantidades y elegir el precio inicial. Deja el precio vacío para que ese tramo requiera cotización. No se extrapolan descuentos ni precios fuera de las cantidades configuradas.
+
+Los productos anteriores se leen sin migración: sus cantidades existentes usan el precio unitario publicado cuando el texto y la referencia numérica coinciden. Si falta un precio claro o existen diferencias, quedan por cotizar. Al guardar, el producto incorpora sus precios por cantidad; el nombre, la imagen y los costos privados se conservan. No se dan de alta modelos ausentes del catálogo.
+
+La tienda muestra el precio por unidad y el neto de la cantidad elegida. El carrito calcula neto, IVA y total para los tramos valorizados, conservando la personalización y el archivo del cliente. Cambiar cantidades o recargar el carrito vuelve a consultar el precio del tramo; una cantidad sin precio pasa a cotización. Finanzas y Ventas usan la misma referencia al elegir un tramo, sin actualizar importes históricos automáticamente.
+
+El archivo `supabase/26-precios-compostables-embalajes.sql` añade validación de cantidades, SKU, totales y precio inicial en la base de datos. Es idempotente y no modifica precios existentes. Debe ejecutarse en Supabase para activar esa protección adicional; la compatibilidad del panel con los productos anteriores no depende de una migración de sus datos.

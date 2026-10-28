@@ -54,5 +54,22 @@
     const byPrice = product.packs?.findIndex(pack => pack.unitPrice === Number(match?.[1].replaceAll(".", "")));
     return byPrice >= 0 ? byPrice : 0;
   }
-  window.KP_PRICES = Object.freeze({packs, unitFromText, calculate, structured, initialPack});
+  function embalajes(product, entries, initial) {
+    if (!window.KP_CATALOG.isEmbalaje(product)) throw new Error("Conserva la venta personalizada por embalaje y la impresión en tapa.");
+    if (!entries.length || entries.length > 30 || !entries[initial]) throw new Error("Conserva entre 1 y 30 tramos y elige el precio inicial.");
+    const skus=new Set(),quantities=new Set();
+    const rows=entries.map((entry,index)=>{
+      const quantity=entry.quantity,unitPrice=Number.isNaN(entry.unitPrice)?null:entry.unitPrice,sku=entry.sku;
+      if (!Number.isSafeInteger(quantity) || quantity < product.orderStep || quantity > 1000000 || quantity % product.orderStep || quantities.has(quantity)) throw new Error("Tramo "+(index+1)+": usa cantidades únicas en múltiplos de "+product.orderStep+" unidades.");
+      if (!(unitPrice===null || Number.isSafeInteger(unitPrice) && unitPrice>=0 && unitPrice<=1e9) || unitPrice!==null && !Number.isSafeInteger(quantity*unitPrice)) throw new Error("Revisa el precio unitario del tramo "+(index+1)+". Usa pesos enteros o deja vacío para cotizar.");
+      if(typeof sku!=="string" || !/^[A-Z0-9-]{1,80}$/.test(sku) || skus.has(sku)) throw new Error("Revisa el SKU del tramo "+(index+1)+". Debe ser único y usar mayúsculas, números y guiones.");
+      quantities.add(quantity);skus.add(sku);
+      const totalNet=unitPrice===null?null:quantity*unitPrice,n=quantity/product.orderStep;
+      return {quantity,unitPrice,totalNet,sku,label:quantity+" unidades · "+n+(n===1?" embalaje":" embalajes")+" · "+(totalNet===null?"Por cotizar":"$"+format(totalNet)+" + IVA")};
+    });
+    const chosen=rows[initial];rows.sort((a,b)=>a.quantity-b.quantity);
+    return {quantityPrices:rows,initialPriceQuantity:chosen.quantity,variants:rows.map(row=>row.label),priceNum:chosen.unitPrice??undefined,
+      price:chosen.unitPrice===null?"Cotización con logo":`$${format(chosen.unitPrice)} + IVA c/u · ${chosen.quantity} unidades`,pricingMode:"embalajes"};
+  }
+  window.KP_PRICES = Object.freeze({packs, unitFromText, calculate, structured, initialPack, embalajes});
 })();

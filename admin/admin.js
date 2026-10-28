@@ -57,7 +57,7 @@
     window.KP_PACK_EDITOR.select(row.data); syncPrices(); status("save-status", ""); renderList();
   }
   function syncPrices() {
-    if (selected?.data.packs) {
+    if (selected?.data.packs || window.KP_CATALOG.isEmbalaje(selected?.data)) {
       $("edit-auto-price").checked = false; $("edit-auto-price").disabled = true;
       for (const id of ["edit-price", "edit-number", "edit-variants"]) {$(id).readOnly = true; $(id).required = false;}
       return;
@@ -140,7 +140,7 @@
   $("edit-form").addEventListener("input", () => { dirty = true; status("save-status", "Cambios pendientes de guardar."); });
   function refreshPricingEligibility() {
     if (saving) return;
-    if (selected?.data.packs) {$("edit-auto-price").disabled = true; return;}
+    if (selected?.data.packs || window.KP_CATALOG.isEmbalaje(selected?.data)) {$("edit-auto-price").disabled = true; return;}
     const packs = window.KP_PRICES.packs($("edit-variants").value.split("\n").map(v=>v.trim()).filter(Boolean));
     $("edit-auto-price").disabled = !packs || (!selected?.isNew && window.KP_PRICES.unitFromText($("edit-price").value) === null);
   }
@@ -170,12 +170,13 @@
       for (const field of ["variants", "specs"]) data[field] = $("edit-" + field).value.split("\n").map(s => s.trim()).filter(Boolean);
       const numeric = $("edit-number").value.trim();
       if (numeric) data.priceNum = Number(numeric); else delete data.priceNum;
-      if (row.data.packs) {
+      if (row.data.packs || window.KP_CATALOG.isEmbalaje(row.data)) {
         Object.assign(data, window.KP_PACK_EDITOR.read());
       } else if ($("edit-auto-price").checked) {
         const calculated = window.KP_PRICES.calculate(numeric, window.KP_PRICES.packs(data.variants));
         Object.assign(data, calculated, {pricingMode:"unit"});
       } else data.pricingMode = "manual";
+      if(data.priceNum===undefined)delete data.priceNum;
       if(data.stockUnits)data.pricePending=$("edit-price-pending").checked;
       window.KP_CATALOG.validate(data);
     } catch (error) { status("save-status", error.message, "error"); return; }

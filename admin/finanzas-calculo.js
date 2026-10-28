@@ -3,7 +3,7 @@
  const nullable=['base','labor','extras','waste','fee','fixed','sale','purchase_total','purchase_units'];
  const orderFields=['preparation','packaging'];
  const required=['printing','prints','quantity','discount','target','floor'];
- function blank(product){return {product_id:product?.id||'',variant:product?.packs?.[0]?.label||'Unidad de producto',supplier:'',note:'',base:null,printing:product?.category==='cerveza'?0:40,prints:product?.category==='cerveza'?0:1,labor:null,extras:null,waste:null,fee:null,fixed:null,preparation:null,packaging:null,quantity:product?.packs?.[0]?.quantity||product?.orderStep||100,sale:null,discount:0,target:45,floor:product?.category==='gastronomia'?45:40,reviewed:false,purchase_total:null,purchase_units:null};}
+ function blank(product){const first=window.KP_CATALOG.embalajeOptions(product)[0];return {product_id:product?.id||'',variant:first?.label||product?.packs?.[0]?.label||'Unidad de producto',supplier:'',note:'',base:null,printing:product?.category==='cerveza'?0:40,prints:product?.category==='cerveza'?0:1,labor:null,extras:null,waste:null,fee:null,fixed:null,preparation:null,packaging:null,quantity:first?.quantity||product?.packs?.[0]?.quantity||product?.orderStep||100,sale:null,discount:0,target:45,floor:product?.category==='gastronomia'?45:40,reviewed:false,purchase_total:null,purchase_units:null};}
  function validate(p){
   if(!p||typeof p!=='object'||Array.isArray(p))throw new Error('Ficha de costos inválida.');
   if(typeof p.product_id!=='string'||!/^[a-z0-9-]{1,100}$/.test(p.product_id))throw new Error('Selecciona un producto.');

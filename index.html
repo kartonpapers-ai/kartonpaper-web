@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=carrito-resumen-20261027">
+  <link rel="stylesheet" href="css/styles.css?v=compostables-20261028">
   <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -193,6 +193,7 @@
           </select>
           <input id="modal-bulk-quantity" class="form-select" type="number" min="1" max="1000000" step="1" hidden>
           <p id="modal-bulk-help" class="field-help" hidden></p>
+          <p id="modal-order-price" class="field-help" role="status" aria-live="polite" hidden></p>
         </div>
 
         <!-- Logo Upload Box -->
@@ -338,10 +339,10 @@
        Core Script: Catálogo, Carrito E-commerce & Personalización
        ======================================================================== -->
   <script src="js/previsualizacion-cajas.js?v=dieline-20261026"></script>
-  <script src="js/carrito-resumen.js?v=carrito-resumen-20261027"></script>
+  <script src="js/carrito-resumen.js?v=compostables-20261028"></script>
   <script src="js/carrito-modal.js?v=carrito-modal-20261027"></script>
   <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
-  <script src="js/catalogo-remoto.js?v=colecciones-20261023"></script>
+  <script src="js/catalogo-remoto.js?v=compostables-20261028"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
   <script src="js/heroes.js?v=biblioteca-20261020"></script>
@@ -432,8 +433,10 @@
         // Variant selector if stock or dual
         let variantHtml = "";
         if (p.variants && p.variants.length > 0) {
+          const initialQuantity=p.initialPriceQuantity||Number(/ · ([0-9]+) unidades$/.exec(p.price)?.[1]);
+          const initialVariant=KP_CATALOG.embalajeFor(p,initialQuantity)?.label||p.variants[0];
           const optionsHtml = p.variants.map((v, idx) => `
-            <button type="button" class="variant-btn ${idx === 0 ? 'selected' : ''}" data-val="${KP_CATALOG.escape(v)}">
+            <button type="button" class="variant-btn ${v === initialVariant ? 'selected' : ''}" data-val="${KP_CATALOG.escape(v)}">
               ${KP_CATALOG.escape(v)}
             </button>
           `).join("");
@@ -511,6 +514,12 @@
         function updatePackPrice() {
           const selected = card.querySelector(".variant-btn.selected")?.dataset.val;
           const pack = KP_CATALOG.packFor(p, selected);
+          const embalaje = KP_CATALOG.embalajeFor(p, selected);
+          if(embalaje){
+            card.querySelector('.product-price-value').textContent=embalaje.unitPrice===null?'Por cotizar':KP_CATALOG.money(embalaje.unitPrice)+' + IVA c/u';
+            card.querySelector('.product-price-note').textContent=embalaje.totalNet===null?'Confirmaremos el precio de este tramo.':KP_CATALOG.money(embalaje.totalNet)+' + IVA / '+embalaje.quantity+' unidades · Impresión en tapa';
+            return;
+          }
           if (!pack) return;
           const buyButton = card.querySelector("[data-action='add-stock']");
           if (buyButton) buyButton.hidden = Boolean(pack.requiresLogo);
@@ -604,6 +613,7 @@
     // Carrito de Compras (Lógica)
     // ------------------------------------------------------------------------
     function saveCart() {
+      cart=cart.map(item=>item.isCustom?{...item,...KP_CATALOG.embalajeFields(productsDB.find(product=>product.id===item.id),item.qty)}:item);
       try {
         localStorage.setItem("kp_cart", JSON.stringify(cart));
       } catch (e) {}
@@ -746,6 +756,7 @@
         text += `   • Cantidad: ${item.qty} ${item.isCustom ? 'unidades' : item.stockUnits ? 'caja(s)' : 'pack(s)'}\n`;
         text += net===null ? `   • Precio: por cotizar\n` : `   • Neto de línea: ${KP_CATALOG.money(net)}\n`;
         if (item.stockUnits) text += `   • Posavasos totales: ${item.stockUnits * item.qty}\n`;
+        if(item.pricedCustomization)text += `   • SKU del tramo: ${item.customPricingSku}\n`;
         const previewDescription=KP_BOX_PREVIEW.describe(item.artworkPreview);
         if(previewDescription)text += `   • Vista plana solicitada: ${previewDescription}\n`;
         if (item.artworkRef) text += `   • Archivo recibido · referencia privada: ${item.artworkRef}\n`;
@@ -864,6 +875,15 @@
         if(product.customQuantities.includes(requested))modalQuantityInput.value=String(requested);
       }
       if(product.orderStep||product.customQuantities) document.getElementById("modal-variant-group").hidden=true;
+      updateCustomPrice();
+    }
+    function updateCustomPrice(){
+      const info=document.getElementById('modal-order-price');
+      info.hidden=!KP_CATALOG.isEmbalaje(currentCustomProduct);
+      if(info.hidden)return;
+      const q=Number(document.getElementById('modal-bulk-quantity').value);
+      const row=KP_CATALOG.embalajeFor(currentCustomProduct,q);
+      info.textContent=row&&row.unitPrice!==null?KP_CATALOG.money(row.unitPrice)+' + IVA c/u · Subtotal neto '+KP_CATALOG.money(row.totalNet)+' · Impresión incluida solo en la tapa.':'Esta cantidad no tiene un precio definido. Se agregará como solicitud por cotizar.';
     }
     modalVariantSelect.addEventListener("change",()=>{if(currentCustomProduct)configureCustomQuantity(currentCustomProduct);});
     modalQuantityInput.addEventListener("change",()=>modalQuantityInput.setCustomValidity(""));
@@ -914,6 +934,7 @@
     });
 
     document.getElementById("modal-bulk-quantity").addEventListener("input", event => event.target.setCustomValidity(""));
+    document.getElementById("modal-bulk-quantity").addEventListener("input",updateCustomPrice);
     // Submit del Customizer
     customProductForm.addEventListener("submit", async (e) => {
       e.preventDefault();

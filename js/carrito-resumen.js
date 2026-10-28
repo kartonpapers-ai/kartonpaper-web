@@ -1,7 +1,8 @@
 (function(){
  'use strict';
  function lineNet(item){
-  if(!item||item.isCustom||!Number.isSafeInteger(item.qty)||item.qty<1)return null;
+  if(!item||!Number.isSafeInteger(item.qty)||item.qty<1)return null;
+  if(item.isCustom){if(!item.pricedCustomization||!Number.isSafeInteger(item.customUnitPrice)||item.customUnitPrice<0||!Number.isSafeInteger(item.customUnitPrice*item.qty))return null;return item.customUnitPrice*item.qty;}
   let value=null;
   if(item.stockUnits)value=item.stockUnitPrice;
   else if(item.totalNet!==undefined)value=item.totalNet;

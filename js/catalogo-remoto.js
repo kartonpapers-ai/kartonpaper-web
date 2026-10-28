@@ -39,6 +39,20 @@
         } else if (!Number.isSafeInteger(rule.step) || rule.step<1 || rule.step>1000000) throw new Error('Revisa el tamaño del embalaje.');
       }
     }
+    if (p.quantityPrices !== undefined) {
+      if (!isEmbalaje(p) || !Array.isArray(p.quantityPrices) || !p.quantityPrices.length || p.quantityPrices.length > 30) throw new Error("Revisa los precios por embalaje.");
+      if(p.initialPriceQuantity!==undefined&&!p.quantityPrices.some(row=>row?.quantity===p.initialPriceQuantity))throw new Error("Revisa el tramo del precio inicial.");
+      const chosen=p.quantityPrices.find(row=>row?.quantity===p.initialPriceQuantity);
+      if(chosen&&(chosen.unitPrice===null?'priceNum' in p:p.priceNum!==chosen.unitPrice))throw new Error("El precio inicial no coincide con el tramo seleccionado.");
+      const skus = new Set();
+      for (const [index, row] of p.quantityPrices.entries()) {
+        if (!row || !Number.isSafeInteger(row.quantity) || row.quantity < p.orderStep || row.quantity > 1000000 || row.quantity % p.orderStep || (index && row.quantity <= p.quantityPrices[index-1].quantity)
+          || !(row.unitPrice === null || Number.isSafeInteger(row.unitPrice) && row.unitPrice >= 0 && row.unitPrice <= 1e9)
+          || row.totalNet !== (row.unitPrice === null ? null : row.unitPrice * row.quantity) || row.totalNet !== null && !Number.isSafeInteger(row.totalNet)
+          || typeof row.sku !== "string" || !/^[A-Z0-9-]{1,80}$/.test(row.sku) || skus.has(row.sku) || !p.variants.includes(row.label)) throw new Error("Revisa cantidades, SKU y totales de los embalajes.");
+        skus.add(row.sku);
+      }
+    }
     if (p.packs !== undefined) {
       if (!Array.isArray(p.packs) || !p.packs.length || p.packs.length > 30) throw new Error("Packs inválidos.");
       const skus = new Set();
@@ -101,8 +115,39 @@
       || identity(pack.label) === identity(label));
     return matches.length === 1 ? matches[0] : undefined;
   }
+  function isEmbalaje(product) {
+    return product?.category === "gastronomia" && product.type === "custom" && Number.isSafeInteger(product.orderStep) && product.orderStep > 0 && product.printingArea === "tapa";
+  }
+  function embalajeOptions(product) {
+    if (!isEmbalaje(product)) return [];
+    if (product.quantityPrices) return product.quantityPrices;
+    const match = /^\$([0-9.]+) \+ IVA c\/u(?:$| · )/.exec(product.price);
+    const displayed = match ? Number(match[1].replaceAll('.', '')) : null;
+    const unitPrice = Number.isSafeInteger(displayed) && displayed >= 0 && displayed <= 1e9 && (product.priceNum === undefined || product.priceNum === displayed) ? displayed : null;
+    // Compatibility with the live catalog: preserve its published unit price.
+    // Only quantities actually offered by the product get a price.
+    return (product.variants || []).map(label => ({label,quantity:Number.parseInt(label,10)}))
+      .filter(row => Number.isSafeInteger(row.quantity) && row.quantity >= product.orderStep && row.quantity <= 1000000 && row.quantity % product.orderStep === 0)
+      .map(row => ({...row,unitPrice,totalNet:unitPrice === null ? null : row.quantity * unitPrice,
+        sku:'KP-GAS-'+product.id.replace(/^bagasse-/, '').toUpperCase().slice(0,40)+'-Q'+row.quantity}));
+  }
+  function embalajeFor(product, key) {
+    const rows = embalajeOptions(product);
+    if (typeof key === 'number') return rows.find(row => row.quantity === key);
+    if (typeof key !== 'string') return undefined;
+    const exact = rows.find(row => row.sku === key || row.label === key);
+    if (exact) return exact;
+    const match = /^([1-9][0-9]*) unidades(?:$| · )/.exec(key);
+    return match ? rows.find(row => row.quantity === Number(match[1])) : undefined;
+  }
+  function embalajeFields(product, quantity) {
+    const row = embalajeFor(product, quantity),priced = row && row.unitPrice !== null;
+    return {pricedCustomization:Boolean(priced),customUnitPrice:priced?row.unitPrice:null,customPricingSku:priced?row.sku:null,
+      price:priced?money(row.unitPrice)+' + IVA c/u · Impresión en tapa':'Cotización con logo'};
+  }
   function catalogSale(product, variant) {
     if (!product) return null;
+    if (isEmbalaje(product)) return embalajeFor(product,variant)?.unitPrice ?? null;
     const pack = packFor(product, variant);
     if (pack) return pack.unitPrice;
     // A product with structured packs must resolve the selected pack. Its
@@ -130,5 +175,5 @@
     const rule=quantityRule(product,variant);
     return !rule || (rule.quantities ? rule.quantities.includes(quantity) : quantity>=rule.step && quantity%rule.step===0);
   }
-  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity});
+  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields});
 })();

@@ -14,7 +14,7 @@
  function removeButton(label,parent,callback){const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=label;button.addEventListener('click',callback);parent.append(button);return button;}
  function refreshVariants(row){const select=row.querySelector('[data-line-product]'),list=row.querySelector('datalist');list.replaceChildren();for(const variant of getProduct(select.value)?.variants||[]){const option=document.createElement('option');option.value=variant.split(' · $')[0];list.append(option);}}
  function applyCatalog(row,p,variant){
-  const pack=window.KP_CATALOG.packFor(p,variant),quantity=row.querySelector('[data-line-quantity]');
+  const pack=(window.KP_CATALOG.packFor(p,variant)||window.KP_CATALOG.embalajeFor(p,variant)),quantity=row.querySelector('[data-line-quantity]');
   row.querySelector('[data-line-price]').value=window.KP_CATALOG.catalogSale(p,variant)??'';
   if(pack)quantity.value=pack.quantity;
   else if(!p.packs){const count=/Pack ([1-9][0-9]*) u\./.exec(variant)||/^([1-9][0-9]*) unidades/.exec(variant);if(count)quantity.value=count[1];}
