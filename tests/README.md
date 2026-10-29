@@ -4,6 +4,19 @@ Ejecutar `npm install` y `npm test` en una copia local. Las dependencias son sol
 para desarrollo; no se sube `node_modules` ni se necesita Node para servir la web.
 Cloudflare puede seguir usando el comando `exit 0` y salida `.`.
 
+`npm test` descubre todos los archivos `tests/test-*.cjs` y los ejecuta en
+procesos separados, en orden alfabético. Continúa después de un fallo y muestra
+al final cuántos archivos aprobaron y cuáles fallaron. Devuelve código 1 si hay
+algún fallo, error de ejecución o una prueba supera 60 segundos; devuelve 0
+solo si todos aprueban. Las pruebas nuevas con ese nombre se incluyen sin
+editar `package.json`.
+
+Las comprobaciones de interfaz usan el catálogo y el índice de imágenes para
+verificar qué elementos se muestran, sin fijar conteos que quedan obsoletos al
+agregar productos o campañas. Los precios comerciales sí tienen comprobaciones
+explícitas por pack y modalidad. `test-tarifas.cjs` distingue el catálogo vigente
+de la migración histórica del 16 de octubre, probada sobre su formato original.
+
 - `test-db.cjs` ejecuta esquema y carga inicial en PostgreSQL mediante PGlite.
   Comprueba lectura pública, productos ocultos, permisos de escritura, autorización
   de un solo administrador, validación, conflictos y carga sin sobrescrituras.
