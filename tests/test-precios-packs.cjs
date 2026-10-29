@@ -25,7 +25,7 @@ assert.equal(catalog.catalogSale({packs:[{sku:'ZERO',label:'Gratis',quantity:1,u
 const box=scope.catalog.find(p=>p.id==='reposteria-caja-3-alfajores'),pack=box.packs[1];
 const data={...finance.blank(box),variant:pack.label,quantity:pack.quantity,sale:finance.catalogSale(box,pack.sku),base:100,labor:0,extras:0,waste:0,fee:0,fixed:0,preparation:0,packaging:0,reviewed:true};
 const result=finance.calculate(data,box);
-assert.equal(result.revenue,17500);assert.equal(result.iva,3325);assert.equal(result.total,20825);assert.equal(result.margin,60);
+assert.equal(result.revenue,17500);assert.equal(result.iva,3325);assert.equal(result.total,20825);assert.equal(result.margin,(350-100)/350*100);assert.equal(data.printing,0);
 assert.equal(finance.blank(box).variant,box.packs[0].label);assert.equal(finance.blank(box).quantity,25);
 assert.equal(catalog.catalogSale({...box,price:'$999 + IVA c/u'},pack.sku),350);
 const ambiguous={...box,packs:[pack,{...pack,sku:'OTHER',label:pack.label.replace('17.500','18.000')}]};

@@ -28,18 +28,26 @@
   catch(error){if(current!==revision)return;ready=false;rows=[];render();$('fin-setup').hidden=false;status('fin-status','No se pudieron cargar los costos. Si es tu primera vez, activa el archivo 09. Si ya lo hiciste, revisa conexión y sesión.','error');}
   finally{if(current===revision){$('fin-reload').disabled=false;for(const id of ['fin-new','fin-export'])$(id).disabled=!ready;}}
  }
- function variants(id){$('fin-variants').replaceChildren();for(const value of product(id)?.variants||[]){const option=document.createElement('option');option.value=value.split(' · $')[0];$('fin-variants').append(option);}}
- function printingState(){const currentProduct=product($('fin-product_id').value),beer=currentProduct?.category==='cerveza',food=currentProduct?.category==='gastronomia';
-  document.querySelector("label[for='fin-floor']").textContent=food?'Margen mínimo obligatorio (%)':'Margen excepcional (%)';
-  $('fin-floor').min=food?'45':'0';$('fin-target').min=food?'45':'0';$('fin-quantity').min=String(currentProduct?.orderStep||1);$('fin-quantity').step=String(currentProduct?.orderStep||1);
-  const adjusted=food&&(Number($('fin-floor').value)<45||Number($('fin-target').value)<45);
-  if(food){if(Number($('fin-floor').value)<45)$('fin-floor').value='45';if(Number($('fin-target').value)<45)$('fin-target').value='45';}
-for(const key of ['printing','prints']){$('fin-'+key).readOnly=beer;if(beer)$('fin-'+key).value='0';}return adjusted;}
+ function variants(id){$('fin-variants').replaceChildren();for(const value of [...new Set([...(product(id)?.variants||[]),...(calc.policy(product(id),'',id).box?product(id)?.configurations||[]:[])])]){const option=document.createElement('option');option.value=value.split(' · $')[0];$('fin-variants').append(option);}}
+ function printingState(initializeLogo=false){
+  const currentProduct=product($('fin-product_id').value),rule=calc.policy(currentProduct,$('fin-variant').value,$('fin-product_id').value);
+  document.querySelector("label[for='fin-floor']").textContent=rule.floor?'Margen mínimo obligatorio (%)':'Margen excepcional (%)';
+  $('fin-floor').min=String(rule.floor);$('fin-target').min=String(rule.floor);
+  $('fin-quantity').min=String(rule.mode==='logo'?100:currentProduct?.orderStep||1);$('fin-quantity').step=String(currentProduct?.orderStep||1);
+  let adjusted=false;
+  if(rule.floor)for(const key of ['floor','target'])if(Number($('fin-'+key).value)<rule.floor){$('fin-'+key).value=String(rule.floor);adjusted=true;}
+  for(const key of ['printing','prints']){
+   const field=$('fin-'+key);field.readOnly=rule.withoutPrint;
+   if(rule.withoutPrint&&Number(field.value)!==0){field.value='0';adjusted=true;}
+   if(initializeLogo&&rule.mode==='logo'&&Number(field.value)===0)field.value=key==='printing'?'40':'1';
+  }
+  return adjusted;
+ }
  function populateProducts(id){$('fin-product_id').replaceChildren();for(const row of products){const option=new Option(row.data.name,row.id);$('fin-product_id').add(option);}if(id&&!product(id))$('fin-product_id').add(new Option(id+' · sin producto activo',id));$('fin-product_id').value=id;variants(id);}
  function select(row){
   selected=structuredClone(row);dirty=false;$('fin-editor').hidden=false;populateProducts(row.data.product_id);$('fin-product_id').disabled=!row.isNew;
   for(const key of [...numeric,'variant','supplier','note'])$('fin-'+key).value=row.data[key]??'';$('fin-reviewed').checked=row.data.reviewed;
-  const adjusted=printingState();dirty=adjusted;$('fin-title').textContent=name(row.data)+' · '+row.data.variant;status('fin-save-status',adjusted?'Gastronomía: mínimo ajustado a 45%. Revisa los costos y guarda la ficha.':'');preview();
+  const adjusted=printingState();dirty=adjusted;$('fin-title').textContent=name(row.data)+' · '+row.data.variant;status('fin-save-status',adjusted?'Aplicamos las reglas de margen e impresión de esta modalidad. Revisa los costos y guarda la ficha.':'');preview();
  }
  function read(){const data={};data.product_id=$('fin-product_id').value;for(const key of ['variant','supplier','note'])data[key]=$('fin-'+key).value.trim();for(const key of numeric){const raw=$('fin-'+key).value.trim();data[key]=raw===''?null:Number(raw);}data.reviewed=$('fin-reviewed').checked;calc.validate(data);const currentProduct=product(data.product_id);if(currentProduct?.category==='gastronomia'&&data.floor<45)throw new Error('Gastronomía requiere al menos 45% de margen.');if(currentProduct?.orderStep&&(data.quantity<currentProduct.orderStep||data.quantity%currentProduct.orderStep!==0))throw new Error('Ingresa un múltiplo de '+currentProduct.orderStep+' unidades por embalaje.');calc.calculate(data,currentProduct);return data;}
  function resultRow(label,value,emphasis=false){const div=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;if(emphasis)div.className='emphasis';div.append(dt,dd);$('fin-results').append(div);}
@@ -57,7 +65,7 @@ for(const key of ['printing','prints']){$('fin-'+key).readOnly=beer;if(beer)$('f
  $('fin-reload').addEventListener('click',()=>{if(mayLeave()){selected=null;dirty=false;$('fin-editor').hidden=true;load();}});
  $('fin-new').addEventListener('click',()=>{if(!ready||!products.length||!mayLeave())return;const data=calc.blank(products[0].data);data.sale=calc.catalogSale(products[0].data,data.variant);select({id:'cost-'+crypto.randomUUID(),data,isNew:true});dirty=true;});
  $('fin-product_id').addEventListener('change',()=>{if(!selected?.isNew)return;const data=calc.blank(product($('fin-product_id').value));data.sale=calc.catalogSale(product(data.product_id),data.variant);select({...selected,data});dirty=true;});
- $('fin-variant').addEventListener('change',()=>{const p=product($('fin-product_id').value),variant=$('fin-variant').value,sale=calc.catalogSale(p,variant),pack=(window.KP_CATALOG.packFor(p,variant)||window.KP_CATALOG.embalajeFor(p,variant));$('fin-sale').value=sale??'';if(pack)$('fin-quantity').value=pack.quantity;dirty=true;status('fin-save-status','Cambios de costos pendientes.');preview();});
+ $('fin-variant').addEventListener('change',()=>{const p=product($('fin-product_id').value),variant=$('fin-variant').value,sale=calc.catalogSale(p,variant),pack=(window.KP_CATALOG.packFor(p,variant)||window.KP_CATALOG.embalajeFor(p,variant));$('fin-sale').value=sale??'';if(pack)$('fin-quantity').value=pack.quantity;else if(calc.policy(p,variant).mode==='logo'&&p.configurations.includes(variant))$('fin-quantity').value=parseInt(variant,10)||100;printingState(true);dirty=true;status('fin-save-status','Cambios de costos pendientes.');preview();});
  $('fin-from-pack').addEventListener('click',()=>{const total=Number($('fin-purchase_total').value),units=Number($('fin-purchase_units').value);if($('fin-purchase_total').value===''||!Number.isFinite(total)||total<0||!Number.isInteger(units)||units<1){status('fin-save-status','Completa compra total y unidades válidas.','error');return;}$('fin-base').value=total/units;dirty=true;preview();});
  $('fin-form').addEventListener('input',()=>{dirty=true;status('fin-save-status','Cambios de costos pendientes.');preview();});
  $('fin-cancel').addEventListener('click',()=>{if(selected&&mayLeave()){if(selected.isNew){selected=null;dirty=false;$('fin-editor').hidden=true;}else select(rows.find(row=>row.id===selected.id));}});

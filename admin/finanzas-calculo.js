@@ -3,7 +3,24 @@
  const nullable=['base','labor','extras','waste','fee','fixed','sale','purchase_total','purchase_units'];
  const orderFields=['preparation','packaging'];
  const required=['printing','prints','quantity','discount','target','floor'];
- function blank(product){const first=window.KP_CATALOG.embalajeOptions(product)[0];return {product_id:product?.id||'',variant:first?.label||product?.packs?.[0]?.label||'Unidad de producto',supplier:'',note:'',base:null,printing:product?.category==='cerveza'?0:40,prints:product?.category==='cerveza'?0:1,labor:null,extras:null,waste:null,fee:null,fixed:null,preparation:null,packaging:null,quantity:first?.quantity||product?.packs?.[0]?.quantity||product?.orderStep||100,sale:null,discount:0,target:45,floor:product?.category==='gastronomia'?45:40,reviewed:false,purchase_total:null,purchase_units:null};}
+ const alfajores=new Set(['reposteria-caja-3-alfajores','reposteria-caja-4-alfajores','reposteria-caja-6-alfajores']);
+ function policy(product,variant,id=product?.id){
+  const box=alfajores.has(id),pack=window.KP_CATALOG.packFor(product,variant);
+  const mode=box?(pack?(pack.withoutPrint?'blanca':'logo'):product?.configurations?.includes(variant)?'logo':null):null;
+  return {box,mode,floor:product?.category==='gastronomia'?45:box?40:0,withoutPrint:product?.category==='cerveza'||box&&mode==='blanca'};
+ }
+ function validatePolicy(p,product){
+  const rule=policy(product,p.variant,p.product_id);
+  if(rule.box&&(p.floor<rule.floor||p.target<rule.floor))throw new Error((rule.box?'Alfajores':'Gastronomía')+' requiere al menos '+rule.floor+'% de margen.');
+  if(rule.box){
+   if(!rule.mode)throw new Error('Alfajores: selecciona un pack de blancas sin impresión o una opción con logo del catálogo.');
+   if(rule.mode==='logo'&&p.quantity<100)throw new Error('Alfajores con logo: el mínimo es 100 unidades.');
+   if(rule.mode==='blanca'&&(p.printing!==0||p.prints!==0))throw new Error('Alfajores blancos: usa cero en impresión y pasadas.');
+   if(rule.mode==='logo'&&p.prints<1)throw new Error('Alfajores con logo: registra al menos una pasada de impresión.');
+  }
+  return rule;
+ }
+ function blank(product){const first=window.KP_CATALOG.embalajeOptions(product)[0],variant=first?.label||product?.packs?.[0]?.label||'Unidad de producto',rule=policy(product,variant);return {product_id:product?.id||'',variant,supplier:'',note:'',base:null,printing:rule.withoutPrint?0:40,prints:rule.withoutPrint?0:1,labor:null,extras:null,waste:null,fee:null,fixed:null,preparation:null,packaging:null,quantity:first?.quantity||product?.packs?.[0]?.quantity||product?.orderStep||100,sale:null,discount:0,target:45,floor:rule.floor||40,reviewed:false,purchase_total:null,purchase_units:null};}
  function validate(p){
   if(!p||typeof p!=='object'||Array.isArray(p))throw new Error('Ficha de costos inválida.');
   if(typeof p.product_id!=='string'||!/^[a-z0-9-]{1,100}$/.test(p.product_id))throw new Error('Selecciona un producto.');
@@ -15,7 +32,7 @@
   if(typeof p.reviewed!=='boolean')throw new Error('Revisa la confirmación de costos.');return p;
  }
  function calculate(p,product){
-  validate(p);const baseSubtotal=p.base===null?null:p.base+p.printing*p.prints;
+  validate(p);validatePolicy(p,product);const baseSubtotal=p.base===null?null:p.base+p.printing*p.prints;
   const missing=['base','labor','extras','waste','fee','fixed',...orderFields].filter(key=>p[key]==null);
   if(product?.orderStep&&(p.quantity<product.orderStep||p.quantity%product.orderStep!==0))missing.push('cantidad por embalaje');
   if(!p.reviewed)missing.push('revisión de costos');
@@ -33,5 +50,5 @@
   return {complete:true,missing:[],baseSubtotal,production,orderCosts,cost,targetPrice,floorPrice,breakEven,sale,commission,profit,margin,revenue,iva,total:revenue===null?null:revenue+iva,totalProfit:profit===null?null:profit*p.quantity,maxDiscount:p.sale>0?Math.floor(Math.max(0,(1-targetPrice/p.sale)*100)*10+1e-9)/10:null,status:margin===null?'Sin venta':margin>=target?'Cumple objetivo':margin>=floor?'Solo excepcional':profit>=0?'Bajo mínimo':'Pérdida'};
  }
  function catalogSale(product,variant){return window.KP_CATALOG.catalogSale(product,variant);}
- window.KP_FINANCE_CALC=Object.freeze({blank,validate,calculate,catalogSale});
+ window.KP_FINANCE_CALC=Object.freeze({blank,validate,policy,validatePolicy,calculate,catalogSale});
 })();
