@@ -1187,6 +1187,8 @@ button, input, select, textarea {
 }
 
 /* Cart Footer & Checkout */
+.cart-drawer [hidden] { display: none !important; }
+.cart-recovery-notice { margin: 16px 24px 0; padding: 12px; border: 1px solid var(--border-focus); border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; line-height: 1.5; flex-shrink: 0; }
 .cart-footer {
   padding: 20px 24px;
   border-top: 1px solid var(--border);

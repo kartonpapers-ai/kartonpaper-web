@@ -250,6 +250,7 @@
     </div>
 
     <div class="cart-content">
+    <p class="cart-recovery-notice" id="cart-recovery-notice" role="status" hidden></p>
     <!-- Items List or Empty State -->
     <div class="cart-items-list" id="cart-items-container">
       <div class="cart-empty" id="cart-empty-view">
@@ -355,6 +356,7 @@
   <script src="js/carrito-modal.js?v=carrito-modal-20261027"></script>
   <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
   <script src="js/catalogo-remoto.js?v=compostables-20261028"></script>
+  <script src="js/carrito-guardado.js?v=recuperacion-20261028"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
   <script src="js/heroes.js?v=biblioteca-20261020"></script>
@@ -364,20 +366,14 @@
     // ------------------------------------------------------------------------
     // Estado de la Aplicación & Carrito
     // ------------------------------------------------------------------------
-    let cart = [];
+    // El acceso a localStorage también puede fallar antes de llamar getItem.
+    let savedCartState;
+    try { savedCartState = KP_SAVED_CART.read(localStorage); }
+    catch (error) { savedCartState = {items:[], storageUnavailable:true,readFailed:true}; }
+    let cart = savedCartState.items;
     let currentCustomProduct = null;
     let selectedLogoFileName = "";
     let artworkBusy = false, uploadedArtwork = null;
-
-    // Cargar carrito de localStorage
-    try {
-      const savedCart = localStorage.getItem("kp_cart");
-      if (savedCart) {
-        cart = JSON.parse(savedCart);
-      }
-    } catch (e) {
-      cart = [];
-    }
 
     // Elementos DOM
     const productsGrid = document.getElementById("products-grid");
@@ -630,8 +626,8 @@
     function saveCart() {
       cart=cart.map(item=>item.isCustom?{...item,...KP_CATALOG.embalajeFields(productsDB.find(product=>product.id===item.id),item.qty)}:item);
       try {
-        localStorage.setItem("kp_cart", JSON.stringify(cart));
-      } catch (e) {}
+        if (!savedCartState.readFailed) localStorage.setItem("kp_cart", JSON.stringify(cart));
+      } catch (e) { savedCartState.storageUnavailable = true; }
       const focused=document.activeElement;
       const index=Number(focused?.dataset.index),action=focused?.dataset.action;
       const fromList=cartItemsContainer.contains(focused);
@@ -664,6 +660,14 @@
     }
 
     function updateCartUI() {
+      const recoveryNotice = document.getElementById("cart-recovery-notice");
+      const notices = [];
+      if (savedCartState.problem) notices.push(cart.length
+        ? "Recuperamos las líneas válidas de tu carrito. Algunas opciones o datos no pudieron recuperarse. Revisa los productos y cantidades antes de enviar."
+        : "No pudimos recuperar los datos de tu carrito anterior. Vuelve a agregar los productos que necesitas.");
+      if (savedCartState.storageUnavailable) notices.push("Tu navegador no permite guardar el carrito. Puedes continuar, pero el pedido podría perderse al cerrar o recargar esta página.");
+      recoveryNotice.textContent = notices.join(" ");
+      recoveryNotice.hidden = !notices.length;
       KP_CART_SUMMARY.render(cart);
       const totalCount = cart.reduce((acc, item) => acc + item.qty, 0);
       cartBadgeCount.textContent = totalCount;
@@ -1090,34 +1094,18 @@
         if (remote !== null) {
           productsDB.splice(0, productsDB.length, ...remote);
         }
-        cart = cart.filter(item => {
-          const product = productsDB.find(p => p.id === item.id);
-          if (!product || product.pricePending || !Number.isSafeInteger(item.qty) || item.qty < 1) return false;
-          const variants = item.isCustom
-            ? (product.configurations || (product.packs?["Personalización con logo · Cotización"]:product.variants)) : product.variants;
-          const validVariant = product.orderStep
-            ? item.isCustom && item.qty % product.orderStep === 0 && item.qty >= product.orderStep && item.qty <= 1000000
-              && item.variant === "Embalaje completo de " + product.orderStep + " u. · Impresión en tapa"
-            : variants.includes(item.variant);
-          return validVariant && (!item.isCustom || KP_CATALOG.validQuantity(product,item.variant,item.qty)) && (item.isCustom ? product.type !== "stock" : product.type !== "custom")
-            && !(!item.isCustom && KP_CATALOG.packFor(product, item.variant)?.requiresLogo)
-            && (!product.requiresArtwork || item.isCustom && /^posavasos\/[a-f0-9-]{36}--[a-zA-Z0-9_-]{1,60}\.(pdf|png|jpg|jpeg|svg|ai|eps)$/.test(item.artworkRef||""));
-        }).map(item => {
-          const product = productsDB.find(p => p.id === item.id);
-          const rule=KP_CATALOG.quantityRule(product,item.variant);
-          const {quantityOptions:oldOptions,unitsPerBox:oldBox,printingArea:oldArea,...savedItem}=item;
-          return {...savedItem, name:product.name, image:product.image,
-            ...(item.isCustom&&rule?.step?{unitsPerBox:rule.step,printingArea:product.printingArea||""}:{}),
-            ...(item.isCustom&&rule?.quantities?{quantityOptions:rule.quantities}:{}),
-            ...(!item.isCustom&&product.stockUnits?{stockUnits:product.stockUnits,stockUnitPrice:product.priceNum}:{}),
-            ...(item.isCustom ? {price:"Cotización con logo", ...(product.orderStep ? {unitsPerBox:product.orderStep,printingArea:product.printingArea||""} : {})} : KP_CATALOG.packFields(product, item.variant))};
-        });
+        const recovered = KP_SAVED_CART.reconcile(cart, productsDB);
+        cart = recovered.items;
+        savedCartState.problem ||= recovered.problem;
         saveCart();
         status.hidden = productsDB.length > 0;
         status.textContent = productsDB.length ? "" : "Estamos actualizando el catálogo. Puedes consultarnos por WhatsApp.";
         checkoutWaBtn.disabled = false;
         checkoutEmailBtn.disabled = false;
       } catch (error) {
+        // Conservar el pedido persistido si falla el catálogo; no usar precios
+        // guardados ni sobrescribirlo con un carrito vacío por falta de conexión.
+        cart = [];
         productsDB.splice(0);
         status.hidden = false;
         status.textContent = "No pudimos cargar el catálogo. Recarga la página o consulta por WhatsApp. Los pedidos guardados podrán revisarse al recuperar la conexión.";
