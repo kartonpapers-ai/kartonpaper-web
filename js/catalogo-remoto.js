@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const categories = ["cerveza", "reposteria", "gastronomia", "bolsas", "doypack", "posavasos"];
+  let loadIssues = [];
   function validate(p) {
     if (!p || typeof p !== "object") throw new Error("Producto inválido.");
     for (const field of ["id", "category", "name", "subtitle", "type", "image", "price"]) {
@@ -21,6 +22,7 @@
         throw new Error("Revisa las opciones y características del producto.");
       }
     }
+    if (p.configurations !== undefined && (!Array.isArray(p.configurations) || !p.configurations.length || p.configurations.length > 30 || p.configurations.some(v=>typeof v!=="string"||!v.trim()||v.length>500))) throw new Error("Revisa las configuraciones del producto.");
     if ("priceNum" in p && (!Number.isFinite(p.priceNum) || p.priceNum < 0)) throw new Error("Precio numérico inválido.");
     if (p.orderStep !== undefined && (!Number.isSafeInteger(p.orderStep) || p.orderStep < 1 || p.orderStep > 1000000 || p.type !== 'custom')) throw new Error('Revisa las unidades del embalaje.');
     if (p.customQuantities !== undefined && (p.type!=='custom'||!Array.isArray(p.customQuantities)||!p.customQuantities.length||p.customQuantities.length>30||p.customQuantities.some((q,i)=>!Number.isSafeInteger(q)||q<1||q>1000000||(i>0&&q<=p.customQuantities[i-1])))) throw new Error('Revisa las cantidades personalizadas.');
@@ -80,7 +82,24 @@
     }
     return c;
   }
+  function partition(rows) {
+    if (!Array.isArray(rows)) throw new Error("Respuesta de catálogo inválida.");
+    const valid = [], rejected = [], counts = new Map();
+    for (const row of rows) if (typeof row?.id === "string") counts.set(row.id, (counts.get(row.id) || 0) + 1);
+    rows.forEach((row, index) => {
+      try {
+        const product = validate(row?.data);
+        if (row.id !== product.id) throw new Error("El identificador de la fila no coincide con el producto.");
+        if (counts.get(row.id) > 1) throw new Error("Identificador duplicado. Revisa las filas de este producto.");
+        valid.push(row);
+      } catch (error) {
+        rejected.push({id:typeof row?.id === "string" ? row.id : null, position:index+1, reason:error.message});
+      }
+    });
+    return {valid, rejected};
+  }
   async function load() {
+    loadIssues = [];
     const c = configuration();
     if (!c) return null;
     const controller = new AbortController();
@@ -90,14 +109,9 @@
       const response = await fetch(url, {headers: {apikey: c.publishableKey}, signal: controller.signal, cache: "no-store"});
       if (!response.ok) throw new Error("No se pudo consultar el catálogo.");
       const rows = await response.json();
-      if (!Array.isArray(rows)) throw new Error("Respuesta de catálogo inválida.");
-      const seen = new Set();
-      return rows.map(row => {
-        const p = validate(row.data);
-        if (row.id !== p.id || seen.has(p.id)) throw new Error("Identificador de catálogo inválido.");
-        seen.add(p.id);
-        return p;
-      });
+      const result = partition(rows);
+      loadIssues = result.rejected;
+      return result.valid.map(row => row.data);
     } finally { clearTimeout(timer); }
   }
   const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
@@ -175,5 +189,5 @@
     const rule=quantityRule(product,variant);
     return !rule || (rule.quantities ? rule.quantities.includes(quantity) : quantity>=rule.step && quantity%rule.step===0);
   }
-  window.KP_CATALOG = Object.freeze({validate, configuration, load, escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields});
+  window.KP_CATALOG = Object.freeze({validate, partition, configuration, load, loadIssues:()=>loadIssues.map(issue=>({...issue})), escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields});
 })();

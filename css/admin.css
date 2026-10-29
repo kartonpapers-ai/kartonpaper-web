@@ -1,4 +1,5 @@
 :root{--ink:#373a3c;--muted:#575e64;--line:#dfe3eb;--accent:#2e469d;--mint:#c3e6d0;--soft:#f5f6f8;--font:'Libre Franklin',system-ui,sans-serif}
+#catalog-quarantine-list li{overflow-wrap:anywhere;margin-block:8px}
 *{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:15px/1.55 var(--font)}[hidden]{display:none!important}
 ::selection{background:var(--mint);color:var(--ink)}a{color:var(--accent);text-underline-offset:4px}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .topbar{padding:26px max(24px,calc((100vw - 1280px)/2));border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:24px}.topbar img{display:block;width:260px;max-width:100%;height:auto}.header-actions{display:flex;align-items:center;gap:24px;white-space:nowrap}

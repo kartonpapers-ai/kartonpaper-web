@@ -3,11 +3,25 @@
   const $ = id => document.getElementById(id);
   let client, rows = [], selected = null, dirty = false, saving = false, activeUser = null, pendingImage = null, imageBusy = false, imageRevision = 0;
   const categoryNames = {cerveza:"Cerveza",reposteria:"Repostería",gastronomia:"Gastronomía",bolsas:"Bolsas",doypack:"Doypack",posavasos:"Posavasos"};
+  function renderQuarantine(issues) {
+    $("catalog-quarantine").hidden = !issues.length;
+    $("catalog-review-status").hidden = !issues.length;
+    $("catalog-review-status").textContent = issues.length ? `${issues.length} filas requieren revisión. Los demás productos están disponibles.` : "";
+    $("catalog-quarantine-count").textContent = issues.length;
+    $("catalog-quarantine-list").replaceChildren();
+    for (const issue of issues) {
+      const li = document.createElement("li"), id = document.createElement("strong");
+      id.textContent = issue.id || `Fila ${issue.position} sin identificador`;
+      li.append(id, document.createTextNode(" — " + issue.reason));
+      $("catalog-quarantine-list").append(li);
+    }
+  }
   function status(id, message, kind = "") { $(id).textContent = message; $(id).className = kind; }
   function setLogin() {
     $("campaign-nav").hidden = true; $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
     window.KP_PANEL?.clear();
     rows = []; selected = null; dirty = false; activeUser = null; resetImage();
+    renderQuarantine([]);
     $("product-list").replaceChildren(); $("edit-form").reset(); window.KP_PACK_EDITOR.select(null); $("edit-form").hidden = true;
   }
   const imageSource = value => value.startsWith("https://") ? value : "../" + value;
@@ -82,8 +96,9 @@
     try {
       const {data, error} = await client.from("kp_products").select("id,data,published,version,updated_at,sort_order").order("sort_order").order("id");
       if (error) throw error;
-      for (const row of data) { window.KP_CATALOG.validate(row.data); if (row.data.id !== row.id) throw new Error("Producto inválido"); }
-      rows = data; selected = null; dirty = false;
+      const result = window.KP_CATALOG.partition(data);
+      rows = result.valid; selected = null; dirty = false;
+      renderQuarantine(result.rejected);
       $("edit-form").hidden = true; $("editor-empty").hidden = false;
       $("product-count").textContent = `${rows.length} productos · ${rows.filter(r => r.published).length} visibles en la tienda`;
       renderList(); window.KP_PANEL?.setCatalog(rows);

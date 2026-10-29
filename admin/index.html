@@ -7,10 +7,10 @@
   <title>Administración · KartonPaper</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css?v=packs-h2-20261026">
+  <link rel="stylesheet" href="../css/admin.css?v=catalogo-parcial-20261029">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
-  <script defer src="../js/catalogo-remoto.js?v=compostables-20261028"></script>
+  <script defer src="../js/catalogo-remoto.js?v=catalogo-parcial-20261029"></script>
   <script defer src="imagenes.js"></script>
   <script defer src="precios.js?v=compostables-20261028"></script>
   <script defer src="packs-editor.js?v=compostables-20261028"></script>
@@ -25,7 +25,7 @@
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
   <script defer src="dashboard.js?v=packs-h2-20261026"></script>
-  <script defer src="admin.js?v=compostables-20261028"></script>
+  <script defer src="admin.js?v=catalogo-parcial-20261029"></script>
 </head>
 <body>
   <header class="topbar">
@@ -46,6 +46,12 @@
     </section>
     <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button><button type="button" data-panel="artwork" aria-pressed="false">Archivos de clientes</button></nav></div><section id="workspace" hidden>
       <div class="workspace-heading"><div><h2>Productos</h2><p id="product-count">Cargando catálogo…</p></div><div class="header-actions"><button id="new-product" class="primary" type="button">Agregar producto</button><button id="reload" class="secondary">Actualizar lista</button></div></div>
+      <p id="catalog-review-status" role="status" aria-live="polite" hidden></p>
+      <details id="catalog-quarantine" class="setup-note" hidden>
+        <summary>Productos que requieren revisión (<span id="catalog-quarantine-count">0</span>)</summary>
+        <p>Estas filas no están disponibles para comprar ni se usan en Precios, Finanzas o Ventas. Corrige los datos indicados en la tabla kp_products de Supabase y pulsa Actualizar lista. No se han borrado ni modificado.</p>
+        <ul id="catalog-quarantine-list"></ul>
+      </details>
       <div class="workspace-layout">
         <section class="catalog-list" aria-label="Buscar productos">
           <label for="search">Buscar en tu catálogo</label><input id="search" type="search" placeholder="Nombre o categoría" autocomplete="off">

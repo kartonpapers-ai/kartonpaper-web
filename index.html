@@ -355,7 +355,7 @@
   <script src="js/carrito-resumen.js?v=compostables-20261028"></script>
   <script src="js/carrito-modal.js?v=carrito-modal-20261027"></script>
   <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
-  <script src="js/catalogo-remoto.js?v=compostables-20261028"></script>
+  <script src="js/catalogo-remoto.js?v=catalogo-parcial-20261029"></script>
   <script src="js/carrito-guardado.js?v=recuperacion-20261028"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
@@ -371,6 +371,7 @@
     try { savedCartState = KP_SAVED_CART.read(localStorage); }
     catch (error) { savedCartState = {items:[], storageUnavailable:true,readFailed:true}; }
     let cart = savedCartState.items;
+    let unavailableCart = [];
     let currentCustomProduct = null;
     let selectedLogoFileName = "";
     let artworkBusy = false, uploadedArtwork = null;
@@ -626,7 +627,7 @@
     function saveCart() {
       cart=cart.map(item=>item.isCustom?{...item,...KP_CATALOG.embalajeFields(productsDB.find(product=>product.id===item.id),item.qty)}:item);
       try {
-        if (!savedCartState.readFailed) localStorage.setItem("kp_cart", JSON.stringify(cart));
+        if (!savedCartState.readFailed) localStorage.setItem("kp_cart", JSON.stringify([...cart, ...unavailableCart]));
       } catch (e) { savedCartState.storageUnavailable = true; }
       const focused=document.activeElement;
       const index=Number(focused?.dataset.index),action=focused?.dataset.action;
@@ -662,6 +663,7 @@
     function updateCartUI() {
       const recoveryNotice = document.getElementById("cart-recovery-notice");
       const notices = [];
+      if (unavailableCart.length) notices.push("Algunos productos de tu carrito no están disponibles temporalmente. Conservamos esas líneas guardadas para cuando vuelvan a estar disponibles. No están incluidos en el pedido que puedes enviar ahora.");
       if (savedCartState.problem) notices.push(cart.length
         ? "Recuperamos las líneas válidas de tu carrito. Algunas opciones o datos no pudieron recuperarse. Revisa los productos y cantidades antes de enviar."
         : "No pudimos recuperar los datos de tu carrito anterior. Vuelve a agregar los productos que necesitas.");
@@ -1094,14 +1096,19 @@
         if (remote !== null) {
           productsDB.splice(0, productsDB.length, ...remote);
         }
-        const recovered = KP_SAVED_CART.reconcile(cart, productsDB);
+        const issues = KP_CATALOG.loadIssues();
+        const unavailableIds = new Set(issues.map(issue=>issue.id).filter(Boolean));
+        unavailableCart = cart.filter(item=>unavailableIds.has(item.id));
+        const recovered = KP_SAVED_CART.reconcile(cart.filter(item=>!unavailableIds.has(item.id)), productsDB);
         cart = recovered.items;
         savedCartState.problem ||= recovered.problem;
         saveCart();
-        status.hidden = productsDB.length > 0;
-        status.textContent = productsDB.length ? "" : "Estamos actualizando el catálogo. Puedes consultarnos por WhatsApp.";
-        checkoutWaBtn.disabled = false;
-        checkoutEmailBtn.disabled = false;
+        status.hidden = productsDB.length > 0 && !issues.length;
+        status.textContent = issues.length
+          ? (productsDB.length ? "Algunos productos no están disponibles por el momento. Puedes seguir eligiendo entre las opciones del catálogo." : "Estamos revisando los productos del catálogo. Puedes consultarnos por WhatsApp.")
+          : productsDB.length ? "" : "Estamos actualizando el catálogo. Puedes consultarnos por WhatsApp.";
+        checkoutWaBtn.disabled = !productsDB.length;
+        checkoutEmailBtn.disabled = !productsDB.length;
       } catch (error) {
         // Conservar el pedido persistido si falla el catálogo; no usar precios
         // guardados ni sobrescribirlo con un carrito vacío por falta de conexión.
