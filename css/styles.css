@@ -1746,6 +1746,7 @@ html { scroll-padding-top: 196px; }
 .product-detail-modal::backdrop{background:rgba(20,28,24,.5)}
 .product-detail-toolbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;font-size:14px;font-weight:600}
 .product-detail-toolbar .btn-modal-close{position:static;width:44px;height:44px;flex-shrink:0}
+.catalog-share{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:18px 0}.catalog-share p,.product-share-actions p{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}.share-link-value{width:100%;min-width:0;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font:inherit;font-size:16px}.share-link-value[hidden]{display:none}.product-share-actions{display:none}.product-detail-card .product-share-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-top:18px;border-top:1px solid var(--border)}
 .product-detail-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:0;border-radius:0;box-shadow:none;cursor:default;overflow:visible}
 .product-detail-card:hover{transform:none;box-shadow:none}
 .product-detail-card .product-card-media{aspect-ratio:1;position:sticky;top:70px;border:0;align-self:start;overflow:hidden}

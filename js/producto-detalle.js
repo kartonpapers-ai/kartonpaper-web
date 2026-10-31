@@ -16,6 +16,7 @@
   if(restoreFocus&&opener?.isConnected)opener.focus({preventScroll:true});
   if(dialog.contains(document.activeElement))document.activeElement.blur();
   dialog.setAttribute('aria-hidden','true');
+  document.dispatchEvent(new CustomEvent('kp:product-close'));
   return opener;
  }
  function open(card,opener){
@@ -34,6 +35,7 @@
    dialog.open=true;
   }
   document.body.style.overflow='hidden';dialog.scrollTop=0;closeButton.focus();
+  document.dispatchEvent(new CustomEvent('kp:product-open',{detail:{id:card.dataset.productId}}));
  }
  closeButton.addEventListener('click',()=>close());
  dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
