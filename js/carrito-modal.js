@@ -3,7 +3,7 @@
   const dialog=document.getElementById('cart-drawer');
   const closeButton=document.getElementById('close-cart-btn');
   const defaultOpener=document.getElementById('open-cart-btn');
-  let state=null;
+  let state=null,backdropPress=null;
   function controls(){
     return Array.from(dialog.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')).filter(element=>{
       if(element.tabIndex<0||element.matches(':disabled'))return false;
@@ -17,6 +17,7 @@
   function open(opener){
     if(dialog.open)return;
     if(state)close();
+    backdropPress=null;
     state={opener:opener||document.activeElement,overflow:document.body.style.overflow,background:[]};
     dialog.setAttribute('aria-hidden','false');
     if(typeof dialog.showModal==='function')dialog.showModal();
@@ -43,8 +44,13 @@
   closeButton.addEventListener('click',close);
   dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
   dialog.addEventListener('close',()=>{if(!dialog.open)close();});
+  dialog.addEventListener('pointerdown',event=>{
+    const rect=dialog.getBoundingClientRect();
+    backdropPress=event.target===dialog&&(event.clientX<rect.left||event.clientX>=rect.right||event.clientY<rect.top||event.clientY>=rect.bottom);
+  });
   dialog.addEventListener('click',event=>{
-    if(event.target!==dialog)return;
+    const press=backdropPress;backdropPress=null;
+    if(event.target!==dialog||press===false)return;
     const rect=dialog.getBoundingClientRect();
     if(event.clientX<rect.left||event.clientX>=rect.right||event.clientY<rect.top||event.clientY>=rect.bottom)close();
   });

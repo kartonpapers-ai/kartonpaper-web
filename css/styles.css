@@ -839,8 +839,9 @@ button, input, select, textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: var(--panel);
@@ -1187,6 +1188,8 @@ button, input, select, textarea {
 }
 
 /* Cart Footer & Checkout */
+#custom-modal[hidden], #custom-modal [hidden] { display: none !important; }
+#custom-modal .form-select { font-size: 16px; }
 .cart-drawer [hidden] { display: none !important; }
 .cart-recovery-notice { margin: 16px 24px 0; padding: 12px; border: 1px solid var(--border-focus); border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; line-height: 1.5; flex-shrink: 0; }
 .cart-footer {

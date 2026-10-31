@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=compostables-20261028">
+  <link rel="stylesheet" href="css/styles.css?v=prelanzamiento-20261030">
   <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -147,7 +147,7 @@
     </section>
   </main>
 
-  <dialog id="product-detail-modal" class="product-detail-modal" aria-labelledby="product-detail-title">
+  <dialog id="product-detail-modal" class="product-detail-modal" aria-labelledby="product-detail-title" aria-hidden="true">
     <div class="product-detail-toolbar"><span>Detalle del producto</span><button type="button" id="close-product-detail" class="btn-modal-close" aria-label="Cerrar detalle del producto">✕</button></div>
     <div id="product-detail-content"></div>
   </dialog>
@@ -155,7 +155,7 @@
   <!-- ========================================================================
        Customizer Modal (Personalización con logo)
        ======================================================================== -->
-  <div class="modal-backdrop" id="custom-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-product-title">
+  <div class="modal-backdrop" id="custom-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-product-title" hidden inert>
     <div class="modal-dialog">
       <div class="modal-header">
         <div>
@@ -167,10 +167,10 @@
 
       <div class="customizer-layout"><div class="customizer-fields">
       <div class="custom-product-preview">
-        <img class="custom-product-thumb" id="modal-product-img" src="" alt="Vista previa del producto">
+        <img class="custom-product-thumb" id="modal-product-img" alt="" hidden>
         <div class="custom-preview-info">
-          <h4 id="modal-product-name">Nombre del producto</h4>
-          <p id="modal-product-note">Impresión digital sobre la superficie del envase.</p>
+          <h4 id="modal-product-name"></h4>
+          <p id="modal-product-note"></p>
         </div>
       </div>
 
@@ -185,11 +185,11 @@
         <div class="form-group">
           <label class="form-label" for="modal-quantity-input">Cantidad a personalizar</label>
           <select class="form-select" id="modal-quantity-input">
-            <option value="100">100 unidades (Mínimo recomendado)</option>
+            <option value="100">100 unidades</option>
             <option value="250">250 unidades</option>
             <option value="500">500 unidades</option>
             <option value="1000">1.000 unidades</option>
-            <option value="2000">2.000 unidades o más</option>
+            <option value="2000">2.000 unidades</option>
           </select>
           <input id="modal-bulk-quantity" class="form-select" type="number" min="1" max="1000000" step="1" hidden>
           <p id="modal-bulk-help" class="field-help" hidden></p>
@@ -353,8 +353,8 @@
        ======================================================================== -->
   <script src="js/previsualizacion-cajas.js?v=dieline-20261026"></script>
   <script src="js/carrito-resumen.js?v=compostables-20261028"></script>
-  <script src="js/carrito-modal.js?v=carrito-modal-20261027"></script>
-  <script src="js/producto-detalle.js?v=catalogo-corto-20261023"></script>
+  <script src="js/carrito-modal.js?v=prelanzamiento-20261030"></script>
+  <script src="js/producto-detalle.js?v=prelanzamiento-20261030"></script>
   <script src="js/catalogo-remoto.js?v=catalogo-parcial-20261029"></script>
   <script src="js/carrito-guardado.js?v=recuperacion-20261028"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
@@ -406,7 +406,7 @@
     const fileAttachedInfo = document.getElementById("file-attached-info");
     const attachedFilename = document.getElementById("attached-filename");
     const removeFileBtn = document.getElementById("remove-file-btn");
-    let customReturnFocus=null;
+    let customReturnFocus=null, customDialogState=null, customBackdropPress=null;
 
     // ------------------------------------------------------------------------
     // Renderizado del Catálogo
@@ -492,7 +492,7 @@
         card.innerHTML = `
           <div class="product-card-media">
             ${badgeHtml}
-            <img src="${q.image}" alt="${q.name}" loading="lazy">
+            <img src="${q.image}" alt="${KP_CATALOG.escape(productImageAlt(p))}" loading="lazy">
           </div>
           <div class="product-card-body">
             <span class="product-category-tag">${getCategoryName(p.category)}</span>
@@ -595,6 +595,8 @@
       };
       return map[cat] || cat;
     }
+
+    function productImageAlt(product) { return `${product.name}. ${product.subtitle}`; }
 
     // ------------------------------------------------------------------------
     // Tabs de filtrado
@@ -846,12 +848,17 @@
     // ------------------------------------------------------------------------
     function openCustomizer(product, pack = null, selectedVariant = null) {
       if (artworkBusy) return;
+      if (customDialogState) closeCustomizer();
+      if (cartDrawer.open) closeCart();
       customReturnFocus=KP_PRODUCT_DETAIL.close(false)||document.activeElement;
+      customDialogState={overflow:document.body.style.overflow,background:[]};
       currentCustomProduct = product;
       KP_BOX_PREVIEW.begin(product);
       modalProductTitle.textContent = `Personalizar ${product.name}`;
       modalProductName.textContent = product.name;
       modalProductImg.src = product.image;
+      modalProductImg.alt = productImageAlt(product);
+      modalProductImg.hidden = false;
       modalProductNote.textContent = product.subtitle;
       selectedLogoFileName = "";uploadedArtwork=null;
       logoFileInput.required=Boolean(product.requiresArtwork);
@@ -883,10 +890,14 @@
         modalVariantSelect.value = pack.configuration;
         modalQuantityInput.value = String(pack.quantity);
       }
+      customModal.hidden=false;
+      customModal.removeAttribute("inert");
       customModal.classList.add("open");
       customModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
       closeModalBtn.focus();
+      customDialogState.background=Array.from(document.body.children).filter(node=>node!==customModal&&!node.hasAttribute("inert"));
+      customDialogState.background.forEach(node=>node.setAttribute("inert",""));
     }
 
     const defaultCustomQuantities = Array.from(modalQuantityInput.options, option=>({value:option.value,text:option.textContent}));
@@ -899,6 +910,7 @@
       modalQuantityInput.hidden=Boolean(step);modalQuantityInput.disabled=Boolean(step);
       document.querySelector("label[for='modal-quantity-input'],label[for='modal-bulk-quantity']").htmlFor=step?"modal-bulk-quantity":"modal-quantity-input";
       help.hidden=!rule;
+      help.textContent="";
       modalQuantityInput.replaceChildren();
       for (const option of rule?.quantities?.map(q=>({value:String(q),text:q+" unidades"}))||defaultCustomQuantities) {
         const node=document.createElement("option");node.value=option.value;node.textContent=option.text;modalQuantityInput.append(node);
@@ -915,12 +927,14 @@
         if(product.customQuantities.includes(requested))modalQuantityInput.value=String(requested);
       }
       if(product.orderStep||product.customQuantities) document.getElementById("modal-variant-group").hidden=true;
+      modalVariantSelect.disabled=document.getElementById("modal-variant-group").hidden;
+      if(!step)bulk.value="";
       updateCustomPrice();
     }
     function updateCustomPrice(){
       const info=document.getElementById('modal-order-price');
       info.hidden=!KP_CATALOG.isEmbalaje(currentCustomProduct);
-      if(info.hidden)return;
+      if(info.hidden){info.textContent="";return;}
       const q=Number(document.getElementById('modal-bulk-quantity').value);
       const row=KP_CATALOG.embalajeFor(currentCustomProduct,q);
       info.textContent=row&&row.unitPrice!==null?KP_CATALOG.money(row.unitPrice)+' + IVA c/u · Subtotal neto '+KP_CATALOG.money(row.totalNet)+' · Impresión incluida solo en la tapa.':'Esta cantidad no tiene un precio definido. Se agregará como solicitud por cotizar.';
@@ -929,27 +943,39 @@
     modalQuantityInput.addEventListener("change",()=>modalQuantityInput.setCustomValidity(""));
 
     function closeCustomizer() {
-      if (artworkBusy) return;
+      if (artworkBusy || !customDialogState) return;
+      const previous=customDialogState;customDialogState=null;
       customModal.classList.remove("open");
-      customModal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
+      previous.background.forEach(node=>node.removeAttribute("inert"));
+      document.body.style.overflow = previous.overflow;
       currentCustomProduct = null;
       KP_BOX_PREVIEW.clear();
-      if(customReturnFocus?.isConnected)customReturnFocus.focus({preventScroll:true});
+      const opener=customReturnFocus;
+      if(opener?.isConnected&&!opener.closest('[hidden],[inert]')&&!opener.matches(':disabled'))opener.focus({preventScroll:true});
+      else openCartBtn.focus({preventScroll:true});
+      if(customModal.contains(document.activeElement))openCartBtn.focus({preventScroll:true});
+      customModal.setAttribute("aria-hidden", "true");
+      customModal.setAttribute("inert", "");
+      customModal.hidden=true;
+      modalProductImg.hidden=true;modalProductImg.removeAttribute("src");modalProductImg.alt="";
+      modalProductName.textContent="";modalProductNote.textContent="";
     }
 
     customModal.addEventListener("keydown",event=>{
       if(event.key==="Escape"){event.preventDefault();closeCustomizer();return;}
       if(event.key!=="Tab")return;
-      const controls=Array.from(customModal.querySelectorAll('button,input,select,a[href]')).filter(el=>!el.disabled&&!el.hidden&&el.getClientRects().length);
+      const controls=Array.from(customModal.querySelectorAll('button,input,select,a[href],[tabindex]')).filter(el=>!el.matches(':disabled')&&el.tabIndex>=0&&!el.closest('[hidden],[inert]')&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden');
       const first=controls[0],last=controls.at(-1);
       if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
       else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
     });
     closeModalBtn.addEventListener("click", closeCustomizer);
+    customModal.addEventListener("pointerdown", e=>{customBackdropPress=e.target===customModal;});
     customModal.addEventListener("click", (e) => {
-      if (e.target === customModal) closeCustomizer();
+      if (e.target === customModal && customBackdropPress!==false) closeCustomizer();
+      customBackdropPress=null;
     });
+    document.addEventListener("focusin",event=>{if(customDialogState&&!customModal.contains(event.target))closeModalBtn.focus();});
 
     // Carga de archivo de logo
     logoFileInput.addEventListener("change", (e) => {
