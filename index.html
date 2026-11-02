@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=enlaces-20261031">
-  <link rel="stylesheet" href="css/hero-editorial.css?v=verde-bordes-20261023">
+  <link rel="stylesheet" href="css/styles.css?v=visibilidad-20261102">
+  <link rel="stylesheet" href="css/hero-editorial.css?v=visibilidad-20261102">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
   <script>if(window.KP_CONFIG?.enabled)document.documentElement.classList.add("kp-connected");</script>
@@ -362,11 +362,11 @@
   <script src="js/carrito-modal.js?v=prelanzamiento-20261030"></script>
   <script src="js/producto-detalle.js?v=enlaces-20261031"></script>
   <script src="js/catalogo-enlaces.js?v=enlaces-20261031"></script>
-  <script src="js/catalogo-remoto.js?v=catalogo-parcial-20261029"></script>
+  <script src="js/catalogo-remoto.js?v=visibilidad-20261102"></script>
   <script src="js/carrito-guardado.js?v=recuperacion-20261028"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
-  <script src="js/hero-editorial.js?v=movil-transiciones-20261021"></script>
-  <script src="js/heroes.js?v=biblioteca-20261020"></script>
+  <script src="js/hero-editorial.js?v=visibilidad-20261102"></script>
+  <script src="js/heroes.js?v=visibilidad-20261102"></script>
   <script src="data/productos.js?v=papel-15x15-20261023"></script>
   <script>
 
@@ -636,10 +636,13 @@
       if(!catalogReady)return;
       const product=requestedProduct&&productsDB.find(p=>p.id===requestedProduct);
       if(product)catalogSelection=KP_CATALOG_LINKS.matches(product,'cajas-reposteria')?'cajas-reposteria':product.category;
+      const categoryUnavailable=!KP_CATALOG.isCategoryVisible(KP_CATALOG_LINKS.category(catalogSelection));
+      if(categoryUnavailable)catalogSelection='all';
       markCatalogSelection();renderProducts(catalogSelection);
+      if(categoryUnavailable){const note=document.getElementById('catalog-link-note');note.hidden=false;note.textContent='Esta categoría no está disponible por el momento. Puedes revisar las otras opciones del catálogo.';}
       if(requestedProduct&&!product){const note=document.getElementById('catalog-link-note');note.hidden=false;note.textContent='Este producto no está disponible por el momento. Puedes revisar los productos del catálogo o consultarnos por WhatsApp.';}
       if(product){const card=productsGrid.querySelector(`[data-product-id="${product.id}"]`);document.getElementById('catalogo').scrollIntoView({behavior:'auto',block:'start'});KP_PRODUCT_DETAIL.open(card,card.querySelector('.btn-view-product'));}
-      else if(catalogSelection!=='all')document.getElementById('catalogo').scrollIntoView({behavior:'auto',block:'start'});
+      else if(catalogSelection!=='all'||categoryUnavailable||requestedProduct)document.getElementById('catalogo').scrollIntoView({behavior:'auto',block:'start'});
       requestedProduct=null;
     }
     window.addEventListener('popstate',()=>{const route=KP_CATALOG_LINKS.read(window.location.href);catalogSelection=route.catalog;requestedProduct=route.product;if(catalogReady)applyCatalogLink();else markCatalogSelection();});
@@ -1137,7 +1140,7 @@
     document.addEventListener("DOMContentLoaded", async () => {
       const status = document.getElementById("catalog-status");
       const heroResult = KP_HERO.load().then(rows=>({rows}),error=>({error}));
-      if(window.KP_CONFIG?.enabled&&!document.getElementById("hero-slider-section").dataset.editorial)document.getElementById("hero-slider-section").hidden=true;
+      if(window.KP_CONFIG?.enabled)document.getElementById("hero-slider-section").hidden=true;
       let stopSlider=initHeroSlider(),expiryTimer;
       window.addEventListener("pagehide",()=>{stopSlider();clearTimeout(expiryTimer);},{once:true});
       checkoutWaBtn.disabled = true;
@@ -1153,9 +1156,13 @@
         if (remote !== null) {
           productsDB.splice(0, productsDB.length, ...remote);
         }
+        document.querySelectorAll('[data-category],[data-filter-link],[data-hero-category]').forEach(node=>{
+          const category=node.dataset.category||node.dataset.filterLink||node.dataset.heroCategory;
+          node.hidden=!KP_CATALOG.isCategoryVisible(category);
+        });
         catalogReady=true;
         const issues = KP_CATALOG.loadIssues();
-        const unavailableIds = new Set(issues.map(issue=>issue.id).filter(Boolean));
+        const unavailableIds = new Set([...issues.map(issue=>issue.id).filter(Boolean), ...cart.filter(item=>!productsDB.some(product=>product.id===item.id)).map(item=>item.id)]);
         unavailableCart = cart.filter(item=>unavailableIds.has(item.id));
         const recovered = KP_SAVED_CART.reconcile(cart.filter(item=>!unavailableIds.has(item.id)), productsDB);
         cart = recovered.items;
@@ -1179,10 +1186,14 @@
       updateCartUI();
       const hero = await heroResult;
       if(hero.error){if(!document.getElementById("hero-slider-section").dataset.editorial)document.getElementById("hero-slider-section").hidden=true;}
-      else if(hero.rows!==null)KP_HERO.render(hero.rows,productsDB);
+      else if(hero.rows!==null&&!document.getElementById("hero-slider-section").dataset.editorial)KP_HERO.render(hero.rows,productsDB);
+      if(document.getElementById("hero-slider-section").dataset.editorial){
+        if(catalogReady)KP_EDITORIAL.render(hero.rows||[],productsDB);
+        else document.getElementById("hero-slider-section").hidden=true;
+      }
       if(!document.getElementById("hero-slider-section").dataset.editorial){stopSlider();stopSlider=initHeroSlider();}
       function scheduleExpiry() {
-        if(!hero.rows)return;
+        if(!hero.rows||!catalogReady)return;
         const future=hero.rows.flatMap(r=>[Date.parse(r.starts_at),Date.parse(r.ends_at)]).filter(t=>t>Date.now());
         if(!future.length)return;
         expiryTimer=setTimeout(()=>{stopSlider();KP_HERO.render(hero.rows,productsDB);stopSlider=initHeroSlider();scheduleExpiry();},Math.min(2147483647,Math.max(1,Math.min(...future)-Date.now()+100)));

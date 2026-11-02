@@ -30,7 +30,7 @@
  }
  function visible(row,products,now=Date.now()) {
   return row.published && (!row.starts_at||Date.parse(row.starts_at)<=now) && (!row.ends_at||Date.parse(row.ends_at)>now) && ['primary','secondary'].every(f=>{
-   const a=row.data[f];return !a||!['producto','personalizar'].includes(a.kind)||products.some(p=>p.id===a.target&&(a.kind!=='personalizar'||p.type!=='stock'));
+   const a=row.data[f];return (!a || a.kind!=='categoria' || window.KP_CATALOG.isCategoryVisible(a.target)) && (!a||!['producto','personalizar'].includes(a.kind)||products.some(p=>p.id===a.target&&(a.kind!=='personalizar'||p.type!=='stock')));
   });
  }
  function button(a,secondary=false) {

@@ -1816,3 +1816,6 @@ html { scroll-padding-top: 196px; }
 @media(max-height:650px){.cart-content{flex:none;overflow:visible}.cart-drawer{overflow-y:auto}.cart-footer{padding-top:16px;padding-bottom:16px}}
 
 #modal-order-price{font-size:14px;line-height:1.5;color:var(--ink);margin:12px 0}
+
+/* Category visibility must override the layout display rules. */
+.filter-tab[hidden],[data-filter-link][hidden],[data-hero-category][hidden]{display:none!important}

@@ -2,7 +2,50 @@
   "use strict";
   const $ = id => document.getElementById(id);
   let client, rows = [], selected = null, dirty = false, saving = false, activeUser = null, pendingImage = null, imageBusy = false, imageRevision = 0;
+  let categories = [], visibilityBusy = false;
   const categoryNames = {cerveza:"Cerveza",reposteria:"Repostería",gastronomia:"Gastronomía",bolsas:"Bolsas",doypack:"Doypack",posavasos:"Posavasos"};
+  const categoryVisible = id => categories.find(row=>row.id===id)?.visible !== false;
+  function visibilityHelp() {
+    $("product-visibility-help").textContent=categories.length!==6?"No se pudo verificar la visibilidad de esta categoría. Pulsa Actualizar lista.":categoryVisible($("edit-category").value)
+      ? "Guarda los cambios para aplicar la visibilidad de este producto."
+      : "Esta categoría está oculta. El producto aparecerá solo cuando actives la categoría y su publicación individual.";
+  }
+  function refreshVisibility() {
+    const count=categories.length===6?rows.filter(row=>row.published&&categoryVisible(row.data.category)).length:null;
+    $("product-count").textContent=`${rows.length} productos · ${count===null?"visibilidad por categoría sin verificar":count+" visibles en la web"}`;
+    if($("summary-visible"))$("summary-visible").textContent=count??"—";
+    visibilityHelp();
+  }
+  function renderVisibility() {
+    const list=$("category-visibility-list");list.replaceChildren();
+    for(const [id,name] of Object.entries(categoryNames)) {
+      const row=categories.find(item=>item.id===id),label=document.createElement("label"),input=document.createElement("input"),text=document.createElement("span"),detail=document.createElement("small");
+      label.className="category-visibility-row";input.type="checkbox";input.dataset.visibilityCategory=id;input.setAttribute("role","switch");input.setAttribute("aria-label","Mostrar "+name+" en la web");input.checked=row?.visible!==false;input.disabled=!row||saving||visibilityBusy;
+      const publishedCount=rows.filter(p=>p.data.category===id&&p.published).length;
+      text.textContent=name;detail.textContent=row?(row.visible?"Visible":"Oculta")+" · "+publishedCount+(publishedCount===1?" producto publicado":" productos publicados"):"Sin configurar";
+      input.addEventListener("change",async()=>{
+        const visible=input.checked;visibilityBusy=true;list.querySelectorAll("input").forEach(control=>control.disabled=true);status("visibility-status","Guardando visibilidad de "+name+"…");
+        try {
+          const result=await client.from("kp_catalog_categories").update({visible,version:row.version+1}).eq("id",id).eq("version",row.version).select("id,visible,version").maybeSingle();
+          if(result.error)throw result.error;
+          if(!result.data)throw new Error("conflict");
+          categories=categories.map(item=>item.id===id?result.data:item);
+          status("visibility-status",name+(visible?" visible en la web. Se mantienen los productos ocultos individualmente.":" oculta en la web. Sus productos y datos siguen guardados.")+" Recarga la tienda para ver el cambio.","success");
+          renderList();refreshVisibility();
+        }catch(error){status("visibility-status","No se guardó el cambio. Pulsa Actualizar lista para revisar la conexión y la versión actual.","error");}
+        finally{const restore=document.activeElement===document.body||document.activeElement===input;visibilityBusy=false;renderVisibility();if(restore)list.querySelector(`[data-visibility-category="${id}"]`)?.focus();}
+      });
+      label.append(input,text,detail);list.append(label);
+    }
+  }
+  async function loadVisibility() {
+    try {
+      const result=await client.from("kp_catalog_categories").select("id,visible,version").order("id");
+      if(result.error||!Array.isArray(result.data)||result.data.length!==6||result.data.some(row=>!Object.hasOwn(categoryNames,row.id)||typeof row.visible!=="boolean"||!Number.isInteger(row.version)))throw new Error("visibility");
+      categories=result.data;status("visibility-status","");
+    }catch(error){categories=[];status("visibility-status","No se pudo cargar la visibilidad por categoría. Pulsa Actualizar lista para reintentar.","error");}
+    renderVisibility();refreshVisibility();renderList();
+  }
   function renderQuarantine(issues) {
     $("catalog-quarantine").hidden = !issues.length;
     $("catalog-review-status").hidden = !issues.length;
@@ -20,6 +63,7 @@
   function setLogin() {
     $("campaign-nav").hidden = true; $("workspace").hidden = true; $("logout").hidden = true; $("login-view").hidden = false;
     window.KP_PANEL?.clear();
+    categories=[];$("category-visibility-list").replaceChildren();
     rows = []; selected = null; dirty = false; activeUser = null; resetImage();
     renderQuarantine([]);
     $("product-list").replaceChildren(); $("edit-form").reset(); window.KP_PACK_EDITOR.select(null); $("edit-form").hidden = true;
@@ -43,7 +87,7 @@
       button.setAttribute("aria-pressed", String(row.id === selected?.id));
       const image = document.createElement("img"); image.src = imageSource(row.data.image); image.alt = "";
       const text = document.createElement("span"), name = document.createElement("strong"), note = document.createElement("small");
-      name.textContent = row.data.name; note.textContent = categoryNames[row.data.category] + " · " + (row.published ? "Visible" : "Oculto");
+      name.textContent = row.data.name; note.textContent = categoryNames[row.data.category] + " · " + (!row.published ? "Oculto individualmente" : categoryVisible(row.data.category) ? "Visible" : "Oculto por categoría");
       text.append(name, note); button.append(image, text);
       button.disabled = saving;
       button.addEventListener("click", () => { if (!saving && mayDiscard()) selectRow(row); });
@@ -62,7 +106,7 @@
     $("edit-price-pending-group").hidden=!row.data.stockUnits;
     $("edit-price-pending").checked=Boolean(row.data.pricePending);
     $("edit-variants").value = row.data.variants.join("\n"); $("edit-specs").value = row.data.specs.join("\n");
-    $("edit-published").checked = row.published;
+    $("edit-published").checked = row.published; visibilityHelp();
     const eligible = window.KP_PRICES.unitFromText(row.data.price) !== null && window.KP_PRICES.packs(row.data.variants) !== null;
     $("edit-auto-price").disabled = !eligible;
     $("edit-auto-price").checked = eligible && row.data.pricingMode !== "manual";
@@ -101,7 +145,7 @@
       renderQuarantine(result.rejected);
       $("edit-form").hidden = true; $("editor-empty").hidden = false;
       $("product-count").textContent = `${rows.length} productos · ${rows.filter(r => r.published).length} visibles en la tienda`;
-      renderList(); window.KP_PANEL?.setCatalog(rows);
+      renderList(); window.KP_PANEL?.setCatalog(rows); await loadVisibility();
     } catch (error) {
       status("list-status", "No se pudo cargar el catálogo. Revisa la conexión y pulsa Actualizar lista.", "error");
     } finally { $("reload").disabled = false; }
@@ -122,13 +166,13 @@
       status("login-status", "Esta cuenta no tiene acceso al administrador. Revisa el usuario autorizado en Supabase.", "error");
     }
   }
-  window.KP_ADMIN_UI={mayLeave:()=>!saving&&mayDiscard(),editProduct:id=>{const row=rows.find(r=>r.id===id);if(row)selectRow(row);}};
+  window.KP_ADMIN_UI={mayLeave:()=>!saving&&!visibilityBusy&&mayDiscard(),editProduct:id=>{const row=rows.find(r=>r.id===id);if(row)selectRow(row);}};
   $("show-password").addEventListener("click", () => {
     const show = $("password").type === "password"; $("password").type = show ? "text" : "password";
     $("show-password").textContent = show ? "Ocultar" : "Mostrar"; $("show-password").setAttribute("aria-pressed", String(show));
   });
   $("new-product").addEventListener("click", () => {
-    if (saving || !mayDiscard()) return;
+    if (saving || visibilityBusy || !mayDiscard()) return;
     selectRow({isNew:true,id:"producto-" + crypto.randomUUID(),published:false,sort_order:Math.max(-1,...rows.map(r=>r.sort_order))+1,data:{name:"",subtitle:"",category:"reposteria",type:"custom",image:"",price:"Cotización con logo",variants:["100 unidades","250 unidades","500 unidades"],specs:["Personalización con tu logo"]}});
     $("edit-title").textContent = "Nuevo producto"; $("edit-id").textContent = "Completa los datos y guarda. Comienza oculto en la tienda."; $("edit-name").focus();
     dirty = true;
@@ -161,6 +205,7 @@
   }
   $("edit-variants").addEventListener("input", refreshPricingEligibility);
   $("edit-price").addEventListener("input", refreshPricingEligibility);
+  $("edit-category").addEventListener("change",visibilityHelp);
   $("edit-type").addEventListener("change", () => {
     if (!selected?.isNew) return;
     if ($("edit-type").value !== "custom" && $("edit-variants").value === "100 unidades\n250 unidades\n500 unidades") {
@@ -171,10 +216,10 @@
   $("edit-number").addEventListener("input", syncPrices);
   $("edit-auto-price").addEventListener("change", () => { dirty = true; syncPrices(); status("save-status", "Cambios pendientes de guardar."); });
   $("cancel").addEventListener("click", () => { if (selected && !saving && mayDiscard()) selectRow(selected); });
-  $("reload").addEventListener("click", () => { if (!saving && mayDiscard()) loadRows(); });
+  $("reload").addEventListener("click", () => { if (!saving && !visibilityBusy && mayDiscard()) loadRows(); });
   window.addEventListener("beforeunload", event => { if (dirty || saving) { event.preventDefault(); event.returnValue = ""; } });
   $("edit-form").addEventListener("submit", async event => {
-    event.preventDefault(); if (!selected || saving) return;
+    event.preventDefault(); if (!selected || saving || visibilityBusy) return;
     if (imageBusy) { status("save-status", "Espera a que termine la preparación de la foto.", "error"); return; }
     const row = selected; const isNew = Boolean(row.isNew);
     let data;
@@ -195,7 +240,7 @@
       if(data.stockUnits)data.pricePending=$("edit-price-pending").checked;
       window.KP_CATALOG.validate(data);
     } catch (error) { status("save-status", error.message, "error"); return; }
-    saving = true;
+    saving = true;renderVisibility();
     const published = $("edit-published").checked;
     for (const input of $("edit-form").elements) input.disabled = true;
     $("logout").disabled = true; $("reload").disabled = true; $("new-product").disabled=true; renderList();
@@ -213,19 +258,19 @@
       if (!result.data) { status("save-status", "El producto cambió en otra sesión. Conserva tus cambios, pulsa Actualizar lista y vuelve a revisarlos.", "error"); return; }
       rows = isNew ? [...rows,result.data] : rows.map(r => r.id === row.id ? result.data : r); $("search").value=""; selectRow(result.data);
       $("product-count").textContent = `${rows.length} productos · ${rows.filter(r => r.published).length} visibles en la tienda`;
-      window.KP_PANEL?.setCatalog(rows);
+      window.KP_PANEL?.setCatalog(rows);refreshVisibility();
       status("save-status", isNew ? "Producto creado. Activa Mostrar en el catálogo cuando esté listo." : "Cambios guardados. Recarga la tienda para verlos.", "success");
     } catch (error) {
       status("save-status", "No se guardaron los cambios. Revisa conexión y sesión. Si es la primera carga, comprueba que ejecutaste 04-nuevos-productos.sql. Actualiza la lista si el producto ya se creó en otro intento.", "error");
     } finally {
-      saving = false;
+      saving = false;renderVisibility();
       for (const input of $("edit-form").elements) input.disabled = false;
       refreshPricingEligibility();
       $("logout").disabled = false; $("reload").disabled = false; $("new-product").disabled=false; renderList();
     }
   });
   $("logout").addEventListener("click", async () => {
-    if (saving || !mayDiscard()) return;
+    if (saving || visibilityBusy || !mayDiscard()) return;
     $("logout").disabled = true;
     const {error} = await client.auth.signOut({scope:"local"});
     $("logout").disabled = false;

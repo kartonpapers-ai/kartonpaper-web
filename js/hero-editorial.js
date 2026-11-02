@@ -152,26 +152,28 @@
   el('photo').src=p.image;el('photo').alt=p.alt||p.detail;el('support').textContent=p.support;el('intro').textContent=p.intro;el('caption').textContent=p.detail;
   el('quote').href='https://wa.me/56930332416?text='+encodeURIComponent('Hola, quiero cotizar '+(p.quoteSubject||p.label.toLowerCase())+' con mi logo.');
   el('explore-label').textContent=p.action?.label||p.exploreLabel||'Explorar envases';
-  buttons().forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.heroCategory===category));button.querySelector('img').src=entries[button.dataset.heroCategory].thumbnail||entries[button.dataset.heroCategory].image;});
+  buttons().forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.heroCategory===category));button.querySelector('img').src=(entries[button.dataset.heroCategory]||defaults[button.dataset.heroCategory]).thumbnail||(entries[button.dataset.heroCategory]||defaults[button.dataset.heroCategory]).image;});
   if(motion)animate();
  }
  function render(rows,products){
-  const active=rows.filter(row=>window.KP_HERO.visible(row,products));entries={...defaults};const assigned=new Set();
+  const active=rows.filter(row=>window.KP_HERO.visible(row,products));entries=Object.fromEntries(Object.entries(defaults).filter(([category])=>window.KP_CATALOG.isCategoryVisible(category)));const assigned=new Set();
   for(const row of active){
    const p=row.data;
    // This composition uses separate product photos on white, never full scene backgrounds.
    if(p.layout!=='layered'||p.background?.kind!=='solid'||p.background.color.toLowerCase()!=='#ffffff')continue;
    const action=p.primary;
    const category=action.kind==='categoria'?action.target:products.find(product=>product.id===action.target)?.category;
-   if(!defaults[category]||assigned.has(category))continue;assigned.add(category);
+   if(!entries[category]||assigned.has(category))continue;assigned.add(category);
    entries[category]={...defaults[category],campaign:false,mobileImage:null,headline:null,quoteLabel:null,quoteSubject:null,exploreLabel:null,image:p.image,alt:p.alt,detail:p.alt,support:[p.title,p.highlight].filter(Boolean).join(' '),intro:p.lead,action};
   }
-  section().hidden=false;section().dataset.ready='true';warm();choose(selected);return active;
+  cancel();changeRequest++;buttons().forEach(button=>{button.hidden=!entries[button.dataset.heroCategory];});
+  if(!entries[selected])selected=Object.keys(entries)[0];
+  section().hidden=!selected;section().dataset.ready='true';warm();if(selected)choose(selected);return active;
  }
  function init(options){
   hooks=options;alive=true;const events=new AbortController();let disposed=false,timer=null,hovered=false,inView=true;
   const stop=()=>{clearTimeout(timer);timer=null;};
-  function sync(){stop();if(!disposed&&!paused&&!reduced.matches&&!document.hidden&&!hovered&&inView&&!section().contains(document.activeElement))timer=setTimeout(async()=>{timer=null;const order=Object.keys(entries);await choose(order[(order.indexOf(selected)+1)%order.length],true,true,()=>!disposed&&!paused&&!document.hidden&&!hovered&&inView&&!section().contains(document.activeElement));sync();},3000);}
+  function sync(){stop();if(Object.keys(entries).length&&!disposed&&!paused&&!reduced.matches&&!document.hidden&&!hovered&&inView&&!section().contains(document.activeElement))timer=setTimeout(async()=>{timer=null;const order=Object.keys(entries);await choose(order[(order.indexOf(selected)+1)%order.length],true,true,()=>!disposed&&!paused&&!document.hidden&&!hovered&&inView&&!section().contains(document.activeElement));sync();},3000);}
   function label(){el('pause').disabled=reduced.matches;el('pause').textContent=paused?'Reanudar':'Pausar';el('pause').setAttribute('aria-pressed',String(paused));el('pause').setAttribute('aria-label',paused?'Reanudar rotación automática del hero':'Pausar rotación automática del hero');}
   const listen=(target,type,handler)=>target.addEventListener(type,handler,{signal:events.signal});
   buttons().forEach(button=>listen(button,'click',async()=>{stop();await choose(button.dataset.heroCategory,true);sync();}));

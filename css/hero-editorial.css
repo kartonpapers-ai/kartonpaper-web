@@ -55,3 +55,4 @@
 @media(max-width:900px){
  .eh-campaign.eh-reposteria .eh-stage img{top:12%;height:88%}
 }
+.eh-category[hidden]{display:none!important}

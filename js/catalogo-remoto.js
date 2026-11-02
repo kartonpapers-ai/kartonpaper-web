@@ -98,6 +98,12 @@
     });
     return {valid, rejected};
   }
+  let hiddenCategories = new Set();
+  const isCategoryVisible = category => !hiddenCategories.has(category);
+  function setVisibility(rows) {
+    if (!Array.isArray(rows) || rows.some(row => !row || !['cerveza','reposteria','gastronomia','bolsas','doypack','posavasos'].includes(row.id) || typeof row.visible !== 'boolean')) throw new Error("Respuesta de visibilidad inválida.");
+    hiddenCategories = new Set(rows.filter(row => !row.visible).map(row => row.id));
+  }
   async function load() {
     loadIssues = [];
     const c = configuration();
@@ -109,9 +115,12 @@
       const response = await fetch(url, {headers: {apikey: c.publishableKey}, signal: controller.signal, cache: "no-store"});
       if (!response.ok) throw new Error("No se pudo consultar el catálogo.");
       const rows = await response.json();
+      const visibilityResponse = await fetch(c.supabaseUrl.replace(/\/$/, "") + "/rest/v1/kp_catalog_categories?select=id,visible", {headers:{apikey:c.publishableKey},signal:controller.signal,cache:"no-store"});
+      if (!visibilityResponse.ok) throw new Error("No se pudo consultar la visibilidad.");
+      setVisibility(await visibilityResponse.json());
       const result = partition(rows);
       loadIssues = result.rejected;
-      return result.valid.map(row => row.data);
+      return result.valid.map(row => row.data).filter(product => isCategoryVisible(product.category));
     } finally { clearTimeout(timer); }
   }
   const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
@@ -189,5 +198,5 @@
     const rule=quantityRule(product,variant);
     return !rule || (rule.quantities ? rule.quantities.includes(quantity) : quantity>=rule.step && quantity%rule.step===0);
   }
-  window.KP_CATALOG = Object.freeze({validate, partition, configuration, load, loadIssues:()=>loadIssues.map(issue=>({...issue})), escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields});
+  window.KP_CATALOG = Object.freeze({isCategoryVisible, setVisibility, validate, partition, configuration, load, loadIssues:()=>loadIssues.map(issue=>({...issue})), escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields});
 })();

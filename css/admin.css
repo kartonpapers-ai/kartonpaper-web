@@ -46,3 +46,15 @@ h1{font-family:var(--font);font-size:30px;line-height:1.2;letter-spacing:-.02em}
 /* Precios por pack: edición por fila y totales derivados. */
 #edit-packs h3{margin:20px 0 8px}.pack-edit-row{min-width:0;margin:20px 0;padding:16px}.pack-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.pack-edit-row>.pack-edit-field{margin-top:16px}.pack-edit-grid>div{min-width:0}.pack-edit-row input,.pack-edit-row select{font-size:16px;min-width:0;font-variant-numeric:tabular-nums}.pack-edit-row output{font-size:16px;font-weight:600;color:var(--ink);padding:12px 0;overflow-wrap:anywhere}.pack-edit-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}.pack-edit-actions .checkbox{margin:0;font-size:14px}.pack-edit-actions button{flex-shrink:0}.pack-edit-row:focus-within{border-color:var(--accent)}#edit-packs .field-help{font-size:14px}#edit-packs [role=status]{overflow-wrap:anywhere}
 @media(max-width:480px){.pack-edit-grid{grid-template-columns:1fr}.pack-edit-actions{align-items:flex-start;flex-direction:column}.pack-edit-row{padding:12px}.pack-edit-row label{margin-top:12px}}
+
+/* Category visibility: native switches, persistent status, compact rows. */
+.category-visibility{border-block:1px solid var(--line);padding:20px 0;margin-bottom:24px}
+.category-visibility h3{margin:0 0 8px;font-size:18px}
+.category-visibility p{max-width:75ch;color:var(--muted)}
+.category-visibility-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px}
+.category-visibility-row{display:grid;grid-template-columns:24px 1fr;align-items:center;gap:0 10px;min-height:64px;border-bottom:1px solid var(--line);cursor:pointer;margin:0}
+.category-visibility-row input{width:20px;height:20px;min-height:0;grid-row:span 2;accent-color:var(--accent)}
+.category-visibility-row small{grid-column:2;color:var(--muted);font-weight:400}
+#product-visibility-help{color:var(--muted)}
+@media(max-width:800px){.category-visibility-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.category-visibility-list{grid-template-columns:1fr}}
