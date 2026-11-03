@@ -1819,3 +1819,12 @@ html { scroll-padding-top: 196px; }
 
 /* Category visibility must override the layout display rules. */
 .filter-tab[hidden],[data-filter-link][hidden],[data-hero-category][hidden]{display:none!important}
+
+/* Social profile in the shared public footer. */
+.footer-tiktok{display:inline-flex;align-items:center;gap:12px;min-height:48px;max-width:100%;margin-top:20px;padding:6px 0;color:#fff;text-decoration:none;border-radius:4px}
+.footer-tiktok svg{flex:none;width:24px;height:24px}
+.footer-tiktok-label,.footer-tiktok-handle{display:block;line-height:1.5}
+.footer-tiktok-label{font-size:14px;font-weight:600}
+.footer-tiktok-handle{font-size:14px;color:#e3e7f4;overflow-wrap:anywhere}
+.footer-tiktok:hover .footer-tiktok-label{text-decoration:underline;text-underline-offset:4px}
+.footer-tiktok:focus-visible{outline:3px solid #fff;outline-offset:5px}
