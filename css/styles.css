@@ -1828,3 +1828,9 @@ html { scroll-padding-top: 196px; }
 .footer-tiktok-handle{font-size:14px;color:#e3e7f4;overflow-wrap:anywhere}
 .footer-tiktok:hover .footer-tiktok-label{text-decoration:underline;text-underline-offset:4px}
 .footer-tiktok:focus-visible{outline:3px solid #fff;outline-offset:5px}
+
+/* TikTok sits beside WhatsApp in the storefront header. */
+.btn-header-tiktok{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:9px 16px;border:1px solid #dfe3eb;border-radius:var(--radius-full);background:#fff;color:var(--ink);font-size:13px;font-weight:600;white-space:nowrap}
+.btn-header-tiktok svg{flex:none}
+.btn-header-tiktok:hover{background:#f5f6f8;border-color:#9ba3ad}
+@media(max-width:768px){.btn-header-tiktok{width:42px;height:42px;padding:0}.btn-header-tiktok span{display:none}}
