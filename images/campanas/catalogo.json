@@ -372,6 +372,52 @@
           "texto_publicitario_integrado": false
         }
       ]
+    },
+    {
+      "id": "tu-marca-sale-a-la-calle",
+      "nombre": "Tu marca sale a la calle · TikTok",
+      "imagenes": [
+        {
+          "id": "tu-marca-sale-a-la-calle-01-meson",
+          "nombre": "TikTok · Tu marca sale a la calle · 01 Mesón",
+          "archivo": "tu-marca-sale-a-la-calle/vertical/01-meson.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 81002,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": true
+        },
+        {
+          "id": "tu-marca-sale-a-la-calle-02-vereda",
+          "nombre": "TikTok · Tu marca sale a la calle · 02 Vereda",
+          "archivo": "tu-marca-sale-a-la-calle/vertical/02-vereda.webp",
+          "ancho": 941,
+          "alto": 1671,
+          "bytes": 101620,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": true
+        },
+        {
+          "id": "tu-marca-sale-a-la-calle-03-picnic",
+          "nombre": "TikTok · Tu marca sale a la calle · 03 Picnic",
+          "archivo": "tu-marca-sale-a-la-calle/vertical/03-picnic.webp",
+          "ancho": 941,
+          "alto": 1672,
+          "bytes": 186406,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": true
+        },
+        {
+          "id": "tu-marca-sale-a-la-calle-04-amigos",
+          "nombre": "TikTok · Tu marca sale a la calle · 04 Amigos",
+          "archivo": "tu-marca-sale-a-la-calle/vertical/04-amigos.webp",
+          "ancho": 941,
+          "alto": 1671,
+          "bytes": 113262,
+          "categoria": "gastronomia",
+          "texto_publicitario_integrado": true
+        }
+      ]
     }
   ]
 }
