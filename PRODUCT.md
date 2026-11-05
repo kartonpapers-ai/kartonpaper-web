@@ -20,8 +20,12 @@ Centralizar catálogo, precios y atención inicial para reducir trabajo repetiti
 Sitio HTML/CSS/JavaScript publicado en Cloudflare Pages desde GitHub. Desarrollo
 en `desarrollo/admin`; producción en `main`. Mantener el catálogo y diseño actual.
 Panel de uso personal con correo y contraseña, sin enlace en la navegación pública
-ni registro de usuarios. Esta primera versión administra productos existentes.
-Promociones, imágenes nuevas, pedidos y asistente se incorporan en etapas siguientes.
+ni registro de usuarios. El panel administra productos existentes y permite crear productos con fotos.
+Heroes, promociones con fechas e imágenes nuevas se administran desde el panel.
+Ventas registra pedidos manuales privados con varios productos, abonos y devoluciones;
+no emite facturas ni sincroniza el carrito público. Producción organiza OT privadas
+manuales o por línea de venta, con avance y tinta estimada/real; no controla la
+impresora ni sincroniza ventas o costos. El asistente se incorpora después.
 Precios, mínimos y plazos requieren confirmación comercial de Jorge.
 
 ## Brand Commitments
@@ -30,7 +34,42 @@ Conservar el logo de KartonPaper y la identidad del sitio publicado.
 
 ## Evidence on Hand
 
-20 productos en `data/productos.js`, seis categorías y siete banners en `index.html`.
+20 productos en `data/productos.js` y seis categorías. La portada implementa el hero
+aprobado `KartonPaper_hero_producto_protagonista.html`: titular fijo y seis fotos
+curadas de producto seleccionables. Campañas vigentes por capas sobre blanco pueden
+sustituir foto y mensajes de su categoría. Los siete banners originales se conservan
+en la administración; las escenas completas no participan en esta portada.
+Ver `docs/HERO-EDITORIAL.md` para la correspondencia de campos y el alcance.
+
+El panel de operación reúne Productos, Precios, Campañas, Finanzas, Ventas y Producción en
+`admin/index.html`. Precios abre la ficha pública para editar; Campañas conserva
+su página existente. Finanzas guarda fichas por variante en `kp_finance`, con
+acceso restringido al administrador por RLS (`supabase/09-finanzas-privadas.sql`).
+Los costos se importan desde un JSON privado local, fuera del repositorio. El
+cálculo separa merma, comisión, gastos por pedido e IVA y permite simular márgenes
+sin publicar precios ni ofertas. Evidencia funcional: `admin/dashboard.js`,
+`admin/finanzas.js` y `admin/finanzas-calculo.js`; esta descripción no acredita
+pruebas reales en navegador. Operación en `docs/PANEL-FINANZAS.md` y tokens locales
+en `docs/DESIGN-ADMIN.md`.
+
+Ventas guarda copias de precios y variantes acordados en `kp_sales`, protegida
+por RLS (`supabase/10-ventas-privadas.sql`), con IVA 19%, seguimiento de saldo,
+filtros y CSV privado. No incluye datos iniciales de clientes. Operación y límites
+en `docs/VENTAS.md`; sus resúmenes son operativos, no contables.
+
+Producción guarda OT en `kp_production`, protegida por RLS
+(`supabase/11-produccion-privada.sql`, requiere Ventas). Mantiene una OT vinculada
+por línea de venta, cola por prioridad y orden manual, historial sin borrado y
+consumo real pendiente hasta registrarlo. Operación y límites en `docs/PRODUCCION.md`.
+
+Redes y marketing guarda en `kp_social/workspace` las cuatro cuentas y una campaña
+por semana, con seis borradores editables, historial de hasta 104 semanas y
+resultados comerciales manuales. La migración `supabase/12-redes-marketing.sql`
+restringe el acceso por RLS y el guardado usa control optimista de versión.
+La relación con Campañas es una referencia interna; no modifica la web. No crea
+cuentas sociales ni conecta API, publica contenido o mide resultados automáticamente.
+Operación y respaldo JSON de solo exportación en `docs/REDES-MARKETING.md`;
+propuesta de lanzamiento y rutina en `docs/ESTRATEGIA-REDES.md`.
 
 ## Product Principles
 
@@ -38,3 +77,9 @@ Conservar el logo de KartonPaper y la identidad del sitio publicado.
 - Guardar cambios en almacenamiento persistente, sin editar HTML.
 - Proteger escrituras en la base de datos, además de mostrar un formulario de acceso.
 - Confirmar diseños y plazos antes de comprometer producción.
+
+## Biblioteca de campañas
+
+Fotos de catálogo y campañas reutilizables, más subidas independientes con nombre
+y categoría. Nuevas campañas con fondo blanco, fotos opacas o transparentes y
+colores editables; las campañas existentes conservan sus configuraciones.
