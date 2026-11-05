@@ -1,0 +1,28 @@
+KARTONPAPER · REDES Y MARKETING
+
+Este paquete agrega la séptima pestaña del administrador existente.
+Se preparó sobre desarrollo/admin, revisión 1b0b623, con Producción incluida.
+
+1. En Supabase > SQL Editor, ejecutar supabase/12-redes-marketing.sql.
+   Es repetible: no agrega cuentas, semanas ni resultados de ejemplo.
+   Requiere el esquema y administrador que ya utiliza el panel (01 y 03).
+2. Descomprimir KartonPaper_modulo_redes.zip.
+3. Subir su contenido a la raíz del repositorio kartonpaper-web,
+   rama desarrollo/admin, conservando las carpetas admin, css, docs,
+   supabase y tests. No subir el ZIP como archivo único.
+4. Esperar que Cloudflare termine y abrir:
+   https://desarrollo-admin.kartonpaper-web.pages.dev/admin/
+5. Entrar y abrir Redes y marketing. Preparar las cuentas, completar la
+   campaña de la semana, generar los borradores y guardar.
+
+El paquete no contiene contraseñas, costos ni registros reales de clientes.
+Las cuentas sociales siguen pendientes de creación en cada plataforma.
+La publicación y el registro de resultados son manuales en esta versión.
+Relacionar una campaña no modifica ni publica el hero de la tienda.
+
+Leer docs/REDES-MARKETING.md para operar el módulo y
+ docs/ESTRATEGIA-REDES.md para el plan de lanzamiento de cuatro semanas.
+
+Verificación: 15 suites funcionales (PostgreSQL local, JS y jsdom).
+Los ajustes de cierre también pasaron las dos suites nuevas.
+Pendiente: comprobación visual en navegador y Supabase del sitio publicado.
