@@ -30,8 +30,9 @@
       const pack = {...entry, totalNet:quantity * unitPrice};
       const mode = withoutPrint ? " · Sin impresión" : entry.requiresLogo ? " · Con logo" : "";
       pack.label = `Pack ${quantity} u.${mode} ($${format(pack.totalNet)} + IVA)`;
-      if (entry.requiresLogo) pack.configuration = `${quantity} unidades`;
-      else {delete pack.configuration; delete pack.requiresLogo;}
+      if (entry.requiresLogo && !product.pricedLogoPacks) pack.configuration = `${quantity} unidades`;
+      else delete pack.configuration;
+      if (!entry.requiresLogo) delete pack.requiresLogo;
       return pack;
     });
     const labels = new Set(updated.map(pack => pack.label));
@@ -42,7 +43,7 @@
     const price = `$${format(initialPack.unitPrice)} + IVA c/u · Pack ${initialPack.quantity} u.${initialPack.withoutPrint ? " sin impresión" : initialPack.requiresLogo ? " con logo" : ""}`;
     const result = {packs:updated, variants, price, priceNum:initialPack.unitPrice, pricingMode:"packs"};
     const previousConfigurations = new Set((product.packs || []).filter(pack => pack.requiresLogo).map(pack => pack.configuration));
-    const configurations = [...updated.filter(pack => pack.requiresLogo).map(pack => pack.configuration), ...(product.configurations || []).filter(value => !previousConfigurations.has(value))];
+    const configurations = [...updated.filter(pack => pack.configuration).map(pack => pack.configuration), ...(product.configurations || []).filter(value => !previousConfigurations.has(value))];
     if (product.configurations || configurations.length) result.configurations = [...new Set(configurations)];
     return result;
   }

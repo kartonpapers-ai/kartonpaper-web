@@ -25,13 +25,15 @@ async function page(file,enabled,before){const errors=[],vc=new VirtualConsole()
  el('email').value='jorge@example.test';el('password').value='errada';el('login-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.equal(el('workspace').hidden,true);assert.match(el('login-status').textContent,/No pudimos/);
  el('password').value='correcta';el('login-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.equal(el('workspace').hidden,false);assert.equal(p.doc.querySelectorAll('.product-row').length,products.length);
  // Structured pack edits change only the selected row and keep its SKU/quantity.
- p.w.KP_ADMIN_UI.editProduct(products[0].id);assert.equal(el('edit-packs').hidden,false);assert.equal(el('edit-auto-price').disabled,true);assert.equal(el('edit-number').readOnly,true);
+ const maleta=products.find(product=>product.id==='beer-maleta-3x330');
+ const maletaRow=rows.find(row=>row.id===maleta.id);
+ p.w.KP_ADMIN_UI.editProduct(maleta.id);assert.equal(el('edit-packs').hidden,false);assert.equal(el('edit-auto-price').disabled,true);assert.equal(el('edit-number').readOnly,true);
  const packRows=el('edit-pack-rows').children,unit=packRows[1].querySelector('[data-pack-unit]');
  unit.value='690';unit.dispatchEvent(new p.w.Event('input',{bubbles:true}));
  assert.match(packRows[1].querySelector('output').textContent,/69\.000/);
  el('edit-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();
- assert.equal(rows[0].data.priceNum,690);assert.match(rows[0].data.price,/Pack 100 u/);assert.equal(rows[0].data.packs[1].totalNet,69000);assert.equal(rows[0].data.packs[1].sku,products[0].packs[1].sku);
- assert.deepEqual(rows[0].data.packs[0],products[0].packs[0]);assert.deepEqual(rows[0].data.packs[2],products[0].packs[2]);
+ assert.equal(maletaRow.data.priceNum,690);assert.match(maletaRow.data.price,/Pack 100 u/);assert.equal(maletaRow.data.packs[1].totalNet,69000);assert.equal(maletaRow.data.packs[1].sku,maleta.packs[1].sku);
+ assert.deepEqual(maletaRow.data.packs[0],maleta.packs[0]);assert.deepEqual(maletaRow.data.packs[2],maleta.packs[2]);
  el('search').value='doypack';el('search').dispatchEvent(new p.w.Event('input'));assert.equal(p.doc.querySelectorAll('.product-row').length,1);
  p.doc.querySelector('.product-row').click();assert.equal(el('edit-form').hidden,false);el('edit-price').value='Cotización revisada';el('edit-price').dispatchEvent(new p.w.Event('input',{bubbles:true}));el('edit-form').dispatchEvent(new p.w.Event('submit',{bubbles:true,cancelable:true}));await pause();assert.match(el('save-status').textContent,/guardados/);assert.equal(rows.find(r=>r.data.category==='doypack').data.price,'Cotización revisada');
  p.w.confirm=()=>true;

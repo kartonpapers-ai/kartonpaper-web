@@ -14,7 +14,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
  assert.deepEqual(Array.from(byId('doypack-kraft-ventana').variants,v=>Number(/\$([0-9.]+)/.exec(v)[1].replaceAll('.',''))),[174,219,255,343,558,570]);
  assert.equal(byId('reposteria-papel-metalizado').priceNum,12300);
  assert.match(byId('reposteria-papel-metalizado').variants[2],/61\.500/);
- assert.deepEqual(Array.from(products.filter(p=>p.category==='cerveza'),p=>p.priceNum),[700,310,450,460,350,700]);
+ assert.deepEqual(Array.from(products.filter(p=>p.category==='cerveza'),p=>p.priceNum),[500,700,310,450,460,350,700]);
  const db=new PGlite();
  await db.exec("create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$select null::uuid$$;");
  await db.exec(fs.readFileSync('supabase/01-esquema.sql','utf8'));
