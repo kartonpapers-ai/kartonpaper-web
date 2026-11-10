@@ -1837,38 +1837,62 @@ html { scroll-padding-top: 196px; }
 .btn-header-tiktok:hover{background:#f5f6f8;border-color:#9ba3ad}
 @media(max-width:768px){.btn-header-tiktok{width:42px;height:42px;padding:0}.btn-header-tiktok span{display:none}}
 
-/* Portada móvil: más espacio para la marca y controles de 44 px. */
+/* Portada móvil: la marca se desplaza y los accesos quedan a mano. */
 @media (max-width: 768px) {
-  .store-header .nav {
-    width: calc(100% - 24px);
-    column-gap: 8px;
+  .store-home {
+    --mobile-brand-row: 100px;
+    --mobile-actions-row: 52px;
+    --mobile-categories-row: 52px;
+    --mobile-sticky-header: calc(var(--mobile-actions-row) + var(--mobile-categories-row) + 1px);
+    scroll-padding-top: calc(var(--mobile-sticky-header) + 16px);
   }
 
-  .store-header .brand { min-height: 76px; }
-  .store-header .brand-logo { width: 236px; }
-  .store-header .nav-actions { gap: 6px; }
+  .store-header { top: calc(0px - var(--mobile-brand-row)); }
+  .store-header:has(.brand:focus-visible) { top: 0; }
+  .store-header .nav {
+    width: calc(100% - 24px);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .store-header .brand {
+    grid-row: 1;
+    justify-self: center;
+    min-height: var(--mobile-brand-row);
+  }
+
+  .store-header .brand-logo { width: 300px; }
+  .store-header .nav-actions {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: center;
+    min-height: var(--mobile-actions-row);
+    padding-bottom: 8px;
+    gap: 6px;
+  }
+
   .store-header .btn-header-wa,
   .store-header .btn-header-tiktok,
   .store-header .btn-cart-trigger {
-    width: 44px;
-    height: 44px;
-    flex: 0 0 44px;
+    width: auto;
+    min-height: 44px;
     justify-content: center;
-    padding: 0;
+    gap: 5px;
+    padding: 0 8px;
+    font-size: 13px;
+    white-space: nowrap;
   }
 
-  .store-header .btn-cart-trigger svg { margin-top: 7px; }
+  .store-header .nav-actions svg { flex: none; }
+  .store-header .nav-actions span:not(.cart-count-badge) { display: inline; }
   .store-header .cart-count-badge {
-    position: absolute;
-    top: -5px;
-    right: -2px;
-    padding-inline: 4px;
+    display: inline-flex;
+    padding-inline: 5px;
     font-variant-numeric: tabular-nums;
   }
 
-  .store-header .nav-links { min-height: 52px; gap: 18px; }
+  .store-header .nav-links { grid-row: 3; min-height: var(--mobile-categories-row); gap: 18px; }
   .store-header .nav-links a { font-size: 16px; line-height: 1.35; padding-block: 12px; }
-  .filter-tabs-wrapper { top: 129px; }
+  .store-home .filter-tabs-wrapper { top: var(--mobile-sticky-header); }
   .filter-tab { min-height: 44px; font-size: 16px; }
 
   .product-card-desc,
@@ -1880,4 +1904,8 @@ html { scroll-padding-top: 196px; }
   .product-detail-card .btn-card-action,
   .btn-view-product,
   .cart-item-details h5 { font-size: 16px; }
+}
+
+@media (max-width: 350px) {
+  .store-header .btn-cart-trigger > span:not(.cart-count-badge) { display: none; }
 }
