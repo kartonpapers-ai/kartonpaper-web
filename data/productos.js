@@ -6,6 +6,69 @@
     const productsDB = [
       // 1. Cerveza Artesanal (Packs sin impresión en ecommerce + personalizables)
       {
+        "id": "beer-maleta-duo",
+        "category": "cerveza",
+        "name": "Maleta Dúo para cerveza",
+        "subtitle": "Caja kraft con asa y ventanas para dos botellas de 330 o 500 cc, o una botella con copa, vaso o chopero de 500 cc.",
+        "type": "dual",
+        "image": "images/cerveza-maleta-duo-frontal.jpg",
+        "detailImage": "images/cerveza-maleta-duo-angulo.jpg",
+        "price": "$500 + IVA c/u · Pack 50 u. sin impresión",
+        "priceNum": 500,
+        "pricingMode": "packs",
+        "sku": "KP-CER-M2-DUO",
+        "specs": [
+          "2 botellas de 500 cc",
+          "2 botellas de 330 cc",
+          "1 botella de 500 cc + 1 de 330 cc",
+          "1 botella + copa, vaso o chopero de 500 cc",
+          "Con logo desde 100 u."
+        ],
+        "variants": [
+          "Pack 50 u. · Sin impresión ($25.000 + IVA)",
+          "Pack 100 u. · Con logo ($60.000 + IVA)",
+          "Pack 200 u. · Con logo ($114.000 + IVA)"
+        ],
+        "packs": [
+          {
+            "quantity": 50,
+            "unitPrice": 500,
+            "totalNet": 25000,
+            "sku": "KP-CER-M2-DUO-P050-SI",
+            "withoutPrint": true,
+            "requiresLogo": false,
+            "label": "Pack 50 u. · Sin impresión ($25.000 + IVA)"
+          },
+          {
+            "quantity": 100,
+            "unitPrice": 600,
+            "totalNet": 60000,
+            "sku": "KP-CER-M2-DUO-P100-LOGO",
+            "withoutPrint": false,
+            "requiresLogo": true,
+            "label": "Pack 100 u. · Con logo ($60.000 + IVA)"
+          },
+          {
+            "quantity": 200,
+            "unitPrice": 570,
+            "totalNet": 114000,
+            "sku": "KP-CER-M2-DUO-P200-LOGO",
+            "withoutPrint": false,
+            "requiresLogo": true,
+            "label": "Pack 200 u. · Con logo ($114.000 + IVA)"
+          }
+        ],
+        "pricedLogoPacks": true,
+        "configurations": [
+          "2 botellas de 500 cc",
+          "2 botellas de 330 cc",
+          "1 botella de 500 cc + 1 de 330 cc",
+          "1 botella + copa",
+          "1 botella + vaso",
+          "1 botella + chopero de 500 cc"
+        ]
+      },
+      {
         id: "beer-maleta-3x330",
         category: "cerveza",
         name: "Maleta para 3 botellas",

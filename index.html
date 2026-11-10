@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=tiktok-header-20261103">
+  <link rel="stylesheet" href="css/styles.css?v=maleta-duo-20261110">
   <link rel="stylesheet" href="css/hero-editorial.css?v=visibilidad-20261102">
   <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <script src="data/config.js"></script>
@@ -369,14 +369,14 @@
   <script src="js/previsualizacion-cajas.js?v=dieline-20261026"></script>
   <script src="js/carrito-resumen.js?v=compostables-20261028"></script>
   <script src="js/carrito-modal.js?v=prelanzamiento-20261030"></script>
-  <script src="js/producto-detalle.js?v=enlaces-20261031"></script>
+  <script src="js/producto-detalle.js?v=maleta-duo-20261110"></script>
   <script src="js/catalogo-enlaces.js?v=enlaces-20261031"></script>
-  <script src="js/catalogo-remoto.js?v=visibilidad-20261102"></script>
-  <script src="js/carrito-guardado.js?v=recuperacion-20261028"></script>
+  <script src="js/catalogo-remoto.js?v=maleta-duo-20261110"></script>
+  <script src="js/carrito-guardado.js?v=maleta-duo-20261110"></script>
   <script src="js/archivos-cliente.js?v=posavasos-20261022"></script>
   <script src="js/hero-editorial.js?v=visibilidad-20261102"></script>
   <script src="js/heroes.js?v=visibilidad-20261102"></script>
-  <script src="data/productos.js?v=papel-15x15-20261023"></script>
+  <script src="data/productos.js?v=maleta-duo-20261110"></script>
   <script>
 
     // ------------------------------------------------------------------------
@@ -509,6 +509,7 @@
           <div class="product-card-media">
             ${badgeHtml}
             <img src="${q.image}" alt="${KP_CATALOG.escape(productImageAlt(p))}" loading="lazy">
+            ${p.detailImage ? '<button class="btn-secondary product-photo-toggle" type="button">Ver foto en ángulo</button>' : ''}
           </div>
           <div class="product-card-body">
             <span class="product-category-tag">${getCategoryName(p.category)}</span>
@@ -531,6 +532,18 @@
             </div>
           </div>
         `;
+
+        const photoToggle = card.querySelector(".product-photo-toggle");
+        if (photoToggle) {
+          const photo = card.querySelector(".product-card-media img");
+          const showPhoto = angled => {
+            photo.src = angled ? p.detailImage : p.image;
+            photo.alt = p.name + (angled ? " · Vista en ángulo" : " · Vista frontal");
+            photoToggle.textContent = angled ? "Ver foto frontal" : "Ver foto en ángulo";
+          };
+          photoToggle.addEventListener("click", () => showPhoto(photo.src !== new URL(p.detailImage, document.baseURI).href));
+          card.addEventListener("kp:product-return", () => showPhoto(false));
+        }
 
         // Variant button clicks
         card.querySelectorAll(".variant-btn").forEach(vBtn => {
@@ -670,7 +683,7 @@
     // Carrito de Compras (Lógica)
     // ------------------------------------------------------------------------
     function saveCart() {
-      cart=cart.map(item=>item.isCustom?{...item,...KP_CATALOG.embalajeFields(productsDB.find(product=>product.id===item.id),item.qty)}:item);
+      cart=cart.map(item=>item.isCustom?{...item,...KP_CATALOG.customPriceFields(productsDB.find(product=>product.id===item.id),item.qty)}:item);
       try {
         if (!savedCartState.readFailed) localStorage.setItem("kp_cart", JSON.stringify([...cart, ...unavailableCart]));
       } catch (e) { savedCartState.storageUnavailable = true; }
@@ -930,8 +943,9 @@
       if (selectedVariant && customVariants.includes(selectedVariant)) modalVariantSelect.value = selectedVariant;
       configureCustomQuantity(product, selectedVariant);
       if (pack?.requiresLogo) {
-        modalVariantSelect.value = pack.configuration;
+        if (pack.configuration) modalVariantSelect.value = pack.configuration;
         modalQuantityInput.value = String(pack.quantity);
+        updateCustomPrice();
       }
       customModal.hidden=false;
       customModal.removeAttribute("inert");
@@ -954,9 +968,13 @@
       document.querySelector("label[for='modal-quantity-input'],label[for='modal-bulk-quantity']").htmlFor=step?"modal-bulk-quantity":"modal-quantity-input";
       help.hidden=!rule;
       help.textContent="";
+      const previousQuantity = modalQuantityInput.value;
       modalQuantityInput.replaceChildren();
       for (const option of rule?.quantities?.map(q=>({value:String(q),text:q+" unidades"}))||defaultCustomQuantities) {
         const node=document.createElement("option");node.value=option.value;node.textContent=option.text;modalQuantityInput.append(node);
+      }
+      if (product.pricedLogoPacks && rule?.quantities.includes(Number(previousQuantity))) {
+        modalQuantityInput.value = previousQuantity;
       }
       if(step){
         bulk.min=String(step);bulk.step=String(step);
@@ -976,6 +994,13 @@
     }
     function updateCustomPrice(){
       const info=document.getElementById('modal-order-price');
+      if (currentCustomProduct?.pricedLogoPacks) {
+        const quantity = Number(modalQuantityInput.value);
+        const price = KP_CATALOG.customPriceFields(currentCustomProduct, quantity);
+        info.hidden = !price.pricedCustomization;
+        info.textContent = info.hidden ? '' : price.price + ' · Subtotal neto ' + KP_CATALOG.money(price.customUnitPrice * quantity);
+        return;
+      }
       info.hidden=!KP_CATALOG.isEmbalaje(currentCustomProduct);
       if(info.hidden){info.textContent="";return;}
       const q=Number(document.getElementById('modal-bulk-quantity').value);
@@ -983,7 +1008,7 @@
       info.textContent=row&&row.unitPrice!==null?KP_CATALOG.money(row.unitPrice)+' + IVA c/u · Subtotal neto '+KP_CATALOG.money(row.totalNet)+' · Impresión incluida solo en la tapa.':'Esta cantidad no tiene un precio definido. Se agregará como solicitud por cotizar.';
     }
     modalVariantSelect.addEventListener("change",()=>{if(currentCustomProduct)configureCustomQuantity(currentCustomProduct);});
-    modalQuantityInput.addEventListener("change",()=>modalQuantityInput.setCustomValidity(""));
+    modalQuantityInput.addEventListener("change",()=>{modalQuantityInput.setCustomValidity("");updateCustomPrice();});
 
     function closeCustomizer() {
       if (artworkBusy || !customDialogState) return;

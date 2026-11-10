@@ -10,6 +10,7 @@
   card.classList.remove('product-detail-card');
   card.querySelector('.product-card-title').removeAttribute('id');
   placeholder.replaceWith(card);
+  card.dispatchEvent(new Event('kp:product-return'));
   if(typeof dialog.close==='function')dialog.close();else dialog.open=false;
   background.forEach(node=>node.removeAttribute('inert'));
   document.body.style.overflow=overflow;

@@ -1752,6 +1752,8 @@ html { scroll-padding-top: 196px; }
 .product-detail-card .product-card-media{aspect-ratio:1;position:sticky;top:70px;border:0;align-self:start;overflow:hidden}
 .product-detail-card .product-card-media img{padding:20px;object-fit:contain}
 .product-detail-card:hover .product-card-media img{transform:none}
+.product-photo-toggle{display:none}
+.product-detail-card .product-photo-toggle{display:block;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);min-height:44px;background:#fff;white-space:nowrap}
 .product-detail-card .product-card-body{padding:28px;min-width:0}
 .product-detail-card .product-card-title{font-size:26px;line-height:1.2}
 .product-detail-card .product-card-desc{flex-grow:0;font-size:15px;line-height:1.5;margin-bottom:24px}

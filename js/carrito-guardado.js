@@ -45,7 +45,7 @@
    const rule=catalog.quantityRule(product,item.variant);
    result.push({...item,name:product.name,image:product.image,
     ...(item.isCustom?{
-     ...catalog.embalajeFields(product,item.qty),
+     ...catalog.customPriceFields(product,item.qty),
      ...(rule?.step?{unitsPerBox:rule.step,printingArea:product.printingArea||''}:{}),
      ...(rule?.quantities?{quantityOptions:[...rule.quantities]}:{})
     }:{...catalog.packFields(product,item.variant),...(product.stockUnits?{stockUnits:product.stockUnits,stockUnitPrice:product.priceNum}:{})})});
