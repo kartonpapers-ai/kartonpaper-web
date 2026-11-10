@@ -1836,3 +1836,48 @@ html { scroll-padding-top: 196px; }
 .btn-header-tiktok svg{flex:none}
 .btn-header-tiktok:hover{background:#f5f6f8;border-color:#9ba3ad}
 @media(max-width:768px){.btn-header-tiktok{width:42px;height:42px;padding:0}.btn-header-tiktok span{display:none}}
+
+/* Portada móvil: más espacio para la marca y controles de 44 px. */
+@media (max-width: 768px) {
+  .store-header .nav {
+    width: calc(100% - 24px);
+    column-gap: 8px;
+  }
+
+  .store-header .brand { min-height: 76px; }
+  .store-header .brand-logo { width: 236px; }
+  .store-header .nav-actions { gap: 6px; }
+  .store-header .btn-header-wa,
+  .store-header .btn-header-tiktok,
+  .store-header .btn-cart-trigger {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .store-header .btn-cart-trigger svg { margin-top: 7px; }
+  .store-header .cart-count-badge {
+    position: absolute;
+    top: -5px;
+    right: -2px;
+    padding-inline: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .store-header .nav-links { min-height: 52px; gap: 18px; }
+  .store-header .nav-links a { font-size: 16px; line-height: 1.35; padding-block: 12px; }
+  .filter-tabs-wrapper { top: 129px; }
+  .filter-tab { min-height: 44px; font-size: 16px; }
+
+  .product-card-desc,
+  .product-detail-card .product-card-desc { font-size: 16px; line-height: 1.5; }
+  .spec-chip,
+  .variant-btn,
+  .product-detail-card .product-price-note,
+  .cart-item-variant { font-size: 15px; }
+  .product-detail-card .btn-card-action,
+  .btn-view-product,
+  .cart-item-details h5 { font-size: 16px; }
+}

@@ -27,19 +27,19 @@
  .eh-campaign .eh-hero{display:flex;flex-direction:column;align-items:stretch;aspect-ratio:auto;min-height:0;gap:0;padding:16px 0}
  .eh-campaign .eh-copy{display:contents}
  .eh-campaign .eh-copy > [aria-live]{order:2;margin:12px 0 0}
- .eh-campaign .eh-headline{position:absolute;z-index:2;top:32px;left:50%;transform:translateX(-50%);width:min(100%,500px);box-sizing:border-box;padding-inline:16px;font-size:clamp(26px,7.2vw,36px);line-height:1.06;margin:0}
+ .eh-campaign .eh-headline{position:absolute;z-index:2;top:32px;left:50%;transform:translateX(-50%);width:min(100%,500px);box-sizing:border-box;padding-inline:16px;font-size:clamp(29px,8vw,37px);line-height:1.06;margin:0}
  .eh-campaign .eh-support{max-width:38ch;font-size:17px;margin-bottom:8px}
  .eh-campaign .eh-intro{max-width:40ch;margin-bottom:12px}
  .eh-campaign .eh-photo{order:1;position:relative;inset:auto;z-index:0;margin:0}
  .eh-campaign .eh-stage{width:min(100%,500px);height:auto;aspect-ratio:941/1672;margin-inline:auto;overflow:hidden}
  .eh-campaign .eh-stage img{position:absolute;width:100%;height:100%;left:0;top:0;bottom:auto;object-fit:contain}
- .eh-campaign .eh-caption{position:static;margin-top:6px}
+ .eh-campaign .eh-caption{position:static;margin-top:6px;font-size:14px}
  .eh-campaign .eh-actions{order:3;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .eh-campaign .eh-action{min-width:0;min-height:50px;padding:12px 10px;gap:8px;font-size:14px;text-align:center;white-space:normal}
+ .eh-campaign .eh-action{min-width:0;min-height:50px;padding:12px 10px;gap:8px;font-size:16px;text-align:center;white-space:normal}
  .eh-campaign .eh-action svg{width:18px;height:18px}
 }
 @media(max-width:480px){
- .eh-campaign .eh-action{padding-inline:8px;font-size:13px}
+ .eh-campaign .eh-action{padding-inline:8px}
  .eh-campaign .eh-action svg{display:none}
 }
 
@@ -56,3 +56,9 @@
  .eh-campaign.eh-reposteria .eh-stage img{top:12%;height:88%}
 }
 .eh-category[hidden]{display:none!important}
+
+@media (max-width: 768px) {
+  .eh-category span { font-size: 15px; }
+  .eh-caption, .eh-footer, .eh-playback button { font-size: 14px; }
+  .eh-playback button { min-height: 44px; }
+}
