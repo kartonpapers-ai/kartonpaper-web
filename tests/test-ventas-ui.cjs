@@ -21,8 +21,28 @@ const wait=()=>new Promise(resolve=>setTimeout(resolve,40));
  el('sale-add-payment').click();el('sale-payments').querySelector('[data-payment-amount]').value='10000';el('sale-form').dispatchEvent(new w.Event('input',{bubbles:true}));assert.match(el('sale-result-status').textContent,/Abono parcial/);
  w.confirm=()=>false;d.querySelector('[data-panel="products"]').click();assert.equal(el('sales-panel').hidden,false);w.confirm=()=>true;
  const publicBefore=JSON.stringify(catalog);el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.equal(records.length,1);assert.equal(el('sale-count').textContent,'1');assert.equal(JSON.stringify(catalog),publicBefore);assert.equal(records[0].data.lines[0].unit_price,700);assert.match(el('sale-title').textContent,/V-000001/);assert.match(el('sale-save-status').textContent,/guardada/);
+ // Saved orders are linked to the private client card and financial summary.
+ const openClient=Array.from(el('sale-rows').querySelectorAll('button')).find(button=>button.textContent==='Ver cliente');
+ openClient.click();
+ assert.equal(el('customers-panel').hidden,false);
+ assert.equal(el('customer-name').textContent,'=2+3');
+ assert.match(el('customer-balance').textContent,/73\.300/);
+ assert.match(el('customer-sales').textContent,/V-000001/);
+ el('customer-sales').querySelector('button').click();
+ assert.equal(el('sales-panel').hidden,false);
+ d.querySelector('[data-panel="finance"]').click();
+ assert.match(el('fin-sales-net').textContent,/70\.000/);
+ assert.match(el('fin-sales-total').textContent,/83\.300/);
+ assert.match(el('fin-sales-paid').textContent,/10\.000/);
+ assert.match(el('fin-sales-balance').textContent,/73\.300/);
+ input('fin-sales-from','2100-01-01');
+ assert.equal(el('fin-sales-rows').children.length,0);
+ input('fin-sales-from','');
+ el('fin-sales-rows').querySelector('button').click();
+ assert.equal(el('sales-panel').hidden,false);
  el('sale-export').click();assert.match(await exported.text(),/"'=2\+3"/);
- const beforeUnit=d.querySelector('[data-line-price]').value;const changed=structuredClone(catalog);changed[0].data.price='$999 + IVA c/u';changed[0].data.packs=changed[0].data.packs.map(pack=>({...pack,unitPrice:999,totalNet:999*pack.quantity}));w.KP_PANEL.setCatalog(changed);assert.equal(d.querySelector('[data-line-price]').value,beforeUnit);
+ const linkedLine=el('sale-lines').firstElementChild;
+ const beforeUnit=linkedLine.querySelector('[data-line-price]').value;const changed=structuredClone(catalog);changed[0].data.price='$999 + IVA c/u';changed[0].data.packs=changed[0].data.packs.map(pack=>({...pack,unitPrice:999,totalNet:999*pack.quantity}));w.KP_PANEL.setCatalog(changed);assert.equal(d.querySelector('[data-line-price]').value,beforeUnit);
 
  // Finance uses the same selected pack, clears unresolved prices, and keeps
  // manually agreed prices on catalog refresh. No finance records are written.
@@ -33,12 +53,12 @@ const wait=()=>new Promise(resolve=>setTimeout(resolve,40));
  el('fin-variant').value=alfajor.packs[1].sku;el('fin-variant').dispatchEvent(new w.Event('change'));assert.equal(el('fin-sale').value,'350');assert.equal(el('fin-quantity').value,'50');
  input('fin-sale','333');w.KP_PANEL.setCatalog(catalog);assert.equal(el('fin-sale').value,'333');
  el('fin-variant').value='Sin precio acordado';el('fin-variant').dispatchEvent(new w.Event('change'));assert.equal(el('fin-sale').value,'');
- d.querySelector('[data-panel="sales"]').click();assert.equal(line.querySelector('[data-line-price]').value,'700');
- input('sale-state','anulada');el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.match(el('sale-save-status').textContent,/devolución/);assert.equal(records[0].data.state,'confirmada');el('sale-add-payment').click();const refund=el('sale-payments').lastElementChild;refund.querySelector('[data-payment-kind]').value='devolucion';refund.querySelector('[data-payment-amount]').value='10000';el('sale-form').dispatchEvent(new w.Event('input',{bubbles:true}));el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.equal(records[0].data.state,'anulada');assert.match(el('sale-balance').textContent,/\$0/);
+ d.querySelector('[data-panel="sales"]').click();assert.equal(linkedLine.querySelector('[data-line-price]').value,'700');
+ input('sale-state','anulada');el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.match(el('sale-save-status').textContent,/devolución/);assert.equal(records[0].data.state,'confirmada');el('sale-add-payment').click();const refund=el('sale-payments').lastElementChild;refund.querySelector('[data-payment-kind]').value='devolucion';refund.querySelector('[data-payment-amount]').value='10000';el('sale-form').dispatchEvent(new w.Event('input',{bubbles:true}));el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.equal(records[0].data.state,'anulada');assert.match(el('sale-balance').textContent,/\$0/);assert.equal(el('fin-sales-rows').children.length,0);
  records[0].version++;input('sale-notes','Corrección');el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.match(el('sale-save-status').textContent,/otra sesión/);el('sale-reload').click();await wait();d.querySelector('#sale-rows button').click();writeFail=true;input('sale-notes','Reintento');el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.match(el('sale-save-status').textContent,/No se pudo guardar/);assert.equal(el('sale-customer').value,'=2+3');writeFail=false;
  // More than one backend page, filtered counts and safe invalid-row handling.
  const sample=structuredClone(records[0]);sample.data.state='confirmada';records=Array.from({length:501},(_,i)=>({...structuredClone(sample),id:'sale-page-'+i,number:i+1}));rangeCalls=0;el('sale-reload').click();await wait();assert.ok(rangeCalls>=2);assert.equal(el('sale-count').textContent,'501');input('sale-search','V-000501');assert.equal(d.querySelectorAll('#sale-rows tr').length,1);input('sale-search','');
  records[0].data.lines=[];el('sale-reload').click();await wait();assert.equal(el('sale-net').textContent,'—');assert.match(el('sale-filter-status').textContent,/revisión/);const oldExport=exported;el('sale-export').click();assert.equal(exported,oldExport);records[0]=structuredClone(sample);el('sale-reload').click();await wait();
- d.querySelector('#sale-rows button').click();deferWrite=true;el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.equal(el('sale-customer').disabled,true);user=null;listener('SIGNED_OUT');await wait();assert.equal(el('sale-customer').value,'');assert.equal(el('sale-customer').disabled,false);assert.equal(el('sale-lines').children.length,0);assert.equal(el('sales-panel').hidden,true);finishWrite({data:sample});deferWrite=false;await wait();assert.equal(el('panel-overview').hidden,true);
+ d.querySelector('#sale-rows button').click();deferWrite=true;el('sale-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();assert.equal(el('sale-customer').disabled,true);user=null;listener('SIGNED_OUT');await wait();assert.equal(el('sale-customer').value,'');assert.equal(el('sale-customer').disabled,false);assert.equal(el('sale-lines').children.length,0);assert.equal(el('sales-panel').hidden,true);assert.equal(el('customer-name').textContent,'');assert.equal(el('fin-sales-net').textContent,'—');finishWrite({data:sample});deferWrite=false;await wait();assert.equal(el('panel-overview').hidden,true);
  el('password').value='correcta';el('login-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await wait();d.querySelector('[data-panel="sales"]').click();assert.equal(el('sales-panel').hidden,false);assert.equal(el('sale-new').disabled,false);missing=true;el('sale-reload').click();await wait();assert.equal(el('sale-setup').hidden,false);assert.equal(el('sale-new').disabled,true);assert.equal(errors.length,0,errors.join('\n'));w.close();console.log('OK interfaz Ventas: registro, packs, cobros/devolución, privacidad, conflicto, exportación segura, paginación y recuperación de sesión.');
 })().catch(error=>{console.error(error);process.exit(1);});
