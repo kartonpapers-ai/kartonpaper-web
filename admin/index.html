@@ -7,7 +7,7 @@
   <title>Administración · KartonPaper</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css?v=visibilidad-20261102">
+  <link rel="stylesheet" href="../css/admin.css?v=clientes-finanzas-20261111">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
   <script defer src="../js/catalogo-remoto.js?v=visibilidad-20261102"></script>
@@ -18,13 +18,14 @@
   <script defer src="finanzas.js?v=alfajores-margen-20261029"></script>
   <script defer src="traslados.js?v=starken-20261022"></script>
   <script defer src="ventas-calculo.js?v=1"></script>
-  <script defer src="ventas.js?v=compostables-20261028"></script>
+  <script defer src="ventas.js?v=clientes-finanzas-20261111"></script>
+  <script defer src="seguimiento-ventas.js?v=1"></script>
   <script defer src="produccion-calculo.js?v=1"></script>
   <script defer src="produccion.js?v=1"></script>
   <script defer src="redes-modelo.js?v=1"></script>
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
-  <script defer src="dashboard.js?v=packs-h2-20261026"></script>
+  <script defer src="dashboard.js?v=clientes-finanzas-20261111"></script>
   <script defer src="admin.js?v=visibilidad-20261102"></script>
 </head>
 <body>
@@ -44,7 +45,7 @@
         <p id="login-status" role="status" aria-live="polite"></p>
       </div>
     </section>
-    <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button><button type="button" data-panel="artwork" aria-pressed="false">Archivos de clientes</button></nav></div><section id="workspace" hidden>
+    <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button class="secondary" type="button" data-panel="customers" aria-pressed="false">Clientes</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button><button type="button" data-panel="artwork" aria-pressed="false">Archivos de clientes</button></nav></div><section id="workspace" hidden>
       <div class="workspace-heading"><div><h2>Productos</h2><p id="product-count">Cargando catálogo…</p></div><div class="header-actions"><button id="new-product" class="primary" type="button">Agregar producto</button><button id="reload" class="secondary">Actualizar lista</button></div></div>
       <section class="category-visibility" aria-labelledby="visibility-title">
         <h3 id="visibility-title">Visibilidad en la web</h3>
@@ -104,7 +105,54 @@
       </div>
     </section>
 <section id="prices-panel" hidden aria-labelledby="prices-heading"><div class="workspace-heading"><div><h2 id="prices-heading">Precios de venta</h2><p>Precios publicados en el catálogo. Los cambios se guardan desde la ficha del producto.</p></div></div><label for="price-search">Buscar producto o categoría</label><input id="price-search" type="search" placeholder="Nombre o categoría"><div class="table-scroll"><table class="data-table"><caption class="sr-only">Precios públicos por producto</caption><thead><tr><th scope="col">Producto</th><th scope="col">Precio neto</th><th scope="col">Opciones de venta</th><th scope="col">Acción</th></tr></thead><tbody id="price-rows"></tbody></table></div></section>
-<section id="finance-panel" hidden aria-labelledby="finance-heading"><div class="workspace-heading"><div><h2 id="finance-heading">Finanzas por producto</h2><p>Costos privados y simulación de rentabilidad. No cambia los precios de la tienda.</p></div><div class="header-actions"><button id="fin-new" class="primary" type="button">Nueva ficha</button><button id="fin-reload" class="secondary" type="button">Actualizar</button><button id="fin-export" class="secondary" type="button">Exportar respaldo</button></div></div>
+<section id="customers-panel" hidden aria-labelledby="customers-heading">
+  <div class="workspace-heading"><h2 id="customers-heading" tabindex="-1">Clientes</h2></div>
+  <div class="customer-workspace">
+    <div class="catalog-list">
+      <label for="customer-search">Buscar por nombre o contacto</label>
+      <input id="customer-search" type="search" autocomplete="off">
+      <p id="customer-status" role="status"></p>
+      <div id="customer-list" class="product-list"></div>
+    </div>
+    <section id="customer-detail" class="editor" hidden aria-labelledby="customer-name">
+      <h3 id="customer-name" tabindex="-1"></h3>
+      <dl class="panel-summary">
+        <div><dt>Teléfono o correo</dt><dd id="customer-contact"></dd></div>
+        <div><dt>Saldo de pedidos confirmados</dt><dd id="customer-balance"></dd></div>
+      </dl>
+      <details id="customer-notes" open><summary>Notas de la última venta</summary><p id="customer-note-text"></p></details>
+      <h4>Historial de ventas</h4>
+      <div class="table-scroll">
+        <table class="data-table" aria-label="Historial de ventas del cliente">
+          <thead><tr><th scope="col">Pedido</th><th scope="col">Total con IVA</th><th scope="col">Saldo</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead>
+          <tbody id="customer-sales"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</section>
+<section id="finance-panel" hidden aria-label="Finanzas">
+  <section class="finance-sales" aria-labelledby="fin-sales-heading">
+    <div class="workspace-heading"><div><h2 id="fin-sales-heading">Ventas y cobros</h2><p>Pedidos confirmados y posteriores. El período filtra por fecha de venta e incluye todos los cobros y devoluciones registrados para esos pedidos.</p></div></div>
+    <div class="sales-filters finance-sales-filters">
+      <div><label for="fin-sales-search">Buscar cliente o pedido</label><input id="fin-sales-search" type="search" autocomplete="off"></div>
+      <div><label for="fin-sales-from">Venta desde</label><input id="fin-sales-from" type="date"></div>
+      <div><label for="fin-sales-to">Venta hasta</label><input id="fin-sales-to" type="date"></div>
+    </div>
+    <p id="fin-sales-status" role="status"></p>
+    <dl class="panel-summary sales-summary">
+      <div><dt>Ventas netas</dt><dd id="fin-sales-net">—</dd></div>
+      <div><dt>Total con IVA</dt><dd id="fin-sales-total">—</dd></div>
+      <div><dt>Cobrado menos devoluciones</dt><dd id="fin-sales-paid">—</dd></div>
+      <div><dt>Saldo pendiente</dt><dd id="fin-sales-balance">—</dd></div>
+    </dl>
+    <div class="table-scroll">
+      <table class="data-table" aria-label="Ventas vinculadas a Finanzas">
+        <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col">Neto</th><th scope="col">Cobrado</th><th scope="col">Saldo</th><th scope="col">Acción</th></tr></thead>
+        <tbody id="fin-sales-rows"></tbody>
+      </table>
+    </div>
+  </section><div class="workspace-heading"><div><h2 id="finance-heading">Finanzas por producto</h2><p>Costos privados y simulación de rentabilidad. No cambia los precios de la tienda.</p></div><div class="header-actions"><button id="fin-new" class="primary" type="button">Nueva ficha</button><button id="fin-reload" class="secondary" type="button">Actualizar</button><button id="fin-export" class="secondary" type="button">Exportar respaldo</button></div></div>
 <section class="trip-section" aria-labelledby="trip-heading">
 <div class="workspace-heading"><div><h3 id="trip-heading">Traslados a Starken · La Cisterna</h3><p>Costo interno de taller a agencia. El flete de Starken lo paga el destinatario.</p></div><button id="trip-reload" class="secondary" type="button">Actualizar viajes</button></div>
 <p id="trip-status" role="status" aria-live="polite"></p>
