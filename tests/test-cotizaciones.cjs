@@ -29,7 +29,7 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
   const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9cAAAAASUVORK5CYII=', 'base64');
   w.Blob = Blob;
   w.HTMLCanvasElement.prototype.toBlob = callback => callback(new Blob([pixel], { type: 'image/png' }));
-  for (const script of ['js/catalogo-remoto.js', 'admin/ventas-calculo.js', 'admin/cotizacion-carta.js', 'admin/cotizaciones.js']) {
+  for (const script of ['js/catalogo-remoto.js', 'admin/precios.js', 'admin/ventas-calculo.js', 'admin/cotizacion-carta.js', 'admin/cotizaciones.js']) {
     w.eval(read(script));
   }
 
@@ -41,10 +41,40 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
     image: 'images/cerveza-maleta-duo-frontal.jpg', packs: [{
       sku: 'KP-CER-M2-DUO-P100-LOGO', label: 'Pack 100 u. · Con logo', quantity: 100, unitPrice: 600
     }] };
-  w.KP_QUOTES.connect();
+  const publicDuo = {
+    ...duo, category: 'cerveza', subtitle: 'Caja kraft para dos botellas', price: '$600 + IVA c/u',
+    specs: ['Con logo'], variants: [duo.packs[0].label], pricedLogoPacks: true,
+    configurations: ['2 botellas de 500 cc'], detailImage: 'images/cerveza-maleta-duo-angulo.jpg',
+    packs: [{ ...duo.packs[0], requiresLogo: true, withoutPrint: false, totalNet: 60000 }]
+  };
+  const partition = w.KP_CATALOG.partition([{ id: duo.id, data: publicDuo, published: true }]);
+  assert.equal(partition.valid.length, 1);
+  const editedDuo = { ...publicDuo, ...w.KP_PRICES.structured(publicDuo, publicDuo.packs, 0) };
+  assert.deepEqual(editedDuo.configurations, publicDuo.configurations);
+  assert.equal(w.KP_CATALOG.validate(editedDuo).packs[0].sku, 'KP-CER-M2-DUO-P100-LOGO');
+
+  const folios = new Map();
+  let lostResponse = true;
+  w.KP_QUOTES.connect({ from(table) {
+    assert.equal(table, 'kp_quote_folios');
+    return {
+      select: () => ({ eq: (field, id) => ({
+        maybeSingle: async () => ({ data: folios.has(id) ? { number: folios.get(id) } : null })
+      }) }),
+      insert: ({ request_id: id }) => ({ select: () => ({ single: async () => {
+        const number = folios.size + 2;
+        folios.set(id, number);
+        if (lostResponse) {
+          lostResponse = false;
+          return { error: { message: 'Respuesta perdida' } };
+        }
+        return { data: { number } };
+      } }) })
+    };
+  } });
   w.KP_QUOTES.setCatalog([wrap, duo].map(data => ({ id: data.id, data })));
   $('quote-customer').value = 'Cervecería de prueba';
-  $('quote-number').value = 'COT-0001';
+  assert.equal($('quote-number').readOnly, true);
   $('quote-date').value = '2026-11-12';
 
   function change(field, value) {
@@ -70,11 +100,14 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
   add(wrap);
   add(duo);
   await generate();
+  assert.equal($('quote-preview').hidden, true);
+  assert.equal(folios.size, 1);
+  await generate();
   assert.equal($('quote-preview').hidden, false);
   assert.match($('quote-status').textContent, /126\.140/);
   const page = $('quote-pages').querySelector('canvas');
   assert.deepEqual([page.width, page.height], [2550, 3300]);
-  for (const value of ['N.º COT-0001', '$46.000', '$60.000', '$20.140', '$126.140', 'contacto@kartonpaper.cl',
+  for (const value of ['N.º COT-0002', '$46.000', '$60.000', '$20.140', '$126.140', 'contacto@kartonpaper.cl',
     'SKU KP-CER-W4-500-P100', 'SKU KP-CER-M2-DUO-P100-LOGO']) assert.ok(drawn.includes(value), value);
   for (const product of [wrap, duo]) assert.ok(photoSources.includes('../' + product.image));
   const png = Buffer.from(await (await w.KP_QUOTE_LETTER.png(page)).arrayBuffer());
@@ -92,6 +125,14 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
   $('quote-print').click();
   w.dispatchEvent(new w.Event('afterprint'));
   assert.equal(d.querySelector('.quote-print'), null);
+  assert.equal(folios.size, 1);
+  $('quote-new').click();
+  assert.equal($('quote-number').value, '');
+  $('quote-customer').value = 'Otro cliente de prueba';
+  add(wrap);
+  await generate();
+  assert.equal($('quote-number').value, 'COT-0003');
+  assert.equal(folios.size, 2);
   w.KP_QUOTES.clear();
   assert.equal($('quote-customer').value, '');
   assert.equal($('quote-pages').children.length, 0);

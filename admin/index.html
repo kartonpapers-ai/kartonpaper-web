@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="../css/admin.css?v=cotizaciones-20261112">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
-  <script defer src="../js/catalogo-remoto.js?v=visibilidad-20261102"></script>
+  <script defer src="../js/catalogo-remoto.js?v=maleta-duo-20261112"></script>
   <script defer src="imagenes.js"></script>
-  <script defer src="precios.js?v=compostables-20261028"></script>
+  <script defer src="precios.js?v=maleta-duo-20261112"></script>
   <script defer src="packs-editor.js?v=compostables-20261028"></script>
   <script defer src="finanzas-calculo.js?v=alfajores-margen-20261029"></script>
   <script defer src="finanzas.js?v=alfajores-margen-20261029"></script>
@@ -26,8 +26,8 @@
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
   <script defer src="cotizacion-carta.js?v=1"></script>
-  <script defer src="cotizaciones.js?v=1"></script>
-  <script defer src="dashboard.js?v=cotizaciones-20261112"></script>
+  <script defer src="cotizaciones.js?v=folios-20261112"></script>
+  <script defer src="dashboard.js?v=folios-20261112"></script>
   <script defer src="admin.js?v=visibilidad-20261102"></script>
 </head>
 <body>
@@ -114,11 +114,11 @@
       <label for="quote-customer">Cliente</label>
       <input id="quote-customer" required maxlength="150" autocomplete="off">
       <div class="product-options">
-        <div><label for="quote-number">Número de cotización</label><input id="quote-number" required maxlength="24" placeholder="COT-0001" autocomplete="off"></div>
+        <div><label for="quote-number">Número de cotización</label><input id="quote-number" readonly placeholder="Se asigna al generar"></div>
         <div><label for="quote-date">Fecha</label><input id="quote-date" required type="date" min="2000-01-01" max="2100-12-31"></div>
       </div>
       <fieldset><legend>Productos</legend><div id="quote-lines"></div><button id="quote-add" type="button" class="secondary">Agregar producto</button></fieldset>
-      <button id="quote-generate" type="submit" class="primary">Generar vista previa</button>
+      <div class="header-actions"><button id="quote-generate" type="submit" class="primary">Generar cotización</button><button id="quote-new" type="button" class="secondary">Nueva cotización</button></div>
       <p id="quote-status" role="status"></p>
     </form>
     <section id="quote-preview" hidden aria-labelledby="quote-preview-heading">

@@ -8,7 +8,8 @@
   const form = $('quote-form');
   const lines = $('quote-lines');
   let products = new Map();
-  let connected = false;
+  let client = null;
+  let draft = null;
   let revision = 0;
   let printPages = null;
 
@@ -18,7 +19,6 @@
     revision++;
     $('quote-preview').hidden = true;
     $('quote-pages').replaceChildren();
-    $('quote-generate').disabled = !connected;
   }
 
   function control(row, name, title, type, attributes = {}) {
@@ -71,7 +71,7 @@
   }
 
   function addLine() {
-    if (!connected || lines.children.length >= 10) return;
+    if (!client || lines.children.length >= 10) return;
     const row = document.createElement('fieldset');
     const legend = document.createElement('legend');
     legend.textContent = 'Producto';
@@ -111,15 +111,15 @@
   }
 
   function updateLineActions() {
-    $('quote-add').disabled = !connected || !products.size || lines.children.length >= 10;
-    $('quote-generate').disabled = !connected || !lines.children.length;
+    $('quote-add').disabled = !client || !products.size || lines.children.length >= 10;
+    $('quote-generate').disabled = !client || !lines.children.length || Boolean(draft?.busy);
+    $('quote-new').disabled = !client || Boolean(draft?.busy);
   }
 
   function readQuote() {
     const customer = $('quote-customer').value.trim();
-    const number = $('quote-number').value.trim();
     const date = $('quote-date').value;
-    if (!number || !customer) throw new Error('Completa el cliente y el número de cotización.');
+    if (!customer) throw new Error('Completa el nombre del cliente.');
     const items = Array.from(lines.children, row => {
       const product = products.get(field(row, 'product').value);
       if (!product) throw new Error('Selecciona un producto disponible en el catálogo.');
@@ -137,7 +137,7 @@
         optionLabel: pack ? '' : variant.split(' · $')[0] };
     });
     const { net, iva, total, lineTotals } = sales.calculate({ ...sales.blank(), customer, date, lines: items });
-    return { customer, number, date, net, iva, total, lines: items.map((item, index) => ({
+    return { customer, date, net, iva, total, lines: items.map((item, index) => ({
       ...item, subtotal: lineTotals[index]
     })) };
   }
@@ -177,6 +177,38 @@
     document.body.classList.remove('quote-printing');
   }
 
+  async function allocateFolio(session, requestId) {
+    const table = () => session.from('kp_quote_folios');
+    const existing = () => table().select('number').eq('request_id', requestId).maybeSingle();
+    let result = await existing();
+    if (!result.error && !result.data) {
+      result = await table().insert({ request_id: requestId }).select('number').single();
+      if (result.error?.code === '23505') result = await existing();
+    }
+    const number = Number(result.data?.number);
+    if (result.error || !Number.isSafeInteger(number) || number < 2) {
+      throw new Error('No se pudo asignar el folio. Revisa la conexión y vuelve a generar la cotización.');
+    }
+    return 'COT-' + String(number).padStart(4, '0');
+  }
+
+  function resetDraft() {
+    draft = client ? { id: crypto.randomUUID(), number: '', busy: false } : null;
+    form.reset();
+    $('quote-number').value = '';
+    $('quote-date').value = client ? sales.today() : '';
+    lines.replaceChildren();
+    clearPrint();
+    invalidate();
+    updateLineActions();
+    status('');
+  }
+
+  $('quote-new').addEventListener('click', () => {
+    if (!client || draft.busy) return;
+    resetDraft();
+    $('quote-customer').focus();
+  });
   $('quote-add').addEventListener('click', addLine);
   form.addEventListener('input', () => {
     invalidate();
@@ -189,13 +221,21 @@
   });
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (!connected || !form.reportValidity()) return;
+    if (!client || draft.busy || !form.reportValidity()) return;
+    const session = client;
+    const activeDraft = draft;
     invalidate();
     const current = revision;
-    $('quote-generate').disabled = true;
-    status('Generando la vista previa…');
+    activeDraft.busy = true;
+    updateLineActions();
+    status('Generando la cotización…');
     try {
       const quote = readQuote();
+      activeDraft.number ||= await allocateFolio(session, activeDraft.id);
+      if (draft !== activeDraft) return;
+      $('quote-number').value = activeDraft.number;
+      if (current !== revision) return;
+      quote.number = activeDraft.number;
       const pages = await letter.render(quote);
       if (current !== revision) return;
       pages.forEach((page, index) => appendPreview(page, index, pages.length, quote, current));
@@ -204,12 +244,15 @@
     } catch (error) {
       if (current === revision) status(error.message);
     } finally {
-      if (current === revision) updateLineActions();
+      if (draft === activeDraft) {
+        activeDraft.busy = false;
+        updateLineActions();
+      }
     }
   });
 
   $('quote-print').addEventListener('click', () => {
-    if (!connected || $('quote-preview').hidden) return;
+    if (!client || $('quote-preview').hidden) return;
     clearPrint();
     printPages = document.createElement('div');
     printPages.className = 'quote-print';
@@ -225,10 +268,9 @@
   window.addEventListener('afterprint', clearPrint);
 
   window.KP_QUOTES = Object.freeze({
-    connect() {
-      connected = true;
-      $('quote-date').value = sales.today();
-      updateLineActions();
+    connect(session) {
+      client = session;
+      resetDraft();
     },
     setCatalog(rows) {
       products = new Map(rows.map(row => [row.id, row.data]));
@@ -254,14 +296,9 @@
       updateLineActions();
     },
     clear() {
-      connected = false;
+      client = null;
       products.clear();
-      form.reset();
-      lines.replaceChildren();
-      clearPrint();
-      invalidate();
-      updateLineActions();
-      status('');
+      resetDraft();
     }
   });
 })();
