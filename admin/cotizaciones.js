@@ -136,10 +136,20 @@
         personalized: field(row, 'personalized').checked,
         optionLabel: pack ? '' : variant.split(' · $')[0] };
     });
-    const { net, iva, total, lineTotals } = sales.calculate({ ...sales.blank(), customer, date, lines: items });
-    return { customer, date, net, iva, total, lines: items.map((item, index) => ({
-      ...item, subtotal: lineTotals[index]
-    })) };
+    const discountPercent = Number($('quote-discount').value);
+    if (!Number.isFinite(discountPercent) || discountPercent < 0 || discountPercent > 100) {
+      throw new Error('Ingresa un descuento entre 0 y 100 %.');
+    }
+    const { net: subtotal, lineTotals } = sales.calculate({ ...sales.blank(), customer, date, lines: items });
+    const discountBasisPoints = Math.round(discountPercent * 100);
+    const discount = Number((BigInt(subtotal) * BigInt(discountBasisPoints) + 5000n) / 10000n);
+    const net = subtotal - discount;
+    const iva = Math.round(net * 19 / 100);
+    return { customer, date, subtotal, discountPercent, discount, net, iva, total: net + iva,
+      lines: items.map((item, index) => ({
+        ...item, subtotal: lineTotals[index]
+      }))
+    };
   }
 
   function appendPreview(page, index, count, quote, current) {

@@ -99,6 +99,10 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
 
   add(wrap);
   add(duo);
+  change($('quote-discount'), '101');
+  await generate();
+  assert.equal(folios.size, 0);
+  change($('quote-discount'), '');
   await generate();
   assert.equal($('quote-preview').hidden, true);
   assert.equal(folios.size, 1);
@@ -114,6 +118,20 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
   assert.equal(png.toString('ascii', 37, 41), 'pHYs');
   assert.deepEqual([png.readUInt32BE(41), png.readUInt32BE(45), png[49]], [11811, 11811, 1]);
 
+  for (const [percent, amount, total] of [
+    ['7', '7.420', '117.310'], ['15', '15.900', '107.219'], ['20', '21.200', '100.912'],
+    ['100', '106.000', '0']
+  ]) {
+    drawn.length = 0;
+    change($('quote-discount'), percent);
+    assert.equal($('quote-preview').hidden, true);
+    await generate();
+    assert.ok(drawn.includes('Descuento (' + percent + ' %)'));
+    assert.ok(drawn.includes('−$' + amount));
+    assert.equal($('quote-status').textContent, 'Total con IVA $' + total + '.');
+    assert.equal($('quote-number').value, 'COT-0002');
+  }
+  change($('quote-discount'), '');
   add(wrap);
   assert.equal($('quote-preview').hidden, true);
   await generate();
@@ -126,7 +144,9 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
   w.dispatchEvent(new w.Event('afterprint'));
   assert.equal(d.querySelector('.quote-print'), null);
   assert.equal(folios.size, 1);
+  change($('quote-discount'), '7');
   $('quote-new').click();
+  assert.equal($('quote-discount').value, '');
   assert.equal($('quote-number').value, '');
   $('quote-customer').value = 'Otro cliente de prueba';
   add(wrap);
