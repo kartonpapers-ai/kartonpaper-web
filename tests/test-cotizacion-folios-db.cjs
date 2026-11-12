@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
     `);
     const sql = file => readFileSync(path.join(__dirname, '..', 'supabase', file), 'utf8');
     await db.exec(sql('01-esquema.sql'));
-    const migration = sql('migrations/20261112152600_quote_folios.sql');
+    const migration = sql('migrations/20261112152810_quote_folios.sql');
     await db.exec(migration);
     await db.exec("insert into kp_private.admin_user values(1,'11111111-1111-4111-8111-111111111111')");
     await db.exec('set role anon');
