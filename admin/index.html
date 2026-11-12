@@ -25,8 +25,8 @@
   <script defer src="redes-modelo.js?v=1"></script>
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
-  <script defer src="cotizacion-carta.js?v=1"></script>
-  <script defer src="cotizaciones.js?v=folios-20261112"></script>
+  <script defer src="cotizacion-carta.js?v=descuento-20261112"></script>
+  <script defer src="cotizaciones.js?v=descuento-20261112"></script>
   <script defer src="dashboard.js?v=folios-20261112"></script>
   <script defer src="admin.js?v=visibilidad-20261102"></script>
 </head>
@@ -118,6 +118,13 @@
         <div><label for="quote-date">Fecha</label><input id="quote-date" required type="date" min="2000-01-01" max="2100-12-31"></div>
       </div>
       <fieldset><legend>Productos</legend><div id="quote-lines"></div><button id="quote-add" type="button" class="secondary">Agregar producto</button></fieldset>
+      <div class="product-options">
+        <div>
+          <label for="quote-discount">Descuento final (%)</label>
+          <input id="quote-discount" type="number" min="0" max="100" step="0.01" placeholder="0" aria-describedby="quote-discount-help">
+          <p id="quote-discount-help" class="field-help">Opcional. Se aplica al subtotal neto antes del IVA.</p>
+        </div>
+      </div>
       <div class="header-actions"><button id="quote-generate" type="submit" class="primary">Generar cotización</button><button id="quote-new" type="button" class="secondary">Nueva cotización</button></div>
       <p id="quote-status" role="status"></p>
     </form>

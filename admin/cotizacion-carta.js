@@ -100,9 +100,16 @@
     });
 
     if (page === pageCount) {
-      for (const [y, label, amount] of [[768, 'Subtotal neto', quote.net], [808, 'IVA (19 %)', quote.iva]]) {
-        text(label, 348, y, 21, 500, { color: colors.muted });
-        text(money(amount), 775, y, 23, 650, right);
+      const discounted = quote.discountPercent > 0;
+      const totals = discounted ? [
+        [745, 'Subtotal neto', money(quote.subtotal)],
+        [772, 'Descuento (' + quote.discountPercent.toLocaleString('es-CL') + ' %)', '−' + money(quote.discount)],
+        [799, 'Neto con descuento', money(quote.net)],
+        [826, 'IVA (19 %)', money(quote.iva)]
+      ] : [[768, 'Subtotal neto', money(quote.net)], [808, 'IVA (19 %)', money(quote.iva)]];
+      for (const [y, label, amount] of totals) {
+        text(label, 348, y, discounted ? 19 : 21, 500, { color: colors.muted });
+        text(amount, 775, y, discounted ? 21 : 23, 650, right);
       }
       box(50, 862, 750, 86, colors.soft, 12);
       text('Total con IVA', 76, 885, 26, 650, { color: colors.green });
