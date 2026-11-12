@@ -7,6 +7,16 @@
   const letter = window.KP_QUOTE_LETTER;
   const form = $('quote-form');
   const lines = $('quote-lines');
+  const whatsapp = document.createElement('a');
+  whatsapp.id = 'quote-whatsapp';
+  whatsapp.className = 'secondary';
+  whatsapp.target = '_blank';
+  whatsapp.rel = 'noopener noreferrer';
+  whatsapp.textContent = 'Compartir en WhatsApp';
+  const shareAction = document.createElement('p');
+  shareAction.className = 'header-actions';
+  shareAction.append(whatsapp);
+  $('quote-pages').before(shareAction);
   let products = new Map();
   let client = null;
   let draft = null;
@@ -18,6 +28,7 @@
   function invalidate() {
     revision++;
     $('quote-preview').hidden = true;
+    whatsapp.removeAttribute('href');
     $('quote-pages').replaceChildren();
   }
 
@@ -152,6 +163,21 @@
     };
   }
 
+  function whatsAppLink(quote) {
+    const items = quote.lines.map(line => {
+      const variant = line.optionLabel ? ' · ' + line.optionLabel : '';
+      const finish = line.personalized ? ' · personalizado' : '';
+      return '• ' + line.quantity.toLocaleString('es-CL') + ' u. de ' + line.name +
+        variant + finish + ' · ' + letter.money(line.subtotal) + ' neto';
+    });
+    const message = ['Hola, te comparto la cotización ' + quote.number + ' de KartonPaper.', '', ...items, ''];
+    if (quote.discountPercent > 0) {
+      message.push('Descuento ' + quote.discountPercent.toLocaleString('es-CL') + ' %: −' + letter.money(quote.discount));
+    }
+    message.push('Total con IVA: ' + letter.money(quote.total) + ' CLP');
+    return 'https://wa.me/?text=' + encodeURIComponent(message.join('\n'));
+  }
+
   function appendPreview(page, index, count, quote, current) {
     const container = document.createElement('div');
     container.className = 'quote-preview-page';
@@ -249,6 +275,7 @@
       const pages = await letter.render(quote);
       if (current !== revision) return;
       pages.forEach((page, index) => appendPreview(page, index, pages.length, quote, current));
+      whatsapp.href = whatsAppLink(quote);
       $('quote-preview').hidden = false;
       status('Total con IVA ' + letter.money(quote.total) + '.');
     } catch (error) {
