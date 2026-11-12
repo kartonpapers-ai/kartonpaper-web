@@ -7,7 +7,7 @@
   <title>Administración · KartonPaper</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css?v=clientes-finanzas-20261111">
+  <link rel="stylesheet" href="../css/admin.css?v=cotizaciones-20261112">
   <script defer src="../vendor/supabase-2.117.3.js"></script>
   <script defer src="../data/config.js"></script>
   <script defer src="../js/catalogo-remoto.js?v=visibilidad-20261102"></script>
@@ -25,7 +25,9 @@
   <script defer src="redes-modelo.js?v=1"></script>
   <script defer src="redes.js?v=1"></script>
   <script defer src="archivos-cliente.js?v=posavasos-20261022"></script>
-  <script defer src="dashboard.js?v=clientes-finanzas-20261111"></script>
+  <script defer src="cotizacion-carta.js?v=1"></script>
+  <script defer src="cotizaciones.js?v=1"></script>
+  <script defer src="dashboard.js?v=cotizaciones-20261112"></script>
   <script defer src="admin.js?v=visibilidad-20261102"></script>
 </head>
 <body>
@@ -45,7 +47,7 @@
         <p id="login-status" role="status" aria-live="polite"></p>
       </div>
     </section>
-    <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button class="secondary" type="button" data-panel="customers" aria-pressed="false">Clientes</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button><button type="button" data-panel="artwork" aria-pressed="false">Archivos de clientes</button></nav></div><section id="workspace" hidden>
+    <div id="panel-overview" hidden><div class="panel-title"><div><h1>Panel de control</h1><p>Catálogo, precios y costos de KartonPaper.</p></div><span class="net-label">CLP · valores netos</span></div><dl class="panel-summary"><div><dt>Productos</dt><dd id="summary-products">—</dd></div><div><dt>Visibles en tienda</dt><dd id="summary-visible">—</dd></div><div><dt>Fichas de costos</dt><dd id="summary-costs">—</dd></div><div><dt>Costos revisados</dt><dd id="summary-reviewed">—</dd></div></dl><nav class="panel-nav" aria-label="Módulos del administrador"><button type="button" data-panel="products" aria-pressed="true">Productos</button><button type="button" data-panel="prices" aria-pressed="false">Precios</button><a id="module-campaigns" href="campanas.html">Campañas</a><button type="button" data-panel="finance" aria-pressed="false">Finanzas</button><button type="button" data-panel="sales" aria-pressed="false">Ventas</button><button class="secondary" type="button" data-panel="customers" aria-pressed="false">Clientes</button><button class="secondary" type="button" data-panel="quotes" aria-pressed="false">Cotizaciones</button><button type="button" data-panel="production" aria-pressed="false">Producción</button><button type="button" data-panel="social" aria-pressed="false">Redes y marketing</button><button type="button" data-panel="artwork" aria-pressed="false">Archivos de clientes</button></nav></div><section id="workspace" hidden>
       <div class="workspace-heading"><div><h2>Productos</h2><p id="product-count">Cargando catálogo…</p></div><div class="header-actions"><button id="new-product" class="primary" type="button">Agregar producto</button><button id="reload" class="secondary">Actualizar lista</button></div></div>
       <section class="category-visibility" aria-labelledby="visibility-title">
         <h3 id="visibility-title">Visibilidad en la web</h3>
@@ -105,6 +107,26 @@
       </div>
     </section>
 <section id="prices-panel" hidden aria-labelledby="prices-heading"><div class="workspace-heading"><div><h2 id="prices-heading">Precios de venta</h2><p>Precios publicados en el catálogo. Los cambios se guardan desde la ficha del producto.</p></div></div><label for="price-search">Buscar producto o categoría</label><input id="price-search" type="search" placeholder="Nombre o categoría"><div class="table-scroll"><table class="data-table"><caption class="sr-only">Precios públicos por producto</caption><thead><tr><th scope="col">Producto</th><th scope="col">Precio neto</th><th scope="col">Opciones de venta</th><th scope="col">Acción</th></tr></thead><tbody id="price-rows"></tbody></table></div></section>
+<section id="quotes-panel" hidden aria-labelledby="quote-heading">
+  <div class="workspace-heading"><div><h2 id="quote-heading">Cotizaciones</h2><p>Prepara una hoja Carta con los productos del catálogo. Descarga la imagen para adjuntarla en WhatsApp o imprime la cotización.</p></div></div>
+  <div class="quote-workspace">
+    <form id="quote-form">
+      <label for="quote-customer">Cliente</label>
+      <input id="quote-customer" required maxlength="150" autocomplete="off">
+      <div class="product-options">
+        <div><label for="quote-number">Número de cotización</label><input id="quote-number" required maxlength="24" placeholder="COT-0001" autocomplete="off"></div>
+        <div><label for="quote-date">Fecha</label><input id="quote-date" required type="date" min="2000-01-01" max="2100-12-31"></div>
+      </div>
+      <fieldset><legend>Productos</legend><div id="quote-lines"></div><button id="quote-add" type="button" class="secondary">Agregar producto</button></fieldset>
+      <button id="quote-generate" type="submit" class="primary">Generar vista previa</button>
+      <p id="quote-status" role="status"></p>
+    </form>
+    <section id="quote-preview" hidden aria-labelledby="quote-preview-heading">
+      <div class="workspace-heading"><h3 id="quote-preview-heading">Vista previa Carta</h3><button id="quote-print" class="secondary" type="button">Imprimir</button></div>
+      <div id="quote-pages"></div>
+    </section>
+  </div>
+</section>
 <section id="customers-panel" hidden aria-labelledby="customers-heading">
   <div class="workspace-heading"><h2 id="customers-heading" tabindex="-1">Clientes</h2></div>
   <div class="customer-workspace">
