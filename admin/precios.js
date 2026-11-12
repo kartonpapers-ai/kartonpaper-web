@@ -30,7 +30,8 @@
       const pack = {...entry, totalNet:quantity * unitPrice};
       const mode = withoutPrint ? " · Sin impresión" : entry.requiresLogo ? " · Con logo" : "";
       pack.label = `Pack ${quantity} u.${mode} ($${format(pack.totalNet)} + IVA)`;
-      if (entry.requiresLogo) pack.configuration = `${quantity} unidades`;
+      if (entry.requiresLogo && !product.pricedLogoPacks) pack.configuration = `${quantity} unidades`;
+      else if (entry.requiresLogo) delete pack.configuration;
       else {delete pack.configuration; delete pack.requiresLogo;}
       return pack;
     });
@@ -43,7 +44,7 @@
     const result = {packs:updated, variants, price, priceNum:initialPack.unitPrice, pricingMode:"packs"};
     const previousConfigurations = new Set((product.packs || []).filter(pack => pack.requiresLogo).map(pack => pack.configuration));
     const configurations = [...updated.filter(pack => pack.requiresLogo).map(pack => pack.configuration), ...(product.configurations || []).filter(value => !previousConfigurations.has(value))];
-    if (product.configurations || configurations.length) result.configurations = [...new Set(configurations)];
+    if (!product.pricedLogoPacks && (product.configurations || configurations.length)) result.configurations = [...new Set(configurations)];
     return result;
   }
   function initialPack(product) {

@@ -12,10 +12,11 @@
     if (!/^[a-z0-9-]+$/.test(p.id) || !categories.includes(p.category) || !["dual", "custom", "stock"].includes(p.type)) {
       throw new Error("Identificador, categoría o tipo inválidos.");
     }
-    if (!/^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(p.image)) {
+    for (const image of [p.image, ...(p.detailImage === undefined ? [] : [p.detailImage])]) {
+      if (typeof image === "string" && /^images\/[a-zA-Z0-9._-]+\.(webp|png|jpe?g)$/.test(image)) continue;
       const c = configuration();
       const prefix = c && c.supabaseUrl.replace(/\/$/, "") + "/storage/v1/object/public/kp-productos/";
-      if (!prefix || !p.image.startsWith(prefix) || !/^[a-z0-9-]+\.webp$/.test(p.image.slice(prefix.length))) throw new Error("Imagen inválida: usa una foto de este catálogo.");
+      if (!prefix || typeof image !== "string" || !image.startsWith(prefix) || !/^[a-z0-9-]+\.webp$/.test(image.slice(prefix.length))) throw new Error("Imagen inválida: usa una foto de este catálogo.");
     }
     for (const field of ["specs", "variants"]) {
       if (!Array.isArray(p[field]) || !p[field].length || p[field].length > 30 || p[field].some(v => typeof v !== "string" || !v.trim() || v.length > 500)) {
@@ -55,9 +56,10 @@
         skus.add(row.sku);
       }
     }
+    if (p.pricedLogoPacks !== undefined && (typeof p.pricedLogoPacks !== "boolean" || (p.pricedLogoPacks && (p.type !== "dual" || !p.configurations?.length || !Array.isArray(p.packs) || !p.packs.some(pack => pack?.requiresLogo))))) throw new Error("Configura los packs con logo.");
     if (p.packs !== undefined) {
       if (!Array.isArray(p.packs) || !p.packs.length || p.packs.length > 30) throw new Error("Packs inválidos.");
-      const skus = new Set();
+      const skus = new Set(), logoQuantities = new Set();
       for (const pack of p.packs) {
         if (!pack || !Number.isSafeInteger(pack.quantity) || pack.quantity < 1
           || !Number.isSafeInteger(pack.unitPrice) || pack.unitPrice < 0
@@ -67,8 +69,12 @@
           throw new Error("Revisa cantidades, SKU y precios estructurados de los packs.");
         }
         if (pack.requiresLogo !== undefined && (typeof pack.requiresLogo !== "boolean"
-          || (pack.requiresLogo && (pack.withoutPrint || p.type === "stock" || typeof pack.configuration !== "string"
-            || !p.configurations?.includes(pack.configuration))))) throw new Error("Revisa la configuración del pack con logo.");
+          || (pack.requiresLogo && (pack.withoutPrint || p.type === "stock" || (!p.pricedLogoPacks
+            && (typeof pack.configuration !== "string" || !p.configurations?.includes(pack.configuration))))))) throw new Error("Revisa la configuración del pack con logo.");
+        if (p.pricedLogoPacks && pack.requiresLogo) {
+          if (pack.quantity > 1000000 || logoQuantities.has(pack.quantity)) throw new Error("Usa cantidades únicas para los packs con logo.");
+          logoQuantities.add(pack.quantity);
+        }
         skus.add(pack.sku);
       }
     }
@@ -168,6 +174,14 @@
     return {pricedCustomization:Boolean(priced),customUnitPrice:priced?row.unitPrice:null,customPricingSku:priced?row.sku:null,
       price:priced?money(row.unitPrice)+' + IVA c/u · Impresión en tapa':'Cotización con logo'};
   }
+  function logoPacks(product) {
+    return product?.pricedLogoPacks ? product.packs.filter(pack => pack.requiresLogo).sort((a, b) => a.quantity - b.quantity) : [];
+  }
+  function customPriceFields(product, quantity) {
+    const pack = logoPacks(product).find(row => row.quantity === quantity);
+    if (!pack) return embalajeFields(product, quantity);
+    return {pricedCustomization:true, customUnitPrice:pack.unitPrice, customPricingSku:pack.sku, price:money(pack.unitPrice)+" + IVA c/u"};
+  }
   function catalogSale(product, variant) {
     if (!product) return null;
     if (isEmbalaje(product)) return embalajeFor(product,variant)?.unitPrice ?? null;
@@ -191,6 +205,9 @@
   function quantityRule(product,variant) {
     if (product?.orderStep) return {step:product.orderStep};
     if (product?.customQuantities) return {quantities:product.customQuantities};
+    if (product?.pricedLogoPacks && product.configurations.includes(variant)) {
+      return {quantities:logoPacks(product).map(pack => pack.quantity)};
+    }
     return product?.quantityRules?.find(rule=>rule.variant===String(variant??'').split(' · $')[0]);
   }
   function validQuantity(product,variant,quantity) {
@@ -198,5 +215,5 @@
     const rule=quantityRule(product,variant);
     return !rule || (rule.quantities ? rule.quantities.includes(quantity) : quantity>=rule.step && quantity%rule.step===0);
   }
-  window.KP_CATALOG = Object.freeze({isCategoryVisible, setVisibility, validate, partition, configuration, load, loadIssues:()=>loadIssues.map(issue=>({...issue})), escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields});
+  window.KP_CATALOG = Object.freeze({isCategoryVisible, setVisibility, validate, partition, configuration, load, loadIssues:()=>loadIssues.map(issue=>({...issue})), escape, money, packFor, catalogSale, packFields, quantityRule, validQuantity, isEmbalaje, embalajeOptions, embalajeFor, embalajeFields, customPriceFields});
 })();
