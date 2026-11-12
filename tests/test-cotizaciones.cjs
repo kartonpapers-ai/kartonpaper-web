@@ -109,6 +109,14 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
   await generate();
   assert.equal($('quote-preview').hidden, false);
   assert.match($('quote-status').textContent, /126\.140/);
+  const share = () => new URL($('quote-whatsapp').href);
+  assert.equal(share().origin, 'https://wa.me');
+  assert.equal(share().pathname, '/');
+  const message = () => share().searchParams.get('text');
+  assert.match(message(), /COT-0002 de KartonPaper/);
+  assert.match(message(), /100 u. de Wrap para 4 botellas de 500 cc/);
+  assert.match(message(), /100 u. de Maleta Dúo para cerveza/);
+  assert.ok(message().includes('Total con IVA: $126.140 CLP'));
   const page = $('quote-pages').querySelector('canvas');
   assert.deepEqual([page.width, page.height], [2550, 3300]);
   for (const value of ['N.º COT-0002', '$46.000', '$60.000', '$20.140', '$126.140', 'contacto@kartonpaper.cl',
@@ -125,10 +133,13 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
     drawn.length = 0;
     change($('quote-discount'), percent);
     assert.equal($('quote-preview').hidden, true);
+    assert.equal($('quote-whatsapp').hasAttribute('href'), false);
     await generate();
     assert.ok(drawn.includes('Descuento (' + percent + ' %)'));
     assert.ok(drawn.includes('−$' + amount));
     assert.equal($('quote-status').textContent, 'Total con IVA $' + total + '.');
+    assert.ok(message().includes('Descuento ' + percent + ' %: −$' + amount));
+    assert.ok(message().includes('Total con IVA: $' + total + ' CLP'));
     assert.equal($('quote-number').value, 'COT-0002');
   }
   change($('quote-discount'), '');
